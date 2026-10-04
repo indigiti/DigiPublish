@@ -125,3 +125,15 @@ jobs:
             echo "Elastic single-card carousel regression found."
             exit 1
           fi
+
+
+      - name: Guard Featured mobile alignment
+        shell: bash
+        run: |
+          set -euo pipefail
+          css="digipublish-core/blocks/featured-posts/style.css"
+          site="digipublish/assets/css/site.css"
+          grep -Fq '.tp-home-top>.wp-block-digipublish-featured-posts.alignwide' "$css" || exit 1
+          grep -Fq '.tp-featured__more{display:none}' "$css" || exit 1
+          grep -Fq 'padding:12px 16px 22px!important' "$site" || exit 1
+          grep -Fq 'min-height:44px' "$css" || exit 1
