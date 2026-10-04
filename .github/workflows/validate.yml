@@ -58,3 +58,12 @@ jobs:
             echo "Obsolete techpress-theme template-part reference found."
             exit 1
           fi
+
+
+      - name: Guard retired block namespace
+        shell: bash
+        run: |
+          if grep -R --line-number --fixed-strings 'techpress/' digipublish digipublish-core; then
+            echo "Retired Gutenberg block namespace found."
+            exit 1
+          fi

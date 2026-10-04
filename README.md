@@ -9,7 +9,7 @@ DigiPublish is a Gutenberg-first publishing framework for WordPress, built as a 
 
 ## Current version
 
-**0.7.0**
+**0.8.0**
 
 ## Capabilities
 
@@ -24,9 +24,7 @@ DigiPublish is a Gutenberg-first publishing framework for WordPress, built as a 
 
 ## Backward compatibility
 
-DigiPublish was initially developed under the internal TechPress name. Version 0.7.0 intentionally retains the legacy `techpress/*` Gutenberg block namespace and selected `techpress_*` / `TECHPRESS_*` identifiers so existing saved Gutenberg content, metadata, settings, custom CSS, and integrations keep working.
-
-The public product identity is now **DigiPublish**. New integrations can use the canonical `DIGIPUBLISH_CORE_*` constants while the legacy aliases remain available.
+DigiPublish was initially developed under the internal TechPress name. Version 0.8.0 uses the canonical `digipublish/*` Gutenberg namespace throughout the theme and plugin. Existing saved content from earlier releases is automatically migrated on upgrade.
 
 ## Installation
 
