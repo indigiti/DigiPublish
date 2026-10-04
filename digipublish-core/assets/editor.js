@@ -97,7 +97,7 @@
   registerBlockType('digipublish/editorial-feed', {
     apiVersion: 3, title: __('Editorial Feed Engine', 'digipublish-core'), category: 'digipublish-editorial', icon: 'layout',
     attributes: {
-      heading: { type: 'string', default: 'Editorial Feed' }, description: { type: 'string', default: '' }, sourceMode: { type: 'string', default: 'latest' }, categoryId: { type: 'integer', default: 0 }, categorySlug: { type: 'string', default: '' }, manualPostIds: { type: 'string', default: '' }, postsToShow: { type: 'integer', default: 8 }, layout: { type: 'string', default: 'cards-4' }, orderBy: { type: 'string', default: 'date' }, period: { type: 'string', default: 'all' }, avoidDuplicates: { type: 'boolean', default: false }, showCategory: { type: 'boolean', default: true }, showExcerpt: { type: 'boolean', default: false }, showAuthor: { type: 'boolean', default: false }, showDate: { type: 'boolean', default: false }, showReadTime: { type: 'boolean', default: true }, showViews: { type: 'boolean', default: true }, showShares: { type: 'boolean', default: true }, showViewAll: { type: 'boolean', default: true }, viewAllLabel: { type: 'string', default: 'View All' }, viewAllUrl: { type: 'string', default: '' }
+      heading: { type: 'string', default: 'Editorial Feed' }, description: { type: 'string', default: '' }, sourceMode: { type: 'string', default: 'latest' }, categoryId: { type: 'integer', default: 0 }, categorySlug: { type: 'string', default: '' }, fillFromLatest: { type: 'boolean', default: false }, manualPostIds: { type: 'string', default: '' }, postsToShow: { type: 'integer', default: 8 }, layout: { type: 'string', default: 'cards-4' }, orderBy: { type: 'string', default: 'date' }, period: { type: 'string', default: 'all' }, avoidDuplicates: { type: 'boolean', default: false }, showCategory: { type: 'boolean', default: true }, showExcerpt: { type: 'boolean', default: false }, showAuthor: { type: 'boolean', default: false }, showDate: { type: 'boolean', default: false }, showReadTime: { type: 'boolean', default: true }, showViews: { type: 'boolean', default: true }, showShares: { type: 'boolean', default: true }, showViewAll: { type: 'boolean', default: true }, viewAllLabel: { type: 'string', default: 'View All' }, viewAllUrl: { type: 'string', default: '' }
     },
     edit: function (props) {
       const a = props.attributes, set = props.setAttributes, categoryOptions = useCategoryOptions();
@@ -123,6 +123,7 @@
             ], onChange: function(v){ set({ sourceMode:v }); } }),
             a.sourceMode === 'category' ? el(SelectControl, { label: __('Category', 'digipublish-core'), value: a.categoryId || 0, options: categoryOptions, onChange: function(v){ set({ categoryId:parseInt(v,10)||0 }); } }) : null,
             a.sourceMode === 'category' ? el(TextControl, { label: __('Portable category slug fallback', 'digipublish-core'), help: __('Used when no category ID is selected. This keeps reusable patterns portable between sites.', 'digipublish-core'), value: a.categorySlug || '', onChange: function(v){ set({ categorySlug:v.toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'') }); } }) : null,
+            a.sourceMode === 'category' ? el(ToggleControl, { label: __('Fill sparse category from Latest', 'digipublish-core'), help: __('Keep the selected category first, then fill empty visual slots with non-duplicate latest stories.', 'digipublish-core'), checked: !!a.fillFromLatest, onChange: function(v){ set({ fillFromLatest:v }); } }) : null,
             a.sourceMode === 'manual' ? el(TextControl, { label: __('Post IDs', 'digipublish-core'), help: __('Comma-separated WordPress post IDs. Order is preserved.', 'digipublish-core'), value: a.manualPostIds || '', onChange: function(v){ set({ manualPostIds:v.replace(/[^0-9,\s]/g,'') }); } }) : null,
             el(RangeControl, { label: __('Stories', 'digipublish-core'), value: a.postsToShow || 8, min: 3, max: 16, onChange: function(v){ set({ postsToShow:v }); } }),
             el(SelectControl, { label: __('Order by', 'digipublish-core'), value: a.orderBy || 'date', options: [
@@ -157,6 +158,64 @@
         el(Preview, { name:'digipublish/editorial-feed', attributes:a })
       );
     }, save: function(){ return null; }
+  });
+
+
+  [
+    {
+      name: 'business-markets',
+      title: __('Business / Markets', 'digipublish-core'),
+      description: __('Four-card Business / Markets editorial section.', 'digipublish-core'),
+      icon: 'chart-line',
+      attributes: { heading:'Business / Markets', sourceMode:'category', categorySlug:'business', fillFromLatest:true, avoidDuplicates:true, postsToShow:4, layout:'cards-4', showCategory:true, showExcerpt:false, showAuthor:false, showDate:false, showReadTime:false, showViews:false, showShares:false, showViewAll:true, viewAllLabel:'View All' }
+    },
+    {
+      name: 'top-weekly',
+      title: __('Top Weekly', 'digipublish-core'),
+      description: __('Seven-day most-discussed editorial mosaic.', 'digipublish-core'),
+      icon: 'awards',
+      attributes: { heading:'Top Weekly', sourceMode:'latest', period:'week', avoidDuplicates:true, postsToShow:6, layout:'weekly-mosaic', orderBy:'comment_count', showCategory:true, showExcerpt:true, showAuthor:false, showDate:false, showReadTime:true, showViews:true, showShares:true, showViewAll:true, viewAllLabel:'View All' }
+    },
+    {
+      name: 'science-space',
+      title: __('Science / Space', 'digipublish-core'),
+      description: __('Swipeable overlay carousel with Science-first sourcing.', 'digipublish-core'),
+      icon: 'slides',
+      attributes: { heading:'Science / Space', sourceMode:'category', categorySlug:'science', fillFromLatest:true, avoidDuplicates:true, postsToShow:8, layout:'carousel-overlay', showCategory:true, showExcerpt:true, showAuthor:false, showDate:false, showReadTime:true, showViews:false, showShares:false, showViewAll:true, viewAllLabel:'See More' }
+    },
+    {
+      name: 'travels',
+      title: __('Travels', 'digipublish-core'),
+      description: __('Featured lead story with two supporting travel cards.', 'digipublish-core'),
+      icon: 'location-alt',
+      attributes: { heading:'Travels', description:'Become a traveler with guides to destinations, booking tips, and ideas for finding the best things to do wherever you go.', sourceMode:'category', categorySlug:'travel', fillFromLatest:true, avoidDuplicates:true, postsToShow:3, layout:'featured-trio', showCategory:true, showExcerpt:true, showAuthor:false, showDate:false, showReadTime:true, showViews:false, showShares:false, showViewAll:true, viewAllLabel:'See More' }
+    },
+    {
+      name: 'wearables',
+      title: __('Wearables', 'digipublish-core'),
+      description: __('Dense compact feed for wearable technology.', 'digipublish-core'),
+      icon: 'smartphone',
+      attributes: { heading:'Wearables', description:'Exploring the latest in earbuds, headphones, audio and wearable technology.', sourceMode:'category', categorySlug:'wearables', fillFromLatest:true, avoidDuplicates:true, postsToShow:12, layout:'compact-grid', showCategory:false, showExcerpt:false, showAuthor:false, showDate:false, showReadTime:true, showViews:true, showShares:false, showViewAll:true, viewAllLabel:'See More Wearables' }
+    },
+    {
+      name: 'latest-posts',
+      title: __('Latest Posts', 'digipublish-core'),
+      description: __('Latest article cards with excerpt and metadata.', 'digipublish-core'),
+      icon: 'list-view',
+      attributes: { heading:'Latest Posts', sourceMode:'latest', avoidDuplicates:true, postsToShow:8, layout:'latest-cards', showCategory:false, showExcerpt:true, showAuthor:false, showDate:true, showReadTime:true, showViews:true, showShares:true, showViewAll:false }
+    },
+    {
+      name: 'technology',
+      title: __('Technology', 'digipublish-core'),
+      description: __('Compact technology topic matrix.', 'digipublish-core'),
+      icon: 'desktop',
+      attributes: { heading:'Technology', description:'Exploring the latest in mobiles, technology, gadgets, apps and software.', sourceMode:'category', categorySlug:'technology', fillFromLatest:true, avoidDuplicates:true, postsToShow:12, layout:'compact-grid', showCategory:false, showExcerpt:false, showAuthor:false, showDate:false, showReadTime:true, showViews:false, showShares:false, showViewAll:true, viewAllLabel:'See More Technology' }
+    }
+  ].forEach(function (variation) {
+    registerBlockVariation('digipublish/editorial-feed', Object.assign({
+      scope: ['inserter'],
+      keywords: [__('DigiPublish', 'digipublish-core'), __('editorial', 'digipublish-core')]
+    }, variation));
   });
 
   registerBlockType('digipublish/ad-slot', {

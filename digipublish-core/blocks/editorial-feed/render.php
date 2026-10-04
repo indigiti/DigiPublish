@@ -11,15 +11,20 @@ if ( ! in_array( $layout, $allowed_layouts, true ) ) {
 
 $posts = techpress_editorial_feed_get_posts( $attributes );
 if ( empty( $posts ) ) {
+	if ( is_admin() ) {
+		$empty_wrapper = get_block_wrapper_attributes( array( 'class' => 'tp-editorial-feed tp-editorial-feed--empty' ) );
+		echo '<section ' . $empty_wrapper . '><p class="tp-editorial-feed__empty">' . esc_html__( 'No stories are available for this feed yet.', 'digipublish-core' ) . '</p></section>';
+	}
 	return;
 }
+$item_count = count( $posts );
 $heading = isset( $attributes['heading'] ) ? trim( (string) $attributes['heading'] ) : '';
 $description = isset( $attributes['description'] ) ? trim( (string) $attributes['description'] ) : '';
 $view_all = techpress_editorial_feed_view_all_url( $attributes );
 $show_view_all = ! empty( $attributes['showViewAll'] ) && $view_all;
 $view_all_label = ! empty( $attributes['viewAllLabel'] ) ? (string) $attributes['viewAllLabel'] : __( 'View All', 'digipublish-core' );
 
-$wrapper = get_block_wrapper_attributes( array( 'class' => 'tp-editorial-feed tp-editorial-feed--' . $layout ) );
+$wrapper = get_block_wrapper_attributes( array( 'class' => 'tp-editorial-feed tp-editorial-feed--' . $layout . ' tp-editorial-feed--items-' . $item_count ) );
 
 echo '<section ' . $wrapper . '>';
 echo '<header class="tp-editorial-feed__header">';
@@ -52,7 +57,9 @@ switch ( $layout ) {
 			echo techpress_editorial_feed_story_markup( $post->ID, $attributes, 'tp-carousel-card', true );
 		}
 		echo '</div>';
-		echo '<div class="tp-editorial-carousel__controls"><button type="button" data-tp-carousel-dir="prev" aria-label="' . esc_attr__( 'Previous stories', 'digipublish-core' ) . '">←</button><button type="button" data-tp-carousel-dir="next" aria-label="' . esc_attr__( 'Next stories', 'digipublish-core' ) . '">→</button></div>';
+		if ( $item_count > 1 ) {
+			echo '<div class="tp-editorial-carousel__controls"><button type="button" data-tp-carousel-dir="prev" aria-label="' . esc_attr__( 'Previous stories', 'digipublish-core' ) . '">←</button><button type="button" data-tp-carousel-dir="next" aria-label="' . esc_attr__( 'Next stories', 'digipublish-core' ) . '">→</button></div>';
+		}
 		break;
 
 	case 'featured-trio':

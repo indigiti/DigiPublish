@@ -4,7 +4,7 @@
   --tp-radius:4px; --tp-wide:1320px;
 }
 html{scroll-behavior:smooth}*,*::before,*::after{box-sizing:border-box}body{margin:0;background:#fff}.wp-site-blocks{padding:0}.wp-site-blocks>*{margin-block-start:0}
-.wp-site-blocks>.alignfull{margin-left:calc(var(--wp--style--root--padding-left,0px)*-1);margin-right:calc(var(--wp--style--root--padding-right,0px)*-1)}
+.wp-site-blocks>.alignfull{margin-left:0!important;margin-right:0!important}
 .tp-shell{max-width:var(--tp-wide);margin-inline:auto;width:100%}.tp-section{padding-block:46px}.tp-home-top{padding:18px 0 30px}.tp-section--soft{background:var(--tp-surface-soft)}.tp-section--blue{background:var(--tp-surface)}
 .tp-section-title{position:relative;display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:0 0 10px;margin:0 0 18px;color:var(--tp-ink);font-size:22px;font-weight:700;line-height:1.25}.tp-section-title:after{content:"";position:absolute;left:0;bottom:0;width:38px;height:4px;background:var(--tp-brand)}
 .tp-kicker,.tp-category{display:inline-block;color:var(--tp-brand);font-size:10.5px;font-weight:700;letter-spacing:.02em;line-height:1.15;text-transform:uppercase;text-decoration:none}.tp-meta{display:flex;flex-wrap:wrap;gap:5px;align-items:center;color:var(--tp-muted);font-size:10px;font-weight:600;line-height:1.25;text-transform:uppercase}.tp-meta a{color:inherit;text-decoration:none}.tp-meta__dot{opacity:.5}
@@ -53,8 +53,9 @@ html{scroll-behavior:smooth}*,*::before,*::after{box-sizing:border-box}body{marg
   .tp-brand{min-width:0;max-width:calc(100% - 104px)}
   .tp-brand .wp-block-site-logo img{max-width:145px;max-height:34px}
   .tp-brand .wp-block-site-title{overflow:hidden;text-overflow:ellipsis;font-size:16px!important}
-  .tp-home-top{padding-top:10px;padding-bottom:20px}
-  .tp-section{padding-block:24px}
+  .tp-home-top{padding:10px 16px 20px}
+  .tp-section{padding:24px 16px}
+  .tp-home-popular-categories{padding-inline:16px}
   .tp-section-title{font-size:20px;line-height:1.2;margin-bottom:15px}
   .tp-article-page{padding-top:12px}
   .tp-breadcrumbs{margin-block:12px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

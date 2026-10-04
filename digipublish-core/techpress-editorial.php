@@ -2,7 +2,7 @@
 /**
  * Plugin Name: DigiPublish Core
  * Description: Dynamic Gutenberg blocks and editorial content types for the DigiPublish publishing framework.
- * Version: 0.8.1
+ * Version: 0.8.2
  * Requires at least: 7.0
  * Requires PHP: 8.0
  * Author: indigiti
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TECHPRESS_EDITORIAL_VERSION', '0.8.1' );
+define( 'TECHPRESS_EDITORIAL_VERSION', '0.8.2' );
 define( 'TECHPRESS_EDITORIAL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TECHPRESS_EDITORIAL_URL', plugin_dir_url( __FILE__ ) );
 
@@ -723,66 +723,96 @@ function techpress_editorial_feed_get_posts( $attributes ) {
 	static $request_cache = array();
 
 	$count = isset( $attributes['postsToShow'] ) ? max( 1, min( 16, absint( $attributes['postsToShow'] ) ) ) : 8;
+	$mode = isset( $attributes['sourceMode'] ) ? sanitize_key( $attributes['sourceMode'] ) : 'latest';
+	$manual = 'manual' === $mode;
 	$args = techpress_editorial_feed_query_args( $attributes );
-	$manual = 'manual' === ( $attributes['sourceMode'] ?? 'latest' );
-	$args['posts_per_page'] = $manual ? min( 16, max( $count, count( $args['post__in'] ?? array() ) ) ) : 24;
+	$args['posts_per_page'] = $manual ? min( 16, max( $count, count( $args['post__in'] ?? array() ) ) ) : 32;
 
-	$key_args = $args;
-	unset( $key_args['posts_per_page'] );
-	$cache_key = md5( wp_json_encode( $key_args ) );
-	$scope = 'comment_count' === ( $args['orderby'] ?? '' ) ? 'popularity' : 'content';
+	$get_pool = static function ( $query_args ) use ( &$request_cache ) {
+		$key_args = $query_args;
+		unset( $key_args['posts_per_page'] );
+		$cache_key = md5( wp_json_encode( $key_args ) );
+		$scope = 'comment_count' === ( $query_args['orderby'] ?? '' ) ? 'popularity' : 'content';
 
-	if ( ! isset( $request_cache[ $cache_key ] ) ) {
-		$object_key = 'v' . techpress_editorial_cache_version( $scope ) . '_feed_' . $cache_key;
-		$post_ids = wp_cache_get( $object_key, 'techpress_editorial' );
-		if ( false === $post_ids ) {
-			$query = new WP_Query( $args );
-			$post_ids = wp_list_pluck( $query->posts, 'ID' );
-			wp_cache_set( $object_key, $post_ids, 'techpress_editorial', 15 * MINUTE_IN_SECONDS );
-		}
-		$post_ids = array_map( 'absint', (array) $post_ids );
-		_prime_post_caches( $post_ids, true, true );
-		$request_cache[ $cache_key ] = array_values( array_filter( array_map( 'get_post', $post_ids ) ) );
-	}
-
-	$pool = $request_cache[ $cache_key ];
-	$avoid_duplicates = ! empty( $attributes['avoidDuplicates'] );
-	if ( ! $avoid_duplicates ) {
-		return array_slice( $pool, 0, $count );
-	}
-
-	$seen = array_flip( digipublish_core_rendered_post_ids() );
-	$result = array_values(
-		array_filter(
-			$pool,
-			static function ( $post ) use ( $seen ) {
-				return $post instanceof WP_Post && ! isset( $seen[ $post->ID ] );
+		if ( ! isset( $request_cache[ $cache_key ] ) ) {
+			$object_key = 'v' . techpress_editorial_cache_version( $scope ) . '_feed_' . $cache_key;
+			$post_ids = wp_cache_get( $object_key, 'techpress_editorial' );
+			if ( false === $post_ids ) {
+				$query = new WP_Query( $query_args );
+				$post_ids = wp_list_pluck( $query->posts, 'ID' );
+				wp_cache_set( $object_key, $post_ids, 'techpress_editorial', 15 * MINUTE_IN_SECONDS );
 			}
-		)
-	);
+			$post_ids = array_map( 'absint', (array) $post_ids );
+			_prime_post_caches( $post_ids, true, true );
+			$request_cache[ $cache_key ] = array_values( array_filter( array_map( 'get_post', $post_ids ) ) );
+		}
+
+		return $request_cache[ $cache_key ];
+	};
+
+	$seen_ids = ! empty( $attributes['avoidDuplicates'] ) ? digipublish_core_rendered_post_ids() : array();
+	$seen = array_flip( array_map( 'intval', $seen_ids ) );
+	$result = array();
+
+	$append_unique = static function ( $posts ) use ( &$result, &$seen, $count ) {
+		foreach ( (array) $posts as $post ) {
+			if ( count( $result ) >= $count ) {
+				break;
+			}
+			if ( ! $post instanceof WP_Post || isset( $seen[ $post->ID ] ) ) {
+				continue;
+			}
+			$result[] = $post;
+			$seen[ $post->ID ] = true;
+		}
+	};
+
+	$append_unique( $get_pool( $args ) );
+
+	/*
+	 * Category-first homepage sections must remain visually complete even when
+	 * a category is new or sparse. Fill missing positions from the generic
+	 * Latest pool while preserving the category stories first and excluding
+	 * everything already rendered earlier on the page.
+	 */
+	if ( count( $result ) < $count && 'category' === $mode && ! empty( $attributes['fillFromLatest'] ) ) {
+		$fallback_attributes = $attributes;
+		$fallback_attributes['sourceMode'] = 'latest';
+		$fallback_attributes['categoryId'] = 0;
+		$fallback_attributes['categorySlug'] = '';
+
+		$fallback_args = techpress_editorial_feed_query_args( $fallback_attributes );
+		$fallback_args['posts_per_page'] = 40;
+		$append_unique( $get_pool( $fallback_args ) );
+
+		if ( count( $result ) < $count ) {
+			$targeted_args = $fallback_args;
+			$targeted_args['posts_per_page'] = $count - count( $result );
+			$targeted_args['post__not_in'] = array_values( array_unique( array_map( 'intval', array_keys( $seen ) ) ) );
+			$targeted = new WP_Query( $targeted_args );
+			$append_unique( $targeted->posts );
+		}
+	}
+
+	/*
+	 * Latest/current feeds keep their own source semantics. If de-duplication
+	 * consumed the shared pool, use one narrow query to finish the requested
+	 * section without repeating already-rendered stories.
+	 */
+	if ( count( $result ) < $count && ! $manual && ( 'category' !== $mode || empty( $attributes['fillFromLatest'] ) ) ) {
+		$targeted_args = $args;
+		$targeted_args['posts_per_page'] = $count - count( $result );
+		$targeted_args['post__not_in'] = array_values( array_unique( array_map( 'intval', array_keys( $seen ) ) ) );
+		$targeted = new WP_Query( $targeted_args );
+		$append_unique( $targeted->posts );
+	}
+
 	$result = array_slice( $result, 0, $count );
 
-	if ( count( $result ) < $count && ! $manual ) {
-		$exclude = array_unique(
-			array_merge(
-				array_map( 'intval', array_keys( $seen ) ),
-				wp_list_pluck( $result, 'ID' ),
-				array_map( 'intval', (array) ( $args['post__not_in'] ?? array() ) )
-			)
-		);
-		$fallback_args = $args;
-		$fallback_args['posts_per_page'] = $count - count( $result );
-		$fallback_args['post__not_in'] = $exclude;
-		$fallback = new WP_Query( $fallback_args );
-		foreach ( $fallback->posts as $post ) {
-			if ( $post instanceof WP_Post ) {
-				$result[] = $post;
-			}
-		}
+	if ( ! empty( $attributes['avoidDuplicates'] ) ) {
+		digipublish_core_rendered_post_ids( wp_list_pluck( $result, 'ID' ) );
 	}
 
-	$result = array_slice( $result, 0, $count );
-	digipublish_core_rendered_post_ids( wp_list_pluck( $result, 'ID' ) );
 	return $result;
 }
 

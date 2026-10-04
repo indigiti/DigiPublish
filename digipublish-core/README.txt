@@ -1,15 +1,14 @@
-DigiPublish Core 0.8.1
+DigiPublish Core 0.8.2
 
-Performance and visual hardening release.
+Homepage completeness and editor-visibility release.
 
-- Portable category-slug sourcing with graceful latest-post fallback.
-- True 24-hour, 7-day and 30-day feed windows.
-- Request-level homepage story de-duplication.
-- Separate content/popularity cache invalidation.
-- Responsive image size hints for editorial layouts.
-- Archive Top Picks are removed from the first Latest grid.
-- Dictionary labels accurately describe recently updated/featured content.
-- Namespace render fallback only runs until the one-time migration completes.
-- Canonical DigiPublish inserter category and translation domain.
+- Category-first Editorial Feed sections now auto-fill missing positions from Latest posts.
+- Fallback fill excludes stories already rendered earlier on the response.
+- Genuine time windows such as Top Weekly remain constrained to their selected period.
+- Sparse feeds expose item-count classes for stable responsive composition.
+- Carousel controls are hidden when there is only one story.
+- Science / Space, Travels, Top Weekly, Business / Markets, Wearables, Latest Posts and Technology are exposed as Gutenberg block variations.
+- Existing 15 custom blocks remain registered under digipublish/*.
+- Editor previews show a clear empty-state instead of disappearing when no content exists.
 
-Use with DigiPublish theme 0.8.1.
+Use with DigiPublish theme 0.8.2.

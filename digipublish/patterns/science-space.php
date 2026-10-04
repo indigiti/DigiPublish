@@ -8,6 +8,6 @@
 ?>
 <!-- wp:group {"align":"full","className":"tp-section tp-section--soft","layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull tp-section tp-section--soft">
-<!-- wp:digipublish/editorial-feed {"align":"wide","heading":"Science / Space","sourceMode":"category","categorySlug":"science","avoidDuplicates":true,"postsToShow":8,"layout":"carousel-overlay","showCategory":true,"showExcerpt":true,"showAuthor":false,"showDate":false,"showReadTime":true,"showViews":false,"showShares":false,"showViewAll":true,"viewAllLabel":"See More"} /-->
+<!-- wp:digipublish/editorial-feed {"align":"wide","heading":"Science / Space","sourceMode":"category","categorySlug":"science","fillFromLatest":true,"avoidDuplicates":true,"postsToShow":8,"layout":"carousel-overlay","showCategory":true,"showExcerpt":true,"showAuthor":false,"showDate":false,"showReadTime":true,"showViews":false,"showShares":false,"showViewAll":true,"viewAllLabel":"See More"} /-->
 </div>
 <!-- /wp:group -->
