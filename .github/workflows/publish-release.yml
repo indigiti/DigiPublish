@@ -53,9 +53,9 @@ jobs:
             ' CHANGELOG.md
             echo
             echo "### Packages"
-            echo "- `digipublish-v${version}.zip` — WordPress theme"
-            echo "- `digipublish-core-v${version}.zip` — companion plugin"
-            echo "- `digipublish-framework-v${version}.zip` — complete framework"
+            printf '%s\n' "- digipublish-v${version}.zip — WordPress theme"
+            printf '%s\n' "- digipublish-core-v${version}.zip — companion plugin"
+            printf '%s\n' "- digipublish-framework-v${version}.zip — complete framework"
           } > release-notes.md
 
           if ! grep -q '[^[:space:]]' release-notes.md; then
