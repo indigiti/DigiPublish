@@ -109,7 +109,7 @@
     line-height:1.48;
     color:var(--tp-body);
   }
-  .tp-featured__hero-copy .tp-meta{margin-top:0}
+  .tp-featured__hero-copy .tp-meta{margin-top:11px}
 
   .tp-featured__strip{
     grid-auto-columns:78%;
