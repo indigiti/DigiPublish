@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.8.3
+
+- Fixed the remaining mobile left-edge clipping caused by the Featured block's `alignwide` behavior inside the homepage constrained group.
+- Reworked Latest Features mobile composition to match a clean editorial-card reference.
+- Hid the top-right More link on mobile so the section title remains visually dominant.
+- Kept category chips in a 44px touch-friendly horizontal swipe rail with no native scrollbar.
+- Contained the lead image to the mobile content width with a stable 16:9 ratio.
+- Reordered mobile lead-story content to category, headline, excerpt, then author/date.
+- Tightened secondary story swipe-card sizing.
+- Added CI guards for Featured mobile alignment and safe-area regressions.
+- Bumped theme, plugin and all custom blocks to 0.8.3.
+
+
 ## 0.8.2
 
 - Fixed category fallback so sparse homepage categories fill from Latest instead of querying the same sparse category again.

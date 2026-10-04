@@ -1,14 +1,10 @@
-DigiPublish Core 0.8.2
+DigiPublish Core 0.8.3
 
-Homepage completeness and editor-visibility release.
+Mobile visual-alignment release.
 
-- Category-first Editorial Feed sections now auto-fill missing positions from Latest posts.
-- Fallback fill excludes stories already rendered earlier on the response.
-- Genuine time windows such as Top Weekly remain constrained to their selected period.
-- Sparse feeds expose item-count classes for stable responsive composition.
-- Carousel controls are hidden when there is only one story.
-- Science / Space, Travels, Top Weekly, Business / Markets, Wearables, Latest Posts and Technology are exposed as Gutenberg block variations.
-- Existing 15 custom blocks remain registered under digipublish/*.
-- Editor previews show a clear empty-state instead of disappearing when no content exists.
+- Featured Stories keeps the same dynamic query/render architecture.
+- Mobile layout styling now follows a clean editorial-card hierarchy.
+- Existing sparse-feed, de-duplication, category fallback and responsive-image improvements remain unchanged.
+- All custom Gutenberg blocks are versioned 0.8.3.
 
-Use with DigiPublish theme 0.8.2.
+Use with DigiPublish theme 0.8.3.

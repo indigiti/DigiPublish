@@ -76,3 +76,20 @@ html{scroll-behavior:smooth}*,*::before,*::after{box-sizing:border-box}body{marg
   .tp-footer__bottom{margin-top:22px;padding-top:18px}
 }
 @media(max-width:380px){.tp-footer__columns{grid-template-columns:1fr}.tp-article-heading .wp-block-post-title{font-size:27px!important}}
+
+/* v0.8.3 mobile alignment guard */
+@media(max-width:680px){
+  .tp-home-top{
+    width:100%;
+    max-width:100%;
+    padding:12px 16px 22px!important;
+    overflow-x:clip;
+  }
+  .tp-home-top>.alignwide,
+  .tp-home-top>.alignfull{
+    width:100%!important;
+    max-width:100%!important;
+    margin-inline:0!important;
+  }
+  .tp-home-top *{min-width:0}
+}
