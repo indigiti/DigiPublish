@@ -80,3 +80,48 @@ jobs:
             echo "Custom blocks must use the digipublish-editorial inserter category."
             exit 1
           fi
+
+
+      - name: Verify block and homepage inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          plugin="digipublish-core/techpress-editorial.php"
+
+          for dir in digipublish-core/blocks/*; do
+            [ -d "$dir" ] || continue
+            block="$(basename "$dir")"
+            test -f "$dir/block.json"
+            jq -e --arg expected "digipublish/$block" '.name == $expected' "$dir/block.json" >/dev/null
+            grep -Fq "'$block'" "$plugin" || {
+              echo "Block directory is not registered: $block"
+              exit 1
+            }
+          done
+
+          while IFS= read -r slug; do
+            test -f "digipublish/patterns/$slug.php" || {
+              echo "Homepage references a missing pattern: $slug"
+              exit 1
+            }
+          done < <(sed -n 's/.*wp:pattern {"slug":"digipublish\/\([^"]*\)".*/\1/p' digipublish/patterns/homepage.php)
+
+          for required in business-markets top-weekly science-space travels wearables latest-posts-cards technology-compact; do
+            grep -Fq "\"slug\":\"digipublish/$required\"" digipublish/patterns/homepage.php || {
+              echo "Required homepage section is missing: $required"
+              exit 1
+            }
+          done
+
+      - name: Guard mobile and carousel regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -Fq 'margin-left:calc(var(--wp--style--root--padding-left,0px)*-1)' digipublish/assets/css/site.css; then
+            echo "Root-padding negative-margin regression found."
+            exit 1
+          fi
+          if grep -Fq 'grid-auto-columns:minmax(260px,1fr)' digipublish-core/blocks/editorial-feed/style.css; then
+            echo "Elastic single-card carousel regression found."
+            exit 1
+          fi
