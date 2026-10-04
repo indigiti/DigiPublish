@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: TechPress Editorial Blocks
- * Description: Dynamic Gutenberg blocks and editorial content types for the TechPress publishing framework.
- * Version: 0.6.1
+ * Plugin Name: DigiPublish Core
+ * Description: Dynamic Gutenberg blocks and editorial content types for the DigiPublish publishing framework.
+ * Version: 0.7.0
  * Requires at least: 7.0
  * Requires PHP: 8.0
- * Author: OpenAI
+ * Author: indigiti
  * License: GPL-2.0-or-later
  * Text Domain: techpress-editorial
  */
@@ -17,6 +17,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'TECHPRESS_EDITORIAL_VERSION', '0.6.1' );
 define( 'TECHPRESS_EDITORIAL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TECHPRESS_EDITORIAL_URL', plugin_dir_url( __FILE__ ) );
+
+/**
+ * Canonical DigiPublish constants.
+ *
+ * Legacy TECHPRESS_* constants remain available for backward compatibility.
+ */
+define( 'DIGIPUBLISH_CORE_VERSION', TECHPRESS_EDITORIAL_VERSION );
+define( 'DIGIPUBLISH_CORE_DIR', TECHPRESS_EDITORIAL_DIR );
+define( 'DIGIPUBLISH_CORE_URL', TECHPRESS_EDITORIAL_URL );
 
 /**
  * Register editorial content types.
@@ -139,7 +148,7 @@ function techpress_editorial_block_categories( $categories ) {
 		$categories,
 		array(
 			'slug'  => 'techpress-editorial',
-			'title' => __( 'TechPress Editorial', 'techpress-editorial' ),
+			'title' => __( 'DigiPublish Editorial', 'techpress-editorial' ),
 			'icon'  => 'admin-post',
 		)
 	);
@@ -158,7 +167,7 @@ function techpress_editorial_author_profile_fields( $user ) {
         'techpress_instagram' => __( 'Instagram URL', 'techpress-editorial' ),
         'techpress_youtube'   => __( 'YouTube URL', 'techpress-editorial' ),
     );
-    echo '<h2>' . esc_html__( 'TechPress Author Profile', 'techpress-editorial' ) . '</h2><table class="form-table" role="presentation">';
+    echo '<h2>' . esc_html__( 'DigiPublish Author Profile', 'techpress-editorial' ) . '</h2><table class="form-table" role="presentation">';
     foreach ( $fields as $key => $label ) {
         $value = get_user_meta( $user->ID, $key, true );
         echo '<tr><th><label for="' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td><input class="regular-text" type="text" id="' . esc_attr( $key ) . '" name="' . esc_attr( $key ) . '" value="' . esc_attr( $value ) . '"></td></tr>';
