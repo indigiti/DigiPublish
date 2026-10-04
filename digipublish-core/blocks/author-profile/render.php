@@ -2,12 +2,12 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 $author = is_author() ? get_queried_object() : null;
 if ( ! ( $author instanceof WP_User ) ) {
-    echo '<div class="tp-author-profile tp-author-profile--placeholder"><strong>' . esc_html__( 'Author Profile', 'techpress-editorial' ) . '</strong><p>' . esc_html__( 'This block uses the current author when rendered on an author archive.', 'techpress-editorial' ) . '</p></div>';
+    echo '<div class="tp-author-profile tp-author-profile--placeholder"><strong>' . esc_html__( 'Author Profile', 'digipublish-core' ) . '</strong><p>' . esc_html__( 'This block uses the current author when rendered on an author archive.', 'digipublish-core' ) . '</p></div>';
     return;
 }
 $author_id = (int) $author->ID;
 $role = get_user_meta( $author_id, 'techpress_role', true );
-if ( ! $role ) { $role = __( 'Contributor', 'techpress-editorial' ); }
+if ( ! $role ) { $role = __( 'Contributor', 'digipublish-core' ); }
 $bio = get_the_author_meta( 'description', $author_id );
 $socials = array(
     'linkedin' => array( 'label' => 'in', 'url' => get_user_meta( $author_id, 'techpress_linkedin', true ) ),
@@ -18,7 +18,7 @@ $socials = array(
 );
 ?>
 <section class="tp-author-profile alignwide">
-  <div class="tp-archive-breadcrumbs"><a href="<?php echo esc_url( home_url( '/' ) ); ?>">⌂</a><span>›</span><span><?php esc_html_e( 'Contributors', 'techpress-editorial' ); ?></span><span>›</span><span><?php echo esc_html( $author->display_name ); ?></span></div>
+  <div class="tp-archive-breadcrumbs"><a href="<?php echo esc_url( home_url( '/' ) ); ?>">⌂</a><span>›</span><span><?php esc_html_e( 'Contributors', 'digipublish-core' ); ?></span><span>›</span><span><?php echo esc_html( $author->display_name ); ?></span></div>
   <div class="tp-author-profile__main">
     <div class="tp-author-profile__avatar"><?php echo get_avatar( $author_id, 190, '', $author->display_name, array( 'loading' => 'eager', 'decoding' => 'async' ) ); ?></div>
     <div class="tp-author-profile__copy">
