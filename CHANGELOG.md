@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.8.2
+
+- Fixed category fallback so sparse homepage categories fill from Latest instead of querying the same sparse category again.
+- Preserved cross-section de-duplication during fallback fill.
+- Added stable item-count layout classes for sparse feeds.
+- Prevented single-card desktop carousels from stretching across the full section.
+- Hidden carousel controls when only one story exists.
+- Fixed mobile full-width/root-padding clipping and Featured filter scrollbar leakage.
+- Added direct Gutenberg variations for all major homepage Editorial Feed presets.
+- Added CI checks for block registration, homepage pattern availability, required sections, mobile clipping and carousel geometry regressions.
+- Bumped theme, plugin and block metadata to 0.8.2.
+
+
 ## 0.8.1
 
 - Fixed stale generated block CSS selectors after the `digipublish/*` namespace migration.
