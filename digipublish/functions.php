@@ -1,8 +1,8 @@
 <?php
 /**
- * TechPress Editorial theme functions.
+ * DigiPublish Editorial theme functions.
  *
- * @package TechPress_Theme
+ * @package DigiPublish_Theme
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,11 +15,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 function techpress_theme_setup() {
 	register_block_pattern_category(
 		'techpress',
-		array( 'label' => __( 'TechPress Editorial', 'techpress-theme' ) )
+		array( 'label' => __( 'DigiPublish Editorial', 'digipublish' ) )
 	);
 
 	// Marker used by the companion plugin for framework-specific optimizations.
 	add_theme_support( 'techpress-editorial-performance' );
+	add_theme_support( 'digipublish-performance' );
 	add_theme_support( 'responsive-embeds' );
 }
 add_action( 'after_setup_theme', 'techpress_theme_setup' );
@@ -34,7 +35,7 @@ function techpress_theme_enqueue_assets() {
 	$ver  = file_exists( $path ) ? (string) filemtime( $path ) : wp_get_theme()->get( 'Version' );
 
 	wp_enqueue_style(
-		'techpress-theme-site',
+		'digipublish-site',
 		get_theme_file_uri( 'assets/css/site.css' ),
 		array(),
 		$ver
@@ -50,7 +51,7 @@ function techpress_theme_editor_assets() {
 	$ver  = file_exists( $path ) ? (string) filemtime( $path ) : wp_get_theme()->get( 'Version' );
 
 	wp_enqueue_style(
-		'techpress-theme-editor',
+		'digipublish-editor',
 		get_theme_file_uri( 'assets/css/site.css' ),
 		array(),
 		$ver
@@ -76,20 +77,26 @@ add_filter( 'should_load_block_assets_on_demand', 'techpress_theme_load_block_as
  */
 function techpress_theme_body_classes( $classes ) {
 	$classes[] = 'techpress-site';
+	$classes[] = 'digipublish-site';
 	if ( is_singular( 'post' ) ) {
 		$classes[] = 'techpress-article';
+		$classes[] = 'digipublish-article';
 	}
 	if ( is_category() ) {
 		$classes[] = 'techpress-category';
+		$classes[] = 'digipublish-category';
 	}
 	if ( is_tag() ) {
 		$classes[] = 'techpress-tag';
+		$classes[] = 'digipublish-tag';
 	}
 	if ( is_author() ) {
 		$classes[] = 'techpress-author';
+		$classes[] = 'digipublish-author';
 	}
 	if ( is_archive() ) {
 		$classes[] = 'techpress-archive';
+		$classes[] = 'digipublish-archive';
 	}
 	return $classes;
 }
@@ -98,7 +105,7 @@ add_filter( 'body_class', 'techpress_theme_body_classes' );
 /**
  * Optional Google Fonts integration.
  * Disabled by default for maximum performance; administrators can enable it
- * from Appearance > TechPress Typography.
+ * from Appearance > DigiPublish Typography.
  */
 function techpress_theme_google_font_choices() {
 	return array(
@@ -139,8 +146,8 @@ add_action( 'admin_init', 'techpress_theme_register_typography_settings' );
 
 function techpress_theme_add_typography_page() {
 	add_theme_page(
-		__( 'TechPress Typography', 'techpress-theme' ),
-		__( 'TechPress Typography', 'techpress-theme' ),
+		__( 'DigiPublish Typography', 'digipublish' ),
+		__( 'DigiPublish Typography', 'digipublish' ),
 		'edit_theme_options',
 		'techpress-typography',
 		'techpress_theme_render_typography_page'
@@ -157,17 +164,17 @@ function techpress_theme_render_typography_page() {
 	$choices = techpress_theme_google_font_choices();
 	?>
 	<div class="wrap">
-		<h1><?php esc_html_e( 'TechPress Typography', 'techpress-theme' ); ?></h1>
-		<p><?php esc_html_e( 'Google Fonts are optional. Keeping this disabled gives the fastest network path. When enabled, the selected family is applied site-wide, including the block editor preview.', 'techpress-theme' ); ?></p>
+		<h1><?php esc_html_e( 'DigiPublish Typography', 'digipublish' ); ?></h1>
+		<p><?php esc_html_e( 'Google Fonts are optional. Keeping this disabled gives the fastest network path. When enabled, the selected family is applied site-wide, including the block editor preview.', 'digipublish' ); ?></p>
 		<form method="post" action="options.php">
 			<?php settings_fields( 'techpress_typography' ); ?>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Enable Google Fonts', 'techpress-theme' ); ?></th>
-					<td><input type="hidden" name="techpress_google_fonts_enabled" value="0"><label><input type="checkbox" name="techpress_google_fonts_enabled" value="1" <?php checked( $enabled ); ?>> <?php esc_html_e( 'Load the selected family from Google Fonts', 'techpress-theme' ); ?></label></td>
+					<th scope="row"><?php esc_html_e( 'Enable Google Fonts', 'digipublish' ); ?></th>
+					<td><input type="hidden" name="techpress_google_fonts_enabled" value="0"><label><input type="checkbox" name="techpress_google_fonts_enabled" value="1" <?php checked( $enabled ); ?>> <?php esc_html_e( 'Load the selected family from Google Fonts', 'digipublish' ); ?></label></td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="techpress_google_font_family"><?php esc_html_e( 'Font family', 'techpress-theme' ); ?></label></th>
+					<th scope="row"><label for="techpress_google_font_family"><?php esc_html_e( 'Font family', 'digipublish' ); ?></label></th>
 					<td><select id="techpress_google_font_family" name="techpress_google_font_family">
 						<?php foreach ( $choices as $value => $label ) : ?>
 							<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $family, $value ); ?>><?php echo esc_html( $label ); ?></option>
@@ -214,7 +221,7 @@ function techpress_theme_google_font_css() {
 function techpress_theme_frontend_google_font_override() {
 	$css = techpress_theme_google_font_css();
 	if ( $css ) {
-		wp_add_inline_style( 'techpress-theme-site', $css );
+		wp_add_inline_style( 'digipublish-site', $css );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'techpress_theme_frontend_google_font_override', 20 );
@@ -222,7 +229,7 @@ add_action( 'wp_enqueue_scripts', 'techpress_theme_frontend_google_font_override
 function techpress_theme_editor_google_font_override() {
 	$css = techpress_theme_google_font_css();
 	if ( $css ) {
-		wp_add_inline_style( 'techpress-theme-editor', $css );
+		wp_add_inline_style( 'digipublish-editor', $css );
 	}
 }
 add_action( 'enqueue_block_editor_assets', 'techpress_theme_editor_google_font_override', 20 );

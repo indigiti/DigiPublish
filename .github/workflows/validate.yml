@@ -1,0 +1,60 @@
+name: Validate DigiPublish
+
+on:
+  push:
+    branches: ["main", "rebrand/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.0"
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate PHP syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            php -l "$file" >/dev/null
+          done < <(find digipublish digipublish-core -type f -name '*.php' -print0)
+
+      - name: Validate JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            jq empty "$file"
+          done < <(find digipublish digipublish-core -type f -name '*.json' -print0)
+
+      - name: Validate JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            node --check "$file"
+          done < <(find digipublish digipublish-core -type f -name '*.js' -print0)
+
+      - name: Guard obsolete theme-part slug
+        shell: bash
+        run: |
+          if grep -R --line-number --fixed-strings '"theme":"techpress-theme"' digipublish/templates digipublish/parts; then
+            echo "Obsolete techpress-theme template-part reference found."
+            exit 1
+          fi

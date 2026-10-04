@@ -1,16 +1,18 @@
-TechPress Editorial Blocks 0.6.1
+DigiPublish Core 0.7.0
 
-Dynamic Gutenberg blocks for publication layouts, reusable editorial feeds, dictionary content, archive pages, author profiles and article support modules.
+Core Gutenberg publishing features for DigiPublish.
 
-New in 0.6.1
-- Adds one reusable Editorial Feed Engine with six visual layouts: 4-card editorial grid, Top Weekly mosaic, overlay carousel, featured lead + two, compact topic matrix and Latest Posts cards.
-- Adds source modes for Latest, Selected Category, Current Context and Manual Post IDs.
-- Adds optional View All link with automatic category/posts-page destination.
-- Adds deterministic read-time metadata and optional views/shares display. Missing analytics metrics are hidden; no fake counters are generated.
-- Adds integration filters techpress_post_views and techpress_post_shares for analytics plugins.
-- Shares/caches feed query pools so multiple homepage sections using the same source do not run duplicate database queries.
-- Adds reusable patterns for Business / Markets, Top Weekly, Science / Space, Travels, Wearables, Latest Posts and Technology.
-- Adds all seven sections to the default homepage pattern while keeping each independently removable and reusable.
-- Keeps Google Fonts and Editorial Attribution controls from 0.5.0.
+Includes
+- Editorial Feed Engine with reusable visual layouts.
+- Featured stories, post feeds, archive feeds, category experts, related posts, author cards, article TOC, article byline, ad slots, dictionary terms, and popular categories.
+- Per-post Editorial Attribution: Fact Checked by, Verified by, or Reported by.
+- Cached/shared query pools for repeated homepage feeds.
+- Read-time support plus optional analytics-backed views/shares.
+- Mobile-friendly block styles and lightweight carousel behavior.
 
-Use with TechPress Editorial theme 0.6.1.
+Backward compatibility
+DigiPublish 0.7.0 keeps the existing techpress/* Gutenberg block namespace, techpress_* PHP functions, TECHPRESS_* constants, and legacy post-meta/option keys. Existing saved pages therefore continue to render without block recovery or data migration.
+
+Canonical DIGIPUBLISH_CORE_* constants are available for new integrations.
+
+Use with DigiPublish theme 0.7.0.

@@ -2,7 +2,7 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "techpress/category-nav",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "title": "Editorial Category Navigation",
   "category": "techpress-editorial",
   "icon": "menu-alt3",
