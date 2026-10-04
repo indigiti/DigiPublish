@@ -159,6 +159,64 @@
     }, save: function(){ return null; }
   });
 
+
+  [
+    {
+      name: 'business-markets',
+      title: __('Business / Markets', 'digipublish-core'),
+      description: __('Four-card Business / Markets editorial section.', 'digipublish-core'),
+      icon: 'chart-line',
+      attributes: { heading:'Business / Markets', sourceMode:'category', categorySlug:'business', avoidDuplicates:true, postsToShow:4, layout:'cards-4', showCategory:true, showExcerpt:false, showAuthor:false, showDate:false, showReadTime:false, showViews:false, showShares:false, showViewAll:true, viewAllLabel:'View All' }
+    },
+    {
+      name: 'top-weekly',
+      title: __('Top Weekly', 'digipublish-core'),
+      description: __('Seven-day most-discussed editorial mosaic.', 'digipublish-core'),
+      icon: 'awards',
+      attributes: { heading:'Top Weekly', sourceMode:'latest', period:'week', avoidDuplicates:true, postsToShow:6, layout:'weekly-mosaic', orderBy:'comment_count', showCategory:true, showExcerpt:true, showAuthor:false, showDate:false, showReadTime:true, showViews:true, showShares:true, showViewAll:true, viewAllLabel:'View All' }
+    },
+    {
+      name: 'science-space',
+      title: __('Science / Space', 'digipublish-core'),
+      description: __('Swipeable overlay carousel with Science-first sourcing.', 'digipublish-core'),
+      icon: 'slides',
+      attributes: { heading:'Science / Space', sourceMode:'category', categorySlug:'science', avoidDuplicates:true, postsToShow:8, layout:'carousel-overlay', showCategory:true, showExcerpt:true, showAuthor:false, showDate:false, showReadTime:true, showViews:false, showShares:false, showViewAll:true, viewAllLabel:'See More' }
+    },
+    {
+      name: 'travels',
+      title: __('Travels', 'digipublish-core'),
+      description: __('Featured lead story with two supporting travel cards.', 'digipublish-core'),
+      icon: 'location-alt',
+      attributes: { heading:'Travels', description:'Become a traveler with guides to destinations, booking tips, and ideas for finding the best things to do wherever you go.', sourceMode:'category', categorySlug:'travel', avoidDuplicates:true, postsToShow:3, layout:'featured-trio', showCategory:true, showExcerpt:true, showAuthor:false, showDate:false, showReadTime:true, showViews:false, showShares:false, showViewAll:true, viewAllLabel:'See More' }
+    },
+    {
+      name: 'wearables',
+      title: __('Wearables', 'digipublish-core'),
+      description: __('Dense compact feed for wearable technology.', 'digipublish-core'),
+      icon: 'smartphone',
+      attributes: { heading:'Wearables', description:'Exploring the latest in earbuds, headphones, audio and wearable technology.', sourceMode:'category', categorySlug:'wearables', avoidDuplicates:true, postsToShow:12, layout:'compact-grid', showCategory:false, showExcerpt:false, showAuthor:false, showDate:false, showReadTime:true, showViews:true, showShares:false, showViewAll:true, viewAllLabel:'See More Wearables' }
+    },
+    {
+      name: 'latest-posts',
+      title: __('Latest Posts', 'digipublish-core'),
+      description: __('Latest article cards with excerpt and metadata.', 'digipublish-core'),
+      icon: 'list-view',
+      attributes: { heading:'Latest Posts', sourceMode:'latest', avoidDuplicates:true, postsToShow:8, layout:'latest-cards', showCategory:false, showExcerpt:true, showAuthor:false, showDate:true, showReadTime:true, showViews:true, showShares:true, showViewAll:false }
+    },
+    {
+      name: 'technology',
+      title: __('Technology', 'digipublish-core'),
+      description: __('Compact technology topic matrix.', 'digipublish-core'),
+      icon: 'desktop',
+      attributes: { heading:'Technology', description:'Exploring the latest in mobiles, technology, gadgets, apps and software.', sourceMode:'category', categorySlug:'technology', avoidDuplicates:true, postsToShow:12, layout:'compact-grid', showCategory:false, showExcerpt:false, showAuthor:false, showDate:false, showReadTime:true, showViews:false, showShares:false, showViewAll:true, viewAllLabel:'See More Technology' }
+    }
+  ].forEach(function (variation) {
+    registerBlockVariation('digipublish/editorial-feed', Object.assign({
+      scope: ['inserter'],
+      keywords: [__('DigiPublish', 'digipublish-core'), __('editorial', 'digipublish-core')]
+    }, variation));
+  });
+
   registerBlockType('digipublish/ad-slot', {
     apiVersion: 3, title: __('Ad Slot', 'digipublish-core'), category: 'digipublish-editorial', icon: 'megaphone',
     attributes: { slotName: { type: 'string', default: 'content-slot' }, label: { type: 'string', default: 'Advertisement' }, minHeight: { type: 'integer', default: 90 }, collapseEmpty: { type: 'boolean', default: true } },
