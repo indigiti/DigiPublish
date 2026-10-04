@@ -1,8 +1,8 @@
 <?php
 /**
  * Title: Popular Categories
- * Slug: techpress/category-browser
- * Categories: techpress
+ * Slug: digipublish/category-browser
+ * Categories: digipublish
  * Inserter: yes
  */
 ?>

@@ -1,8 +1,8 @@
 <?php
 /**
  * Title: Newsletter CTA
- * Slug: techpress/newsletter
- * Categories: techpress, call-to-action
+ * Slug: digipublish/newsletter
+ * Categories: digipublish, call-to-action
  * Inserter: yes
  */
 ?>

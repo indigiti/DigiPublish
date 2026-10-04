@@ -14,12 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function techpress_theme_setup() {
 	register_block_pattern_category(
-		'techpress',
+		'digipublish',
 		array( 'label' => __( 'DigiPublish Editorial', 'digipublish' ) )
 	);
 
 	// Marker used by the companion plugin for framework-specific optimizations.
-	add_theme_support( 'techpress-editorial-performance' );
 	add_theme_support( 'digipublish-performance' );
 	add_theme_support( 'responsive-embeds' );
 }

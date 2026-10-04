@@ -1,16 +1,13 @@
-DigiPublish Theme 0.7.0
+DigiPublish Theme 0.8.0
 
 Gutenberg-first block theme for a high-density editorial publication.
 
-Highlights
-- Reusable Gutenberg homepage and landing-page patterns.
-- Mobile-first publication navigation and swipe layouts.
-- Performance-oriented CSS delivery and image behavior.
-- Optional Google Fonts controls.
-- Category, tag, author, archive, search, dictionary, and single-article templates.
-- Companion DigiPublish Core plugin supplies dynamic editorial blocks.
+0.8.0 namespace update
+- All custom Gutenberg blocks now use the canonical digipublish/* namespace.
+- All theme templates and reusable patterns reference digipublish/* blocks.
+- All pattern slugs/categories now use the digipublish namespace.
+- Mobile-first navigation, swipe layouts, performance-oriented CSS, optional Google Fonts, and publication templates remain included.
 
-Compatibility
-The theme intentionally retains selected legacy techpress-* CSS/body markers while adding canonical digipublish-* markers. This prevents existing custom CSS from breaking during the v0.7.0 rebrand.
+Existing saved content using the previous internal namespace is migrated by DigiPublish Core 0.8.0.
 
-Requires DigiPublish Core 0.7.0 for all dynamic editorial blocks.
+Requires DigiPublish Core 0.8.0 for all dynamic editorial blocks.
