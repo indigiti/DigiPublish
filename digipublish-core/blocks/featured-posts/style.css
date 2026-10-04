@@ -8,7 +8,7 @@
   .tp-featured__heading-row{margin-bottom:14px}
   .tp-featured__heading-row .tp-section-title{font-size:20px}
   .tp-featured__filters{gap:7px;margin-inline:0;padding:0 0 6px;scroll-snap-type:x proximity;scroll-padding-inline:0}
-  .tp-featured__filter{min-height:40px;align-items:center;scroll-snap-align:start}
+  .tp-featured__filter{min-height:44px;align-items:center;scroll-snap-align:start}
   .tp-featured__hero-copy{padding:16px 15px}.tp-featured__badge{margin-bottom:10px}.tp-featured__hero-excerpt{font-size:13px;margin-top:10px}
   .tp-featured__strip{display:grid;grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:82%;gap:12px;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scrollbar-width:none;margin-top:14px;padding-bottom:14px}
   .tp-featured__strip::-webkit-scrollbar{display:none}.tp-featured__strip-item{display:block!important;scroll-snap-align:start}.tp-featured__strip-item:nth-child(n){display:block}.tp-featured__strip-item h3{font-size:17px;line-height:1.22;margin-bottom:9px}.tp-featured__strip-image{aspect-ratio:16/9;height:auto}
