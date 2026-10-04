@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TECHPRESS_EDITORIAL_VERSION', '0.6.1' );
+define( 'TECHPRESS_EDITORIAL_VERSION', '0.7.0' );
 define( 'TECHPRESS_EDITORIAL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TECHPRESS_EDITORIAL_URL', plugin_dir_url( __FILE__ ) );
 
