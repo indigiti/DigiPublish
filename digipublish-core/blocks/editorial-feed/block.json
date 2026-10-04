@@ -14,6 +14,7 @@
     "sourceMode": { "type": "string", "default": "latest" },
     "categoryId": { "type": "integer", "default": 0 },
     "categorySlug": { "type": "string", "default": "" },
+    "fillFromLatest": { "type": "boolean", "default": false },
     "manualPostIds": { "type": "string", "default": "" },
     "postsToShow": { "type": "integer", "default": 8 },
     "layout": { "type": "string", "default": "cards-4" },
