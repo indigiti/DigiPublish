@@ -10,6 +10,8 @@
 - Fixed mobile full-width/root-padding clipping and Featured filter scrollbar leakage.
 - Added direct Gutenberg variations for all major homepage Editorial Feed presets.
 - Added CI checks for block registration, homepage pattern availability, required sections, mobile clipping and carousel geometry regressions.
+- Normalized remaining mobile touch targets to 44px where applicable.
+- Made sparse-category Latest fill an explicit opt-in used by the homepage category presets.
 - Bumped theme, plugin and block metadata to 0.8.2.
 
 
