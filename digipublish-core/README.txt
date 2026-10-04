@@ -1,15 +1,15 @@
-DigiPublish Core 0.8.0
+DigiPublish Core 0.8.1
 
-Core Gutenberg publishing features for DigiPublish.
+Performance and visual hardening release.
 
-0.8.0 namespace migration
-- Every custom Gutenberg block now uses the canonical digipublish/* namespace.
-- Editor registrations, server-side block metadata, templates and patterns use the same namespace.
-- Existing saved Gutenberg content is migrated automatically on the first admin request after upgrade.
-- A render-time fallback preserves frontend output before the one-time migration has completed.
-- Pattern and Query Loop variation namespaces are canonical DigiPublish identifiers.
-- Theme/plugin performance, editorial attribution, dictionary, feeds, archives, author tools, TOC and ad slots remain included.
+- Portable category-slug sourcing with graceful latest-post fallback.
+- True 24-hour, 7-day and 30-day feed windows.
+- Request-level homepage story de-duplication.
+- Separate content/popularity cache invalidation.
+- Responsive image size hints for editorial layouts.
+- Archive Top Picks are removed from the first Latest grid.
+- Dictionary labels accurately describe recently updated/featured content.
+- Namespace render fallback only runs until the one-time migration completes.
+- Canonical DigiPublish inserter category and translation domain.
 
-Legacy metadata/settings keys that store editorial attribution or configuration are preserved where changing them would risk data loss. They are not Gutenberg block IDs.
-
-Use with DigiPublish theme 0.8.0.
+Use with DigiPublish theme 0.8.1.

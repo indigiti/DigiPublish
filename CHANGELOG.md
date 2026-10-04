@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.8.1
+
+- Fixed stale generated block CSS selectors after the `digipublish/*` namespace migration.
+- Added category-slug feed sources with graceful fallback and real time-window filters.
+- Added request-level story de-duplication across homepage editorial sections.
+- Split content and popularity cache invalidation so comments do not flush unrelated feeds.
+- Added layout-specific responsive image sizing hints.
+- Removed category Top Picks from the first Latest grid to avoid duplicate stories.
+- Renamed Dictionary ranking labels to match actual recently-updated/featured behavior.
+- Limited the legacy block render fallback to sites that have not completed migration.
+- Normalized card radius, homepage background rhythm, inserter category and translation domains.
+- Tuned `content-visibility` intrinsic sizes to reduce layout-shift risk.
+- Added CI guards for stale generated block classes and inserter-category regressions.
+
+
 ## 0.8.0
 
 - Replaced every custom Gutenberg block ID with the canonical `digipublish/*` namespace.

@@ -92,7 +92,7 @@ if ( 'magazine' === $layout ) {
     echo techpress_editorial_meta_markup( $lead->ID, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true );
     echo '</div></article><div class="tp-featured__rail">';
     foreach ( $posts as $post ) {
-        echo '<article class="tp-featured__rail-item"><a class="tp-featured__rail-image" href="' . esc_url( get_permalink( $post->ID ) ) . '">' . techpress_editorial_image_markup( $post->ID, 'medium' ) . '</a><div class="tp-featured__rail-body">';
+        echo '<article class="tp-featured__rail-item"><a class="tp-featured__rail-image" href="' . esc_url( get_permalink( $post->ID ) ) . '">' . techpress_editorial_image_markup( $post->ID, 'medium', false, '(max-width: 720px) 115px, 115px' ) . '</a><div class="tp-featured__rail-body">';
         echo techpress_editorial_category_markup( $post->ID );
         echo '<h3><a href="' . esc_url( get_permalink( $post->ID ) ) . '">' . esc_html( get_the_title( $post->ID ) ) . '</a></h3>';
         echo techpress_editorial_meta_markup( $post->ID, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true );

@@ -400,7 +400,9 @@ function techpress_editorial_bump_post_cache_versions( $post_id = 0 ) {
 		return;
 	}
 	techpress_editorial_bump_cache_version( 'content' );
-	techpress_editorial_bump_cache_version( 'popularity' );
+	if ( 'post' === get_post_type( $post_id ) ) {
+		techpress_editorial_bump_cache_version( 'popularity' );
+	}
 }
 add_action( 'save_post', 'techpress_editorial_bump_post_cache_versions' );
 
@@ -593,7 +595,7 @@ function techpress_editorial_card_markup( $post_id, $attributes = array() ) {
 
 	$html = '<article class="tp-card">';
 	if ( $show_image ) {
-		$html .= '<a class="tp-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' . techpress_editorial_image_markup( $post_id ) . '</a>';
+		$html .= '<a class="tp-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' . techpress_editorial_image_markup( $post_id, 'medium_large', false, '(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw' ) . '</a>';
 	}
 	$html .= '<div class="tp-card__body">';
 	$html .= techpress_editorial_category_markup( $post_id );
