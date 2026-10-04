@@ -775,7 +775,7 @@ function techpress_editorial_feed_get_posts( $attributes ) {
 	 * Latest pool while preserving the category stories first and excluding
 	 * everything already rendered earlier on the page.
 	 */
-	if ( count( $result ) < $count && 'category' === $mode ) {
+	if ( count( $result ) < $count && 'category' === $mode && ! empty( $attributes['fillFromLatest'] ) ) {
 		$fallback_attributes = $attributes;
 		$fallback_attributes['sourceMode'] = 'latest';
 		$fallback_attributes['categoryId'] = 0;
@@ -799,7 +799,7 @@ function techpress_editorial_feed_get_posts( $attributes ) {
 	 * consumed the shared pool, use one narrow query to finish the requested
 	 * section without repeating already-rendered stories.
 	 */
-	if ( count( $result ) < $count && ! $manual && 'category' !== $mode ) {
+	if ( count( $result ) < $count && ! $manual && ( 'category' !== $mode || empty( $attributes['fillFromLatest'] ) ) ) {
 		$targeted_args = $args;
 		$targeted_args['posts_per_page'] = $count - count( $result );
 		$targeted_args['post__not_in'] = array_values( array_unique( array_map( 'intval', array_keys( $seen ) ) ) );
