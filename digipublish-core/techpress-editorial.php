@@ -166,10 +166,28 @@ function digipublish_core_rewrite_block_namespace_in_content( $content ) {
 	$legacy_namespace = 'tech' . 'press';
 	$open_legacy      = '<!-- wp:' . $legacy_namespace . '/';
 	$close_legacy     = '<!-- /wp:' . $legacy_namespace . '/';
+	$pattern_legacy   = '"slug":"' . $legacy_namespace . '/';
+	$pattern_spaced   = '"slug": "' . $legacy_namespace . '/';
+	$query_legacy     = '"namespace":"' . $legacy_namespace . '/story-grid"';
+	$query_spaced     = '"namespace": "' . $legacy_namespace . '/story-grid"';
 
 	return str_replace(
-		array( $open_legacy, $close_legacy ),
-		array( '<!-- wp:digipublish/', '<!-- /wp:digipublish/' ),
+		array(
+			$open_legacy,
+			$close_legacy,
+			$pattern_legacy,
+			$pattern_spaced,
+			$query_legacy,
+			$query_spaced,
+		),
+		array(
+			'<!-- wp:digipublish/',
+			'<!-- /wp:digipublish/',
+			'"slug":"digipublish/',
+			'"slug": "digipublish/',
+			'"namespace":"digipublish/story-grid"',
+			'"namespace": "digipublish/story-grid"',
+		),
 		(string) $content
 	);
 }
@@ -186,16 +204,12 @@ function digipublish_core_migrate_block_namespace() {
 	global $wpdb;
 
 	$legacy_namespace = 'tech' . 'press';
-	$open_legacy      = '<!-- wp:' . $legacy_namespace . '/';
-	$close_legacy     = '<!-- /wp:' . $legacy_namespace . '/';
-	$open_like        = '%' . $wpdb->esc_like( $open_legacy ) . '%';
-	$close_like       = '%' . $wpdb->esc_like( $close_legacy ) . '%';
+	$legacy_like      = '%' . $wpdb->esc_like( $legacy_namespace . '/' ) . '%';
 
 	$post_ids = $wpdb->get_col(
 		$wpdb->prepare(
-			"SELECT ID FROM {$wpdb->posts} WHERE post_content LIKE %s OR post_content LIKE %s",
-			$open_like,
-			$close_like
+			"SELECT ID FROM {$wpdb->posts} WHERE post_content LIKE %s",
+			$legacy_like
 		)
 	);
 
@@ -818,6 +832,7 @@ function techpress_editorial_ad_provider_markup( $slot_name, $attributes ) {
  */
 function techpress_editorial_activate() {
 	techpress_editorial_register_content_types();
+	digipublish_core_migrate_block_namespace();
 	flush_rewrite_rules();
 }
 register_activation_hook( __FILE__, 'techpress_editorial_activate' );
