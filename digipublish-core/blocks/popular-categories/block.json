@@ -2,7 +2,7 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "digipublish/popular-categories",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "title": "Popular Categories",
   "category": "digipublish-editorial",
   "icon": "category",
