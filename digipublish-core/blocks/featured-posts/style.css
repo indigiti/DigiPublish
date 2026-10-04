@@ -58,7 +58,7 @@
   .tp-featured__filters::-webkit-scrollbar{display:none}
   .tp-featured__filter{
     flex:0 0 auto;
-    min-height:42px;
+    min-height:44px;
     padding:0 12px;
     display:inline-flex;
     align-items:center;
@@ -89,8 +89,13 @@
     background:transparent;
     padding:14px 0 0;
     min-width:0;
-    display:block;
+    display:flex;
+    flex-direction:column;
   }
+  .tp-featured__hero-copy>.tp-category{order:1}
+  .tp-featured__hero-title{order:2}
+  .tp-featured__hero-excerpt{order:3}
+  .tp-featured__hero-copy>.tp-meta{order:4;margin-top:11px}
   .tp-featured__badge{display:none}
   .tp-featured__hero-title{
     font-size:clamp(22px,5.4vw,25px);
