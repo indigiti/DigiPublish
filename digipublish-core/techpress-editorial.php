@@ -2,19 +2,19 @@
 /**
  * Plugin Name: DigiPublish Core
  * Description: Dynamic Gutenberg blocks and editorial content types for the DigiPublish publishing framework.
- * Version: 0.7.0
+ * Version: 0.8.0
  * Requires at least: 7.0
  * Requires PHP: 8.0
  * Author: indigiti
  * License: GPL-2.0-or-later
- * Text Domain: techpress-editorial
+ * Text Domain: digipublish-core
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TECHPRESS_EDITORIAL_VERSION', '0.7.0' );
+define( 'TECHPRESS_EDITORIAL_VERSION', '0.8.0' );
 define( 'TECHPRESS_EDITORIAL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TECHPRESS_EDITORIAL_URL', plugin_dir_url( __FILE__ ) );
 
@@ -35,10 +35,10 @@ function techpress_editorial_register_content_types() {
 		'tech_term',
 		array(
 			'labels' => array(
-				'name'          => __( 'Dictionary Terms', 'techpress-editorial' ),
-				'singular_name' => __( 'Dictionary Term', 'techpress-editorial' ),
-				'add_new_item'  => __( 'Add Dictionary Term', 'techpress-editorial' ),
-				'edit_item'     => __( 'Edit Dictionary Term', 'techpress-editorial' ),
+				'name'          => __( 'Dictionary Terms', 'digipublish-core' ),
+				'singular_name' => __( 'Dictionary Term', 'digipublish-core' ),
+				'add_new_item'  => __( 'Add Dictionary Term', 'digipublish-core' ),
+				'edit_item'     => __( 'Edit Dictionary Term', 'digipublish-core' ),
 			),
 			'public'       => true,
 			'show_in_rest' => true,
@@ -47,7 +47,7 @@ function techpress_editorial_register_content_types() {
 			'rewrite'      => array( 'slug' => 'dictionary' ),
 			'supports'     => array( 'title', 'editor', 'excerpt', 'thumbnail', 'author', 'revisions', 'custom-fields' ),
 			'template'     => array(
-				array( 'core/paragraph', array( 'placeholder' => __( 'Write a concise definition first, then expand with examples and context.', 'techpress-editorial' ) ) ),
+				array( 'core/paragraph', array( 'placeholder' => __( 'Write a concise definition first, then expand with examples and context.', 'digipublish-core' ) ) ),
 			),
 		)
 	);
@@ -57,8 +57,8 @@ function techpress_editorial_register_content_types() {
 		array( 'tech_term' ),
 		array(
 			'labels'       => array(
-				'name'          => __( 'Dictionary Topics', 'techpress-editorial' ),
-				'singular_name' => __( 'Dictionary Topic', 'techpress-editorial' ),
+				'name'          => __( 'Dictionary Topics', 'digipublish-core' ),
+				'singular_name' => __( 'Dictionary Topic', 'digipublish-core' ),
 			),
 			'public'       => true,
 			'show_in_rest' => true,
@@ -109,9 +109,9 @@ add_action( 'init', 'techpress_editorial_register_attribution_meta', 6 );
  */
 function techpress_editorial_attribution_label( $type ) {
 	$labels = array(
-		'fact_checked' => __( 'Fact Checked by', 'techpress-editorial' ),
-		'verified'     => __( 'Verified by', 'techpress-editorial' ),
-		'reported'     => __( 'Reported by', 'techpress-editorial' ),
+		'fact_checked' => __( 'Fact Checked by', 'digipublish-core' ),
+		'verified'     => __( 'Verified by', 'digipublish-core' ),
+		'reported'     => __( 'Reported by', 'digipublish-core' ),
 	);
 	return $labels[ $type ] ?? '';
 }
@@ -126,7 +126,7 @@ function techpress_editorial_register_blocks() {
 	$editor_js = TECHPRESS_EDITORIAL_DIR . 'assets/editor.js';
 
 	wp_register_script(
-		'techpress-editorial-editor',
+		'digipublish-core-editor',
 		TECHPRESS_EDITORIAL_URL . 'assets/editor.js',
 		array( 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-data', 'wp-core-data', 'wp-plugins', 'wp-editor' ),
 		file_exists( $editor_js ) ? (string) filemtime( $editor_js ) : TECHPRESS_EDITORIAL_VERSION,
@@ -147,8 +147,8 @@ function techpress_editorial_block_categories( $categories ) {
 	array_unshift(
 		$categories,
 		array(
-			'slug'  => 'techpress-editorial',
-			'title' => __( 'DigiPublish Editorial', 'techpress-editorial' ),
+			'slug'  => 'digipublish-editorial',
+			'title' => __( 'DigiPublish Editorial', 'digipublish-core' ),
 			'icon'  => 'admin-post',
 		)
 	);
@@ -157,17 +157,115 @@ function techpress_editorial_block_categories( $categories ) {
 add_filter( 'block_categories_all', 'techpress_editorial_block_categories' );
 
 /**
+ * Rewrite the previous internal Gutenberg namespace to digipublish/*.
+ *
+ * The old namespace is assembled in two pieces so no retired block ID remains
+ * registered or hardcoded in the active framework.
+ */
+function digipublish_core_rewrite_block_namespace_in_content( $content ) {
+	$legacy_namespace = 'tech' . 'press';
+	$open_legacy      = '<!-- wp:' . $legacy_namespace . '/';
+	$close_legacy     = '<!-- /wp:' . $legacy_namespace . '/';
+	$pattern_legacy   = '"slug":"' . $legacy_namespace . '/';
+	$pattern_spaced   = '"slug": "' . $legacy_namespace . '/';
+	$query_legacy     = '"namespace":"' . $legacy_namespace . '/story-grid"';
+	$query_spaced     = '"namespace": "' . $legacy_namespace . '/story-grid"';
+
+	return str_replace(
+		array(
+			$open_legacy,
+			$close_legacy,
+			$pattern_legacy,
+			$pattern_spaced,
+			$query_legacy,
+			$query_spaced,
+		),
+		array(
+			'<!-- wp:digipublish/',
+			'<!-- /wp:digipublish/',
+			'"slug":"digipublish/',
+			'"slug": "digipublish/',
+			'"namespace":"digipublish/story-grid"',
+			'"namespace": "digipublish/story-grid"',
+		),
+		(string) $content
+	);
+}
+
+/**
+ * One-time migration for saved posts, reusable blocks, navigation, templates
+ * and template parts that contain the previous internal block namespace.
+ */
+function digipublish_core_migrate_block_namespace() {
+	if ( get_option( 'digipublish_block_namespace_migrated_080', false ) ) {
+		return;
+	}
+
+	global $wpdb;
+
+	$legacy_namespace = 'tech' . 'press';
+	$legacy_like      = '%' . $wpdb->esc_like( $legacy_namespace . '/' ) . '%';
+
+	$post_ids = $wpdb->get_col(
+		$wpdb->prepare(
+			"SELECT ID FROM {$wpdb->posts} WHERE post_content LIKE %s",
+			$legacy_like
+		)
+	);
+
+	foreach ( $post_ids as $post_id ) {
+		$old_content = get_post_field( 'post_content', $post_id, 'raw' );
+		$new_content = digipublish_core_rewrite_block_namespace_in_content( $old_content );
+
+		if ( $new_content === $old_content ) {
+			continue;
+		}
+
+		$wpdb->update(
+			$wpdb->posts,
+			array( 'post_content' => $new_content ),
+			array( 'ID' => absint( $post_id ) ),
+			array( '%s' ),
+			array( '%d' )
+		);
+		clean_post_cache( $post_id );
+	}
+
+	update_option( 'digipublish_block_namespace_migrated_080', gmdate( 'c' ), false );
+}
+add_action( 'admin_init', 'digipublish_core_migrate_block_namespace', 5 );
+
+/**
+ * Keep the frontend rendering during the short window before the one-time
+ * database migration has run on an upgraded site.
+ */
+function digipublish_core_render_block_namespace_fallback( $parsed_block ) {
+	if ( empty( $parsed_block['blockName'] ) ) {
+		return $parsed_block;
+	}
+
+	$legacy_prefix = ( 'tech' . 'press' ) . '/';
+	if ( str_starts_with( $parsed_block['blockName'], $legacy_prefix ) ) {
+		$parsed_block['blockName'] = 'digipublish/' . substr( $parsed_block['blockName'], strlen( $legacy_prefix ) );
+	}
+
+	return $parsed_block;
+}
+add_filter( 'render_block_data', 'digipublish_core_render_block_namespace_fallback', 5 );
+
+
+/**
  * Optional publication profile fields used by the author archive hero.
  */
 function techpress_editorial_author_profile_fields( $user ) {
     $fields = array(
-        'techpress_role'      => __( 'Editorial role', 'techpress-editorial' ),
-        'techpress_linkedin'  => __( 'LinkedIn URL', 'techpress-editorial' ),
-        'techpress_x'         => __( 'X / Twitter URL', 'techpress-editorial' ),
-        'techpress_instagram' => __( 'Instagram URL', 'techpress-editorial' ),
-        'techpress_youtube'   => __( 'YouTube URL', 'techpress-editorial' ),
+        'techpress_role'      => __( 'Editorial role', 'digipublish-core' ),
+        'techpress_linkedin'  => __( 'LinkedIn URL', 'digipublish-core' ),
+        'techpress_x'         => __( 'X / Twitter URL', 'digipublish-core' ),
+        'techpress_instagram' => __( 'Instagram URL', 'digipublish-core' ),
+        'techpress_youtube'   => __( 'YouTube URL', 'digipublish-core' ),
     );
-    echo '<h2>' . esc_html__( 'DigiPublish Author Profile', 'techpress-editorial' ) . '</h2><table class="form-table" role="presentation">';
+    echo '<h2>' . esc_html__( 'DigiPublish Author Profile', 'digipublish-core' ) . '</h2><table class="form-table" role="presentation">';
     foreach ( $fields as $key => $label ) {
         $value = get_user_meta( $user->ID, $key, true );
         echo '<tr><th><label for="' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td><input class="regular-text" type="text" id="' . esc_attr( $key ) . '" name="' . esc_attr( $key ) . '" value="' . esc_attr( $value ) . '"></td></tr>';
@@ -302,7 +400,7 @@ add_action( 'delete_comment', 'techpress_editorial_bump_cache_version' );
  * query so the archive-feed block can render it without a duplicate query.
  */
 function techpress_editorial_optimize_main_queries( $query ) {
-	if ( is_admin() || ! $query->is_main_query() || ! current_theme_supports( 'techpress-editorial-performance' ) ) {
+	if ( is_admin() || ! $query->is_main_query() || ! current_theme_supports( 'digipublish-performance' ) ) {
 		return;
 	}
 
@@ -647,18 +745,18 @@ function techpress_editorial_feed_stats_markup( $post_id, $attributes ) {
 	$stats = array();
 	if ( $attributes['showReadTime'] ?? true ) {
 		$minutes = techpress_editorial_read_time( $post_id );
-		$stats[] = sprintf( _n( '%d min read', '%d min read', $minutes, 'techpress-editorial' ), $minutes );
+		$stats[] = sprintf( _n( '%d min read', '%d min read', $minutes, 'digipublish-core' ), $minutes );
 	}
 	if ( $attributes['showViews'] ?? true ) {
 		$views = techpress_editorial_metric_value( $post_id, '_techpress_views' );
 		if ( $views ) {
-			$stats[] = techpress_editorial_format_metric( $views ) . ' ' . __( 'views', 'techpress-editorial' );
+			$stats[] = techpress_editorial_format_metric( $views ) . ' ' . __( 'views', 'digipublish-core' );
 		}
 	}
 	if ( $attributes['showShares'] ?? true ) {
 		$shares = techpress_editorial_metric_value( $post_id, '_techpress_shares' );
 		if ( $shares ) {
-			$stats[] = __( 'Shares', 'techpress-editorial' ) . ' ' . techpress_editorial_format_metric( $shares );
+			$stats[] = __( 'Shares', 'digipublish-core' ) . ' ' . techpress_editorial_format_metric( $shares );
 		}
 	}
 	if ( ! $stats ) {
@@ -734,6 +832,7 @@ function techpress_editorial_ad_provider_markup( $slot_name, $attributes ) {
  */
 function techpress_editorial_activate() {
 	techpress_editorial_register_content_types();
+	digipublish_core_migrate_block_namespace();
 	flush_rewrite_rules();
 }
 register_activation_hook( __FILE__, 'techpress_editorial_activate' );

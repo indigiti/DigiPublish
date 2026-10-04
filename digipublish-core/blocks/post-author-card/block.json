@@ -1,13 +1,13 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "techpress/post-author-card",
-  "version": "0.7.0",
+  "name": "digipublish/post-author-card",
+  "version": "0.8.0",
   "title": "Article Author Card",
-  "category": "techpress-editorial",
+  "category": "digipublish-editorial",
   "icon": "id",
   "description": "Detailed author card for the current article.",
-  "textdomain": "techpress-editorial",
+  "textdomain": "digipublish-core",
   "supports": {
     "align": [
       "wide",
@@ -15,7 +15,7 @@
     ],
     "html": false
   },
-  "editorScript": "techpress-editorial-editor",
+  "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
   "render": "file:./render.php"
 }

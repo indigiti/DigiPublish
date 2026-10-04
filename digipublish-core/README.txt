@@ -1,18 +1,15 @@
-DigiPublish Core 0.7.0
+DigiPublish Core 0.8.0
 
 Core Gutenberg publishing features for DigiPublish.
 
-Includes
-- Editorial Feed Engine with reusable visual layouts.
-- Featured stories, post feeds, archive feeds, category experts, related posts, author cards, article TOC, article byline, ad slots, dictionary terms, and popular categories.
-- Per-post Editorial Attribution: Fact Checked by, Verified by, or Reported by.
-- Cached/shared query pools for repeated homepage feeds.
-- Read-time support plus optional analytics-backed views/shares.
-- Mobile-friendly block styles and lightweight carousel behavior.
+0.8.0 namespace migration
+- Every custom Gutenberg block now uses the canonical digipublish/* namespace.
+- Editor registrations, server-side block metadata, templates and patterns use the same namespace.
+- Existing saved Gutenberg content is migrated automatically on the first admin request after upgrade.
+- A render-time fallback preserves frontend output before the one-time migration has completed.
+- Pattern and Query Loop variation namespaces are canonical DigiPublish identifiers.
+- Theme/plugin performance, editorial attribution, dictionary, feeds, archives, author tools, TOC and ad slots remain included.
 
-Backward compatibility
-DigiPublish 0.7.0 keeps the existing techpress/* Gutenberg block namespace, techpress_* PHP functions, TECHPRESS_* constants, and legacy post-meta/option keys. Existing saved pages therefore continue to render without block recovery or data migration.
+Legacy metadata/settings keys that store editorial attribution or configuration are preserved where changing them would risk data loss. They are not Gutenberg block IDs.
 
-Canonical DIGIPUBLISH_CORE_* constants are available for new integrations.
-
-Use with DigiPublish theme 0.7.0.
+Use with DigiPublish theme 0.8.0.
