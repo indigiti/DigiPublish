@@ -40,39 +40,28 @@ jobs:
       - name: Write release notes
         shell: bash
         run: |
-          cat > release-notes.md <<'EOF'
-          ## DigiPublish v0.8.1
+          set -euo pipefail
+          version="${{ steps.version.outputs.version }}"
 
-          Performance and visual hardening release for the Gutenberg-first DigiPublish publishing framework.
+          {
+            echo "## DigiPublish v${version}"
+            echo
+            awk -v heading="## ${version}" '
+              $0 == heading { found=1; next }
+              found && /^## / { exit }
+              found { print }
+            ' CHANGELOG.md
+            echo
+            echo "### Packages"
+            echo "- `digipublish-v${version}.zip` — WordPress theme"
+            echo "- `digipublish-core-v${version}.zip` — companion plugin"
+            echo "- `digipublish-framework-v${version}.zip` — complete framework"
+          } > release-notes.md
 
-          ### Visual and editorial fixes
-          - Fixed stale generated block selectors after the `digipublish/*` namespace migration.
-          - Standardized editorial card radii and improved homepage section rhythm.
-          - Added portable category-slug homepage sources with graceful fallback.
-          - Added request-level story de-duplication across homepage sections.
-          - Made Top Weekly genuinely seven-day based.
-          - Removed category Top Picks from the first archive grid.
-          - Renamed Dictionary ranking labels to accurately describe the underlying data.
-
-          ### Performance
-          - Split content and popularity cache invalidation.
-          - Narrowed invalidation to relevant posts, taxonomies, and comments.
-          - Added layout-specific responsive image `sizes` hints.
-          - Limited the legacy namespace render fallback to sites that still require migration.
-          - Tuned section-specific `content-visibility` intrinsic sizes.
-
-          ### Hardening
-          - Normalized DigiPublish block inserter categories and translation domains.
-          - Added CI guards against stale generated block classes and namespace regressions.
-          - PHP, JSON, and JavaScript validation pass on the release code.
-
-          ### Packages
-          - `digipublish-v0.8.1.zip` — WordPress theme
-          - `digipublish-core-v0.8.1.zip` — companion plugin
-          - `digipublish-framework-v0.8.1.zip` — complete framework
-
-          Existing sites upgrading from v0.8.0 retain the one-time block namespace migration and compatibility protection.
-          EOF
+          if ! grep -q '[^[:space:]]' release-notes.md; then
+            echo "Release notes are empty."
+            exit 1
+          fi
 
       - name: Publish GitHub release
         env:
