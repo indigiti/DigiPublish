@@ -1,13 +1,13 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "techpress/featured-posts",
-  "version": "0.7.0",
+  "name": "digipublish/featured-posts",
+  "version": "0.8.0",
   "title": "Featured Stories",
-  "category": "techpress-editorial",
+  "category": "digipublish-editorial",
   "icon": "star-filled",
   "description": "Lead story plus supporting stories from a selected category or the latest posts.",
-  "textdomain": "techpress-editorial",
+  "textdomain": "digipublish-core",
   "attributes": {
     "heading": {
       "type": "string",
@@ -54,7 +54,7 @@
     "html": false,
     "anchor": true
   },
-  "editorScript": "techpress-editorial-editor",
+  "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
   "render": "file:./render.php"
 }

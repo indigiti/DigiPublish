@@ -1,13 +1,13 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "techpress/category-experts",
-  "version": "0.7.0",
+  "name": "digipublish/category-experts",
+  "version": "0.8.0",
   "title": "Category Experts",
-  "category": "techpress-editorial",
+  "category": "digipublish-editorial",
   "icon": "groups",
   "description": "Shows the most active authors for the current category.",
-  "textdomain": "techpress-editorial",
+  "textdomain": "digipublish-core",
   "attributes": {
     "limit": {
       "type": "integer",
@@ -21,7 +21,7 @@
     ],
     "html": false
   },
-  "editorScript": "techpress-editorial-editor",
+  "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
   "render": "file:./render.php"
 }

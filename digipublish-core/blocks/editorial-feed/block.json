@@ -1,13 +1,13 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "techpress/editorial-feed",
-  "version": "0.7.0",
+  "name": "digipublish/editorial-feed",
+  "version": "0.8.0",
   "title": "Editorial Feed Engine",
-  "category": "techpress-editorial",
+  "category": "digipublish-editorial",
   "icon": "layout",
   "description": "Reusable editorial feed with card grid, weekly mosaic, carousel, featured trio, compact grid and latest-post layouts.",
-  "textdomain": "techpress-editorial",
+  "textdomain": "digipublish-core",
   "attributes": {
     "heading": { "type": "string", "default": "Editorial Feed" },
     "description": { "type": "string", "default": "" },
@@ -33,7 +33,7 @@
     "html": false,
     "anchor": true
   },
-  "editorScript": "techpress-editorial-editor",
+  "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
   "viewScript": "file:./view.js",
   "render": "file:./render.php"

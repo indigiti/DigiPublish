@@ -1,13 +1,13 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "techpress/article-byline",
-  "version": "0.7.0",
+  "name": "digipublish/article-byline",
+  "version": "0.8.0",
   "title": "Article Editorial Byline",
-  "category": "techpress-editorial",
+  "category": "digipublish-editorial",
   "icon": "admin-users",
   "description": "Primary author, optional fact-check/verification/reporting attribution, updated date, and share action for the current article.",
-  "textdomain": "techpress-editorial",
+  "textdomain": "digipublish-core",
   "supports": {
     "align": [
       "wide",
@@ -15,7 +15,7 @@
     ],
     "html": false
   },
-  "editorScript": "techpress-editorial-editor",
+  "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
   "render": "file:./render.php",
   "viewScriptModule": "file:../../assets/share.js"
