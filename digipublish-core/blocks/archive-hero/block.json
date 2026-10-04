@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "techpress/archive-hero",
+  "version": "0.6.1",
+  "title": "Archive Hero",
+  "category": "techpress-editorial",
+  "icon": "welcome-widgets-menus",
+  "description": "Context-aware hero for category, tag, taxonomy, date, and search archives.",
+  "textdomain": "techpress-editorial",
+  "attributes": {
+    "showSearch": {
+      "type": "boolean",
+      "default": true
+    },
+    "showFeaturedTerms": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false
+  },
+  "editorScript": "techpress-editorial-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

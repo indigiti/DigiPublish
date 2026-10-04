@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "techpress/category-nav",
+  "version": "0.6.1",
+  "title": "Editorial Category Navigation",
+  "category": "techpress-editorial",
+  "icon": "menu-alt3",
+  "description": "Automatic publication navigation using top post categories, dictionary and search.",
+  "textdomain": "techpress-editorial",
+  "attributes": {
+    "limit": {
+      "type": "integer",
+      "default": 5
+    },
+    "showDictionary": {
+      "type": "boolean",
+      "default": true
+    },
+    "showSearch": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "supports": {
+    "html": false
+  },
+  "editorScript": "techpress-editorial-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "techpress/post-feed",
+  "version": "0.6.1",
+  "title": "Editorial Post Feed",
+  "category": "techpress-editorial",
+  "icon": "screenoptions",
+  "description": "Reusable latest, trending, popular, or category-based post feed.",
+  "textdomain": "techpress-editorial",
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Latest"
+    },
+    "categoryId": {
+      "type": "integer",
+      "default": 0
+    },
+    "postsToShow": {
+      "type": "integer",
+      "default": 6
+    },
+    "layout": {
+      "type": "string",
+      "default": "grid-3"
+    },
+    "orderBy": {
+      "type": "string",
+      "default": "date"
+    },
+    "showImage": {
+      "type": "boolean",
+      "default": true
+    },
+    "showExcerpt": {
+      "type": "boolean",
+      "default": false
+    },
+    "showAuthor": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDate": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false,
+    "anchor": true
+  },
+  "editorScript": "techpress-editorial-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

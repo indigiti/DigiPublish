@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "techpress/post-author-card",
+  "version": "0.6.1",
+  "title": "Article Author Card",
+  "category": "techpress-editorial",
+  "icon": "id",
+  "description": "Detailed author card for the current article.",
+  "textdomain": "techpress-editorial",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false
+  },
+  "editorScript": "techpress-editorial-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

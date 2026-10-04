@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "techpress/archive-feed",
+  "version": "0.6.1",
+  "title": "Archive Story Feed",
+  "category": "techpress-editorial",
+  "icon": "grid-view",
+  "description": "Context-aware archive feed with category top picks, dense article grid, and pagination.",
+  "textdomain": "techpress-editorial",
+  "attributes": {
+    "postsPerPage": {
+      "type": "integer",
+      "default": 10
+    },
+    "columns": {
+      "type": "integer",
+      "default": 5
+    },
+    "showTopPicks": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false
+  },
+  "editorScript": "techpress-editorial-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

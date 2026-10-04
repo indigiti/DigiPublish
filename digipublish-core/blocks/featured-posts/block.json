@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "techpress/featured-posts",
+  "version": "0.6.1",
+  "title": "Featured Stories",
+  "category": "techpress-editorial",
+  "icon": "star-filled",
+  "description": "Lead story plus supporting stories from a selected category or the latest posts.",
+  "textdomain": "techpress-editorial",
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Latest Features"
+    },
+    "categoryId": {
+      "type": "integer",
+      "default": 0
+    },
+    "postsToShow": {
+      "type": "integer",
+      "default": 7
+    },
+    "layout": {
+      "type": "string",
+      "default": "magazine"
+    },
+    "showExcerpt": {
+      "type": "boolean",
+      "default": true
+    },
+    "showAuthor": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDate": {
+      "type": "boolean",
+      "default": true
+    },
+    "showFilters": {
+      "type": "boolean",
+      "default": true
+    },
+    "filterLimit": {
+      "type": "integer",
+      "default": 6
+    }
+  },
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false,
+    "anchor": true
+  },
+  "editorScript": "techpress-editorial-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

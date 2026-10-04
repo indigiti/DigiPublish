@@ -1,0 +1,23 @@
+<!-- wp:template-part {"slug":"header","theme":"techpress-theme","tagName":"header"} /-->
+<!-- wp:group {"tagName":"main","align":"wide","className":"tp-section","layout":{"type":"constrained"}} -->
+<main class="wp-block-group alignwide tp-section">
+	<!-- wp:post-terms {"term":"tech_topic","className":"tp-category"} /-->
+	<!-- wp:post-title {"level":1,"fontSize":"display"} /-->
+	<!-- wp:post-excerpt {"fontSize":"lg"} /-->
+	<!-- wp:group {"align":"wide","className":"tp-article-layout","layout":{"type":"default"}} -->
+	<div class="wp-block-group alignwide tp-article-layout">
+		<!-- wp:group {"className":"tp-article-main","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group tp-article-main">
+			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+		</div>
+		<!-- /wp:group -->
+		<!-- wp:group {"className":"tp-article-sidebar","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group tp-article-sidebar">
+			<!-- wp:techpress/term-index {"heading":"More Definitions","postsToShow":8,"showSearch":false,"showAlphabet":false} /-->
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+</main>
+<!-- /wp:group -->
+<!-- wp:template-part {"slug":"footer","theme":"techpress-theme","tagName":"footer"} /-->

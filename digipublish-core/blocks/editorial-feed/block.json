@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "techpress/editorial-feed",
+  "version": "0.6.1",
+  "title": "Editorial Feed Engine",
+  "category": "techpress-editorial",
+  "icon": "layout",
+  "description": "Reusable editorial feed with card grid, weekly mosaic, carousel, featured trio, compact grid and latest-post layouts.",
+  "textdomain": "techpress-editorial",
+  "attributes": {
+    "heading": { "type": "string", "default": "Editorial Feed" },
+    "description": { "type": "string", "default": "" },
+    "sourceMode": { "type": "string", "default": "latest" },
+    "categoryId": { "type": "integer", "default": 0 },
+    "manualPostIds": { "type": "string", "default": "" },
+    "postsToShow": { "type": "integer", "default": 8 },
+    "layout": { "type": "string", "default": "cards-4" },
+    "orderBy": { "type": "string", "default": "date" },
+    "showCategory": { "type": "boolean", "default": true },
+    "showExcerpt": { "type": "boolean", "default": false },
+    "showAuthor": { "type": "boolean", "default": false },
+    "showDate": { "type": "boolean", "default": false },
+    "showReadTime": { "type": "boolean", "default": true },
+    "showViews": { "type": "boolean", "default": true },
+    "showShares": { "type": "boolean", "default": true },
+    "showViewAll": { "type": "boolean", "default": true },
+    "viewAllLabel": { "type": "string", "default": "View All" },
+    "viewAllUrl": { "type": "string", "default": "" }
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "html": false,
+    "anchor": true
+  },
+  "editorScript": "techpress-editorial-editor",
+  "style": "file:./style.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

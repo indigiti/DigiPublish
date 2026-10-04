@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "techpress/article-toc",
+  "version": "0.6.1",
+  "title": "Article Table of Contents",
+  "category": "techpress-editorial",
+  "icon": "list-view",
+  "description": "Automatic on-page contents generated from article headings.",
+  "textdomain": "techpress-editorial",
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Table of Contents"
+    }
+  },
+  "supports": {
+    "html": false
+  },
+  "editorScript": "techpress-editorial-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php",
+  "viewScriptModule": "file:../../assets/frontend.js"
+}

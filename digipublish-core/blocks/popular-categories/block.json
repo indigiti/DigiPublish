@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "techpress/popular-categories",
+  "version": "0.6.1",
+  "title": "Popular Categories",
+  "category": "techpress-editorial",
+  "icon": "category",
+  "description": "Icon-style publication category strip.",
+  "textdomain": "techpress-editorial",
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Popular Categories"
+    },
+    "limit": {
+      "type": "integer",
+      "default": 8
+    }
+  },
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false
+  },
+  "editorScript": "techpress-editorial-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

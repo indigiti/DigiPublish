@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "techpress/ad-slot",
+  "version": "0.6.1",
+  "title": "Ad Slot",
+  "category": "techpress-editorial",
+  "icon": "megaphone",
+  "description": "Reserved ad position that can be connected to your ad manager without hardcoding provider scripts into templates.",
+  "textdomain": "techpress-editorial",
+  "attributes": {
+    "slotName": {
+      "type": "string",
+      "default": "content-slot"
+    },
+    "label": {
+      "type": "string",
+      "default": "Advertisement"
+    },
+    "minHeight": {
+      "type": "integer",
+      "default": 90
+    },
+    "collapseEmpty": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false,
+    "anchor": true
+  },
+  "editorScript": "techpress-editorial-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

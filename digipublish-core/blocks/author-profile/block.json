@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "techpress/author-profile",
+  "version": "0.6.1",
+  "title": "Author Profile Hero",
+  "category": "techpress-editorial",
+  "icon": "admin-users",
+  "description": "Context-aware author profile header for author archives.",
+  "textdomain": "techpress-editorial",
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false
+  },
+  "editorScript": "techpress-editorial-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

@@ -1,0 +1,127 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+$per_page = max( 5, min( 20, absint( $attributes['postsPerPage'] ?? 10 ) ) );
+$columns  = max( 2, min( 5, absint( $attributes['columns'] ?? 5 ) ) );
+$show_top = $attributes['showTopPicks'] ?? true;
+$paged    = max( 1, get_query_var( 'paged' ), get_query_var( 'page' ) );
+
+$context_label = __( 'Latest Articles', 'techpress-editorial' );
+$args          = array(
+	'post_type'           => 'post',
+	'post_status'         => 'publish',
+	'posts_per_page'      => $per_page,
+	'paged'               => $paged,
+	'orderby'             => 'date',
+	'order'               => 'DESC',
+	'ignore_sticky_posts' => true,
+);
+
+if ( is_category() ) {
+	$term             = get_queried_object();
+	$args['cat']      = (int) $term->term_id;
+	$context_label    = __( 'Latest News', 'techpress-editorial' );
+} elseif ( is_tag() ) {
+	$term             = get_queried_object();
+	$args['tag_id']   = (int) $term->term_id;
+	$context_label    = sprintf( __( 'Latest %s Articles', 'techpress-editorial' ), $term->name );
+} elseif ( is_tax() ) {
+	$term              = get_queried_object();
+	$args['tax_query'] = array(
+		array(
+			'taxonomy' => $term->taxonomy,
+			'field'    => 'term_id',
+			'terms'    => $term->term_id,
+		),
+	);
+} elseif ( is_author() ) {
+	$author           = get_queried_object();
+	$args['author']   = (int) $author->ID;
+	$context_label    = sprintf( __( 'Latest Articles from %s', 'techpress-editorial' ), $author->display_name );
+} elseif ( is_search() ) {
+	$args['s']        = get_search_query();
+	$context_label    = __( 'Search Results', 'techpress-editorial' );
+} elseif ( is_day() ) {
+	$args['year']     = get_query_var( 'year' );
+	$args['monthnum'] = get_query_var( 'monthnum' );
+	$args['day']      = get_query_var( 'day' );
+} elseif ( is_month() ) {
+	$args['year']     = get_query_var( 'year' );
+	$args['monthnum'] = get_query_var( 'monthnum' );
+} elseif ( is_year() ) {
+	$args['year']     = get_query_var( 'year' );
+}
+
+/*
+ * Standard archive/search/author/date templates have already run the main
+ * WordPress query. Reuse it instead of executing the same database work again.
+ */
+global $wp_query;
+$use_main_query = ! is_admin()
+	&& ! ( defined( 'REST_REQUEST' ) && REST_REQUEST )
+	&& $wp_query instanceof WP_Query
+	&& ( is_archive() || is_search() || is_author() || is_category() || is_tag() || is_date() );
+
+$query      = $use_main_query ? $wp_query : new WP_Query( $args );
+$post_items = $query->posts;
+
+if ( empty( $post_items ) ) {
+	echo '<section class="tp-archive-feed alignwide"><p>' . esc_html__( 'No matching content found.', 'techpress-editorial' ) . '</p></section>';
+	return;
+}
+
+if ( $show_top && is_category() && 1 === $paged ) {
+	$top_ids = array();
+	foreach ( $post_items as $item ) {
+		if ( has_post_thumbnail( $item->ID ) ) {
+			$top_ids[] = (int) $item->ID;
+		}
+		if ( 3 === count( $top_ids ) ) {
+			break;
+		}
+	}
+	if ( count( $top_ids ) < 3 ) {
+		foreach ( $post_items as $item ) {
+			$id = (int) $item->ID;
+			if ( ! in_array( $id, $top_ids, true ) ) {
+				$top_ids[] = $id;
+			}
+			if ( 3 === count( $top_ids ) ) {
+				break;
+			}
+		}
+	}
+
+	if ( $top_ids ) {
+		echo '<section class="tp-archive-top-picks"><h2 class="tp-section-title">' . esc_html__( 'Our Top Picks', 'techpress-editorial' ) . '</h2><div class="tp-archive-top-picks__grid">';
+		foreach ( $top_ids as $i => $post_id ) {
+			$cls        = 0 === $i ? 'tp-top-pick tp-top-pick--lead' : 'tp-top-pick';
+			$image_size = 0 === $i ? 'medium_large' : 'medium';
+			echo '<article class="' . esc_attr( $cls ) . '"><a class="tp-top-pick__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' . techpress_editorial_image_markup( $post_id, $image_size ) . '</a><div class="tp-top-pick__body">' . techpress_editorial_category_markup( $post_id ) . '<h3><a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html( get_the_title( $post_id ) ) . '</a></h3>' . techpress_editorial_meta_markup( $post_id, true, true ) . '</div></article>';
+		}
+		echo '</div></section>';
+	}
+}
+
+echo '<section class="tp-archive-feed alignwide"><div class="tp-archive-feed__heading"><h2 class="tp-section-title">' . esc_html( $context_label ) . '</h2></div><div class="tp-archive-story-grid" style="--tp-archive-columns:' . esc_attr( $columns ) . '">';
+foreach ( $post_items as $item ) {
+	$id = (int) $item->ID;
+	echo '<article class="tp-archive-story"><a class="tp-archive-story__image" href="' . esc_url( get_permalink( $id ) ) . '">' . techpress_editorial_image_markup( $id, 'medium' ) . '</a>' . techpress_editorial_category_markup( $id ) . '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>' . techpress_editorial_meta_markup( $id, true, true ) . '</article>';
+}
+echo '</div>';
+
+$links = paginate_links(
+	array(
+		'total'     => (int) $query->max_num_pages,
+		'current'   => $paged,
+		'type'      => 'list',
+		'prev_text' => '←',
+		'next_text' => '→',
+	)
+);
+if ( $links ) {
+	echo '<nav class="tp-pagination" aria-label="' . esc_attr__( 'Posts pagination', 'techpress-editorial' ) . '">' . wp_kses_post( $links ) . '</nav>';
+}
+echo '</section>';

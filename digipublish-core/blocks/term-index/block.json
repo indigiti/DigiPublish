@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "techpress/term-index",
+  "version": "0.6.1",
+  "title": "Dictionary Index",
+  "category": "techpress-editorial",
+  "icon": "book-alt",
+  "description": "Searchable A\u2013Z index of dictionary terms stored as Gutenberg-native content.",
+  "textdomain": "techpress-editorial",
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Tech Dictionary"
+    },
+    "postsToShow": {
+      "type": "integer",
+      "default": 16
+    },
+    "showSearch": {
+      "type": "boolean",
+      "default": true
+    },
+    "showAlphabet": {
+      "type": "boolean",
+      "default": true
+    },
+    "showPopular": {
+      "type": "boolean",
+      "default": true
+    },
+    "popularHeading": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false,
+    "anchor": true
+  },
+  "editorScript": "techpress-editorial-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}
