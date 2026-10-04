@@ -1,0 +1,98 @@
+name: Publish DigiPublish Release
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: startsWith(github.event.head_commit.message, 'release:')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(awk '/^Version:/{print $2; exit}' digipublish/style.css)"
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build release packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ steps.version.outputs.version }}"
+          zip -qr "digipublish-v${version}.zip" digipublish
+          zip -qr "digipublish-core-v${version}.zip" digipublish-core
+          zip -qr "digipublish-framework-v${version}.zip" digipublish digipublish-core README.md CHANGELOG.md
+
+      - name: Write release notes
+        shell: bash
+        run: |
+          cat > release-notes.md <<'EOF'
+          ## DigiPublish v0.8.1
+
+          Performance and visual hardening release for the Gutenberg-first DigiPublish publishing framework.
+
+          ### Visual and editorial fixes
+          - Fixed stale generated block selectors after the `digipublish/*` namespace migration.
+          - Standardized editorial card radii and improved homepage section rhythm.
+          - Added portable category-slug homepage sources with graceful fallback.
+          - Added request-level story de-duplication across homepage sections.
+          - Made Top Weekly genuinely seven-day based.
+          - Removed category Top Picks from the first archive grid.
+          - Renamed Dictionary ranking labels to accurately describe the underlying data.
+
+          ### Performance
+          - Split content and popularity cache invalidation.
+          - Narrowed invalidation to relevant posts, taxonomies, and comments.
+          - Added layout-specific responsive image `sizes` hints.
+          - Limited the legacy namespace render fallback to sites that still require migration.
+          - Tuned section-specific `content-visibility` intrinsic sizes.
+
+          ### Hardening
+          - Normalized DigiPublish block inserter categories and translation domains.
+          - Added CI guards against stale generated block classes and namespace regressions.
+          - PHP, JSON, and JavaScript validation pass on the release code.
+
+          ### Packages
+          - `digipublish-v0.8.1.zip` — WordPress theme
+          - `digipublish-core-v0.8.1.zip` — companion plugin
+          - `digipublish-framework-v0.8.1.zip` — complete framework
+
+          Existing sites upgrading from v0.8.0 retain the one-time block namespace migration and compatibility protection.
+          EOF
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if ! git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a "${TAG}" "${GITHUB_SHA}" -m "DigiPublish ${TAG}"
+            git push origin "${TAG}"
+          fi
+
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            gh release edit "${TAG}" --title "DigiPublish ${TAG}" --notes-file release-notes.md
+            gh release upload "${TAG}"               "digipublish-v${VERSION}.zip"               "digipublish-core-v${VERSION}.zip"               "digipublish-framework-v${VERSION}.zip"               --clobber
+          else
+            gh release create "${TAG}"               "digipublish-v${VERSION}.zip"               "digipublish-core-v${VERSION}.zip"               "digipublish-framework-v${VERSION}.zip"               --title "DigiPublish ${TAG}"               --notes-file release-notes.md               --target "${GITHUB_SHA}"
+          fi
