@@ -17,7 +17,7 @@ if ( $cats ) { $args['category__in'] = array( $cats[0] ); }
 $q = new WP_Query( $args );
 if ( ! $q->posts ) { return; }
 
-echo '<section class="tp-related-posts alignwide"><h2 class="tp-section-title">' . esc_html( $attributes['heading'] ?? __( 'Related Features', 'techpress-editorial' ) ) . '</h2><div class="tp-related-posts__grid">';
+echo '<section class="tp-related-posts alignwide"><h2 class="tp-section-title">' . esc_html( $attributes['heading'] ?? __( 'Related Features', 'digipublish-core' ) ) . '</h2><div class="tp-related-posts__grid">';
 foreach ( $q->posts as $i => $p ) {
 	$id         = (int) $p->ID;
 	$cls        = 0 === $i ? 'tp-related-card tp-related-card--lead' : 'tp-related-card';
