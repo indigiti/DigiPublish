@@ -1,13 +1,13 @@
-DigiPublish Theme 0.8.0
+DigiPublish Theme 0.8.1
 
-Gutenberg-first block theme for a high-density editorial publication.
+Gutenberg-first editorial block theme.
 
-0.8.0 namespace update
-- All custom Gutenberg blocks now use the canonical digipublish/* namespace.
-- All theme templates and reusable patterns reference digipublish/* blocks.
-- All pattern slugs/categories now use the digipublish namespace.
-- Mobile-first navigation, swipe layouts, performance-oriented CSS, optional Google Fonts, and publication templates remain included.
+0.8.1 visual/performance hardening:
+- Correct DigiPublish generated block selectors after the namespace migration.
+- Alternating homepage section rhythm.
+- Publication-style 4px card radii.
+- Section-specific content-visibility intrinsic sizing.
+- Category-aware reusable homepage patterns.
+- Improved responsive image delivery through DigiPublish Core.
 
-Existing saved content using the previous internal namespace is migrated by DigiPublish Core 0.8.0.
-
-Requires DigiPublish Core 0.8.0 for all dynamic editorial blocks.
+Requires DigiPublish Core 0.8.1.

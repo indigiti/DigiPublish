@@ -67,3 +67,16 @@ jobs:
             echo "Retired Gutenberg block namespace found."
             exit 1
           fi
+
+
+      - name: Guard stale generated block classes
+        shell: bash
+        run: |
+          if grep -R --line-number --fixed-strings 'wp-block-techpress-' digipublish digipublish-core; then
+            echo "Stale pre-DigiPublish generated block CSS class found."
+            exit 1
+          fi
+          if grep -R --line-number --fixed-strings "category: 'digipublish-core'" digipublish-core/assets; then
+            echo "Custom blocks must use the digipublish-editorial inserter category."
+            exit 1
+          fi

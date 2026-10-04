@@ -22,6 +22,7 @@ foreach ( $query->posts as $candidate ) {
 }
 $posts = array_slice( array_merge( $with_images, $without_images ), 0, $need );
 if ( empty( $posts ) ) { return; }
+digipublish_core_rendered_post_ids( wp_list_pluck( $posts, 'ID' ) );
 
 $layout = isset( $attributes['layout'] ) ? sanitize_key( $attributes['layout'] ) : 'magazine';
 if ( ! in_array( $layout, array( 'magazine', 'lead-list', 'grid-3', 'grid-4' ), true ) ) { $layout = 'magazine'; }
@@ -33,8 +34,8 @@ if ( ! empty( $attributes['heading'] ) ) {
     if ( $attributes['showFilters'] ?? true ) {
         $filter_limit = max( 1, min( 8, (int) ( $attributes['filterLimit'] ?? 6 ) ) );
         $filter_cats = techpress_editorial_get_top_categories( $filter_limit, true );
-        echo '<nav class="tp-featured__filters" aria-label="' . esc_attr__( 'Feature categories', 'techpress-editorial' ) . '">';
-        echo '<a class="tp-featured__filter is-active" href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'All Features', 'techpress-editorial' ) . '</a>';
+        echo '<nav class="tp-featured__filters" aria-label="' . esc_attr__( 'Feature categories', 'digipublish-core' ) . '">';
+        echo '<a class="tp-featured__filter is-active" href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'All Features', 'digipublish-core' ) . '</a>';
         foreach ( $filter_cats as $cat ) {
             echo '<a class="tp-featured__filter" href="' . esc_url( get_category_link( $cat ) ) . '">' . esc_html( $cat->name ) . '</a>';
         }
@@ -42,7 +43,7 @@ if ( ! empty( $attributes['heading'] ) ) {
     }
     $posts_page = (int) get_option( 'page_for_posts' );
     $more_url = $posts_page ? get_permalink( $posts_page ) : home_url( '/?post_type=post' );
-    echo '<a class="tp-featured__more" href="' . esc_url( $more_url ) . '">' . esc_html__( 'More', 'techpress-editorial' ) . ' <span aria-hidden="true">→</span></a>';
+    echo '<a class="tp-featured__more" href="' . esc_url( $more_url ) . '">' . esc_html__( 'More', 'digipublish-core' ) . ' <span aria-hidden="true">→</span></a>';
     echo '</div></div>';
 }
 
@@ -51,9 +52,9 @@ if ( 'magazine' === $layout ) {
     $side = array_shift( $posts );
     echo '<div class="tp-featured__magazine">';
     echo '<div class="tp-featured__top">';
-    echo '<a class="tp-featured__hero-image" href="' . esc_url( get_permalink( $lead->ID ) ) . '">' . techpress_editorial_image_markup( $lead->ID, 'large', is_front_page() || is_home() ) . '</a>';
+    echo '<a class="tp-featured__hero-image" href="' . esc_url( get_permalink( $lead->ID ) ) . '">' . techpress_editorial_image_markup( $lead->ID, 'large', is_front_page() || is_home(), '(max-width: 720px) 100vw, 52vw' ) . '</a>';
     echo '<article class="tp-featured__hero-copy">';
-    echo '<div class="tp-featured__badge"><span aria-hidden="true">◆</span> ' . esc_html__( 'Top Story', 'techpress-editorial' ) . '</div>';
+    echo '<div class="tp-featured__badge"><span aria-hidden="true">◆</span> ' . esc_html__( 'Top Story', 'digipublish-core' ) . '</div>';
     echo techpress_editorial_category_markup( $lead->ID );
     echo '<h3 class="tp-featured__hero-title"><a href="' . esc_url( get_permalink( $lead->ID ) ) . '">' . esc_html( get_the_title( $lead->ID ) ) . '</a></h3>';
     echo techpress_editorial_meta_markup( $lead->ID, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true );
@@ -61,7 +62,7 @@ if ( 'magazine' === $layout ) {
     echo '</article>';
     if ( $side ) {
         echo '<article class="tp-featured__side">';
-        echo '<a class="tp-featured__side-image" href="' . esc_url( get_permalink( $side->ID ) ) . '">' . techpress_editorial_image_markup( $side->ID, 'medium' ) . '</a>';
+        echo '<a class="tp-featured__side-image" href="' . esc_url( get_permalink( $side->ID ) ) . '">' . techpress_editorial_image_markup( $side->ID, 'medium_large', false, '(max-width: 720px) 86vw, 24vw' ) . '</a>';
         echo techpress_editorial_category_markup( $side->ID );
         echo '<h3 class="tp-featured__side-title"><a href="' . esc_url( get_permalink( $side->ID ) ) . '">' . esc_html( get_the_title( $side->ID ) ) . '</a></h3>';
         echo techpress_editorial_meta_markup( $side->ID, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true );
@@ -72,7 +73,7 @@ if ( 'magazine' === $layout ) {
         echo '<div class="tp-featured__strip">';
         foreach ( array_slice( $posts, 0, 5 ) as $post ) {
             echo '<article class="tp-featured__strip-item">';
-            echo '<a class="tp-featured__strip-image" href="' . esc_url( get_permalink( $post->ID ) ) . '">' . techpress_editorial_image_markup( $post->ID, 'medium' ) . '</a>';
+            echo '<a class="tp-featured__strip-image" href="' . esc_url( get_permalink( $post->ID ) ) . '">' . techpress_editorial_image_markup( $post->ID, 'medium', false, '(max-width: 720px) 74vw, 18vw' ) . '</a>';
             echo techpress_editorial_category_markup( $post->ID );
             echo '<h3><a href="' . esc_url( get_permalink( $post->ID ) ) . '">' . esc_html( get_the_title( $post->ID ) ) . '</a></h3>';
             echo techpress_editorial_meta_markup( $post->ID, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true );
@@ -84,14 +85,14 @@ if ( 'magazine' === $layout ) {
 } elseif ( 'lead-list' === $layout ) {
     $lead = array_shift( $posts );
     echo '<div class="tp-featured__layout"><article class="tp-featured__lead tp-card">';
-    echo '<a class="tp-featured__lead-image" href="' . esc_url( get_permalink( $lead->ID ) ) . '">' . techpress_editorial_image_markup( $lead->ID, 'large', is_front_page() || is_home() ) . '</a><div class="tp-card__body">';
+    echo '<a class="tp-featured__lead-image" href="' . esc_url( get_permalink( $lead->ID ) ) . '">' . techpress_editorial_image_markup( $lead->ID, 'large', is_front_page() || is_home(), '(max-width: 720px) 100vw, 58vw' ) . '</a><div class="tp-card__body">';
     echo techpress_editorial_category_markup( $lead->ID );
     echo '<h3 class="tp-featured__lead-title"><a href="' . esc_url( get_permalink( $lead->ID ) ) . '">' . esc_html( get_the_title( $lead->ID ) ) . '</a></h3>';
     if ( $attributes['showExcerpt'] ?? true ) { echo '<p class="tp-card__excerpt">' . esc_html( wp_trim_words( get_the_excerpt( $lead->ID ), 32 ) ) . '</p>'; }
     echo techpress_editorial_meta_markup( $lead->ID, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true );
     echo '</div></article><div class="tp-featured__rail">';
     foreach ( $posts as $post ) {
-        echo '<article class="tp-featured__rail-item"><a class="tp-featured__rail-image" href="' . esc_url( get_permalink( $post->ID ) ) . '">' . techpress_editorial_image_markup( $post->ID, 'medium' ) . '</a><div class="tp-featured__rail-body">';
+        echo '<article class="tp-featured__rail-item"><a class="tp-featured__rail-image" href="' . esc_url( get_permalink( $post->ID ) ) . '">' . techpress_editorial_image_markup( $post->ID, 'medium', false, '(max-width: 720px) 115px, 115px' ) . '</a><div class="tp-featured__rail-body">';
         echo techpress_editorial_category_markup( $post->ID );
         echo '<h3><a href="' . esc_url( get_permalink( $post->ID ) ) . '">' . esc_html( get_the_title( $post->ID ) ) . '</a></h3>';
         echo techpress_editorial_meta_markup( $post->ID, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true );

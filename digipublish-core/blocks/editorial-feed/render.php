@@ -17,7 +17,7 @@ $heading = isset( $attributes['heading'] ) ? trim( (string) $attributes['heading
 $description = isset( $attributes['description'] ) ? trim( (string) $attributes['description'] ) : '';
 $view_all = techpress_editorial_feed_view_all_url( $attributes );
 $show_view_all = ! empty( $attributes['showViewAll'] ) && $view_all;
-$view_all_label = ! empty( $attributes['viewAllLabel'] ) ? (string) $attributes['viewAllLabel'] : __( 'View All', 'techpress-editorial' );
+$view_all_label = ! empty( $attributes['viewAllLabel'] ) ? (string) $attributes['viewAllLabel'] : __( 'View All', 'digipublish-core' );
 
 $wrapper = get_block_wrapper_attributes( array( 'class' => 'tp-editorial-feed tp-editorial-feed--' . $layout ) );
 
@@ -52,7 +52,7 @@ switch ( $layout ) {
 			echo techpress_editorial_feed_story_markup( $post->ID, $attributes, 'tp-carousel-card', true );
 		}
 		echo '</div>';
-		echo '<div class="tp-editorial-carousel__controls"><button type="button" data-tp-carousel-dir="prev" aria-label="' . esc_attr__( 'Previous stories', 'techpress-editorial' ) . '">←</button><button type="button" data-tp-carousel-dir="next" aria-label="' . esc_attr__( 'Next stories', 'techpress-editorial' ) . '">→</button></div>';
+		echo '<div class="tp-editorial-carousel__controls"><button type="button" data-tp-carousel-dir="prev" aria-label="' . esc_attr__( 'Previous stories', 'digipublish-core' ) . '">←</button><button type="button" data-tp-carousel-dir="next" aria-label="' . esc_attr__( 'Next stories', 'digipublish-core' ) . '">→</button></div>';
 		break;
 
 	case 'featured-trio':

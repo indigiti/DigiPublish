@@ -76,7 +76,7 @@
   });
 
   registerBlockType('digipublish/featured-posts', {
-    apiVersion: 3, title: __('Featured Stories', 'digipublish-core'), category: 'digipublish-core', icon: 'star-filled',
+    apiVersion: 3, title: __('Featured Stories', 'digipublish-core'), category: 'digipublish-editorial', icon: 'star-filled',
     attributes: { heading: { type: 'string', default: 'Latest Features' }, categoryId: { type: 'integer', default: 0 }, postsToShow: { type: 'integer', default: 7 }, layout: { type: 'string', default: 'magazine' }, showExcerpt: { type: 'boolean', default: true }, showAuthor: { type: 'boolean', default: true }, showDate: { type: 'boolean', default: true }, showFilters: { type: 'boolean', default: true }, filterLimit: { type: 'integer', default: 6 } },
     edit: function (props) {
       const a = props.attributes, set = props.setAttributes;
@@ -89,15 +89,15 @@
   });
 
   registerBlockType('digipublish/post-feed', {
-    apiVersion: 3, title: __('Editorial Post Feed', 'digipublish-core'), category: 'digipublish-core', icon: 'screenoptions',
+    apiVersion: 3, title: __('Editorial Post Feed', 'digipublish-core'), category: 'digipublish-editorial', icon: 'screenoptions',
     attributes: { heading: { type: 'string', default: 'Latest' }, categoryId: { type: 'integer', default: 0 }, postsToShow: { type: 'integer', default: 6 }, layout: { type: 'string', default: 'grid-3' }, orderBy: { type: 'string', default: 'date' }, showImage: { type: 'boolean', default: true }, showExcerpt: { type: 'boolean', default: false }, showAuthor: { type: 'boolean', default: true }, showDate: { type: 'boolean', default: true } },
     edit: function (props) { return el(Fragment, {}, editorialControls(props, { orderBy: true, layouts: [{ label: __('List', 'digipublish-core'), value: 'list' }, { label: __('2-column grid', 'digipublish-core'), value: 'grid-2' }, { label: __('3-column grid', 'digipublish-core'), value: 'grid-3' }, { label: __('4-column grid', 'digipublish-core'), value: 'grid-4' }, { label: __('5-column grid', 'digipublish-core'), value: 'grid-5' }] }), el(Preview, { name: 'digipublish/post-feed', attributes: props.attributes })); }, save: function () { return null; }
   });
 
   registerBlockType('digipublish/editorial-feed', {
-    apiVersion: 3, title: __('Editorial Feed Engine', 'digipublish-core'), category: 'digipublish-core', icon: 'layout',
+    apiVersion: 3, title: __('Editorial Feed Engine', 'digipublish-core'), category: 'digipublish-editorial', icon: 'layout',
     attributes: {
-      heading: { type: 'string', default: 'Editorial Feed' }, description: { type: 'string', default: '' }, sourceMode: { type: 'string', default: 'latest' }, categoryId: { type: 'integer', default: 0 }, manualPostIds: { type: 'string', default: '' }, postsToShow: { type: 'integer', default: 8 }, layout: { type: 'string', default: 'cards-4' }, orderBy: { type: 'string', default: 'date' }, showCategory: { type: 'boolean', default: true }, showExcerpt: { type: 'boolean', default: false }, showAuthor: { type: 'boolean', default: false }, showDate: { type: 'boolean', default: false }, showReadTime: { type: 'boolean', default: true }, showViews: { type: 'boolean', default: true }, showShares: { type: 'boolean', default: true }, showViewAll: { type: 'boolean', default: true }, viewAllLabel: { type: 'string', default: 'View All' }, viewAllUrl: { type: 'string', default: '' }
+      heading: { type: 'string', default: 'Editorial Feed' }, description: { type: 'string', default: '' }, sourceMode: { type: 'string', default: 'latest' }, categoryId: { type: 'integer', default: 0 }, categorySlug: { type: 'string', default: '' }, manualPostIds: { type: 'string', default: '' }, postsToShow: { type: 'integer', default: 8 }, layout: { type: 'string', default: 'cards-4' }, orderBy: { type: 'string', default: 'date' }, period: { type: 'string', default: 'all' }, avoidDuplicates: { type: 'boolean', default: false }, showCategory: { type: 'boolean', default: true }, showExcerpt: { type: 'boolean', default: false }, showAuthor: { type: 'boolean', default: false }, showDate: { type: 'boolean', default: false }, showReadTime: { type: 'boolean', default: true }, showViews: { type: 'boolean', default: true }, showShares: { type: 'boolean', default: true }, showViewAll: { type: 'boolean', default: true }, viewAllLabel: { type: 'string', default: 'View All' }, viewAllUrl: { type: 'string', default: '' }
     },
     edit: function (props) {
       const a = props.attributes, set = props.setAttributes, categoryOptions = useCategoryOptions();
@@ -122,6 +122,7 @@
               { label: __('Manual post IDs', 'digipublish-core'), value:'manual' }
             ], onChange: function(v){ set({ sourceMode:v }); } }),
             a.sourceMode === 'category' ? el(SelectControl, { label: __('Category', 'digipublish-core'), value: a.categoryId || 0, options: categoryOptions, onChange: function(v){ set({ categoryId:parseInt(v,10)||0 }); } }) : null,
+            a.sourceMode === 'category' ? el(TextControl, { label: __('Portable category slug fallback', 'digipublish-core'), help: __('Used when no category ID is selected. This keeps reusable patterns portable between sites.', 'digipublish-core'), value: a.categorySlug || '', onChange: function(v){ set({ categorySlug:v.toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'') }); } }) : null,
             a.sourceMode === 'manual' ? el(TextControl, { label: __('Post IDs', 'digipublish-core'), help: __('Comma-separated WordPress post IDs. Order is preserved.', 'digipublish-core'), value: a.manualPostIds || '', onChange: function(v){ set({ manualPostIds:v.replace(/[^0-9,\s]/g,'') }); } }) : null,
             el(RangeControl, { label: __('Stories', 'digipublish-core'), value: a.postsToShow || 8, min: 3, max: 16, onChange: function(v){ set({ postsToShow:v }); } }),
             el(SelectControl, { label: __('Order by', 'digipublish-core'), value: a.orderBy || 'date', options: [
@@ -129,7 +130,14 @@
               { label: __('Recently updated', 'digipublish-core'), value:'modified' },
               { label: __('Most discussed', 'digipublish-core'), value:'comment_count' },
               { label: __('Alphabetical', 'digipublish-core'), value:'title' }
-            ], onChange: function(v){ set({ orderBy:v }); } })
+            ], onChange: function(v){ set({ orderBy:v }); } }),
+            el(SelectControl, { label: __('Time period', 'digipublish-core'), value: a.period || 'all', options: [
+              { label: __('All time', 'digipublish-core'), value:'all' },
+              { label: __('Past 24 hours', 'digipublish-core'), value:'day' },
+              { label: __('Past 7 days', 'digipublish-core'), value:'week' },
+              { label: __('Past 30 days', 'digipublish-core'), value:'month' }
+            ], onChange: function(v){ set({ period:v }); } }),
+            el(ToggleControl, { label: __('Avoid stories already rendered earlier on this page', 'digipublish-core'), checked: !!a.avoidDuplicates, onChange: function(v){ set({ avoidDuplicates:v }); } })
           ),
           el(PanelBody, { title: __('Story metadata', 'digipublish-core'), initialOpen: false },
             el(ToggleControl, { label: __('Show category', 'digipublish-core'), checked: !!a.showCategory, onChange: function(v){ set({ showCategory:v }); } }),
@@ -152,27 +160,27 @@
   });
 
   registerBlockType('digipublish/ad-slot', {
-    apiVersion: 3, title: __('Ad Slot', 'digipublish-core'), category: 'digipublish-core', icon: 'megaphone',
+    apiVersion: 3, title: __('Ad Slot', 'digipublish-core'), category: 'digipublish-editorial', icon: 'megaphone',
     attributes: { slotName: { type: 'string', default: 'content-slot' }, label: { type: 'string', default: 'Advertisement' }, minHeight: { type: 'integer', default: 90 }, collapseEmpty: { type: 'boolean', default: true } },
     edit: function (props) { const a = props.attributes, set = props.setAttributes; return el(Fragment, {}, el(InspectorControls, {}, el(PanelBody, { title: __('Ad slot settings', 'digipublish-core'), initialOpen: true }, el(TextControl, { label: __('Slot name', 'digipublish-core'), value: a.slotName, onChange: function (v) { set({ slotName: v.replace(/[^a-zA-Z0-9_-]/g, '-').toLowerCase() }); } }), el(TextControl, { label: __('Label', 'digipublish-core'), value: a.label, onChange: function (v) { set({ label: v }); } }), el(RangeControl, { label: __('Reserved height (px)', 'digipublish-core'), value: a.minHeight, min: 0, max: 600, step: 10, onChange: function (v) { set({ minHeight: v }); } }), el(ToggleControl, { label: __('Collapse when empty', 'digipublish-core'), checked: !!a.collapseEmpty, onChange: function (v) { set({ collapseEmpty: v }); } }))), el(Preview, { name: 'digipublish/ad-slot', attributes: a })); }, save: function () { return null; }
   });
 
   registerBlockType('digipublish/category-nav', {
-    apiVersion: 3, title: __('Editorial Category Navigation', 'digipublish-core'), category: 'digipublish-core', icon: 'menu-alt3',
+    apiVersion: 3, title: __('Editorial Category Navigation', 'digipublish-core'), category: 'digipublish-editorial', icon: 'menu-alt3',
     attributes: { limit: { type: 'integer', default: 5 }, showDictionary: { type: 'boolean', default: true }, showSearch: { type: 'boolean', default: true } },
     edit: function (props) { const a = props.attributes, set = props.setAttributes; return el(Fragment, {}, el(InspectorControls, {}, el(PanelBody, { title: __('Navigation settings', 'digipublish-core'), initialOpen: true }, el(RangeControl, { label: __('Category links', 'digipublish-core'), value: a.limit, min: 2, max: 8, onChange: function (v) { set({ limit: v }); } }), el(ToggleControl, { label: __('Show Dictionary', 'digipublish-core'), checked: !!a.showDictionary, onChange: function (v) { set({ showDictionary: v }); } }), el(ToggleControl, { label: __('Show search', 'digipublish-core'), checked: !!a.showSearch, onChange: function (v) { set({ showSearch: v }); } }))), el(Preview, { name: 'digipublish/category-nav', attributes: a })); }, save: function () { return null; }
   });
 
   registerBlockType('digipublish/term-index', {
-    apiVersion: 3, title: __('Dictionary Index', 'digipublish-core'), category: 'digipublish-core', icon: 'book-alt',
+    apiVersion: 3, title: __('Dictionary Index', 'digipublish-core'), category: 'digipublish-editorial', icon: 'book-alt',
     attributes: { heading: { type: 'string', default: 'Tech Dictionary' }, postsToShow: { type: 'integer', default: 16 }, showSearch: { type: 'boolean', default: true }, showAlphabet: { type: 'boolean', default: true }, showPopular: { type: 'boolean', default: true }, popularHeading: { type: 'string', default: '' } },
-    edit: function (props) { const a = props.attributes, set = props.setAttributes; return el(Fragment, {}, el(InspectorControls, {}, el(PanelBody, { title: __('Dictionary settings', 'digipublish-core'), initialOpen: true }, el(TextControl, { label: __('Section heading', 'digipublish-core'), value: a.heading, onChange: function (v) { set({ heading: v }); } }), el(RangeControl, { label: __('Terms to show', 'digipublish-core'), value: a.postsToShow, min: 4, max: 60, onChange: function (v) { set({ postsToShow: v }); } }), el(ToggleControl, { label: __('Show search', 'digipublish-core'), checked: !!a.showSearch, onChange: function (v) { set({ showSearch: v }); } }), el(ToggleControl, { label: __('Show A–Z navigation', 'digipublish-core'), checked: !!a.showAlphabet, onChange: function (v) { set({ showAlphabet: v }); } }), el(ToggleControl, { label: __('Show popular cards', 'digipublish-core'), checked: !!a.showPopular, onChange: function (v) { set({ showPopular: v }); } }), el(TextControl, { label: __('Popular section heading (blank = site name)', 'digipublish-core'), value: a.popularHeading || '', onChange: function (v) { set({ popularHeading: v }); } }))), el(Preview, { name: 'digipublish/term-index', attributes: a })); }, save: function () { return null; }
+    edit: function (props) { const a = props.attributes, set = props.setAttributes; return el(Fragment, {}, el(InspectorControls, {}, el(PanelBody, { title: __('Dictionary settings', 'digipublish-core'), initialOpen: true }, el(TextControl, { label: __('Section heading', 'digipublish-core'), value: a.heading, onChange: function (v) { set({ heading: v }); } }), el(RangeControl, { label: __('Terms to show', 'digipublish-core'), value: a.postsToShow, min: 4, max: 60, onChange: function (v) { set({ postsToShow: v }); } }), el(ToggleControl, { label: __('Show search', 'digipublish-core'), checked: !!a.showSearch, onChange: function (v) { set({ showSearch: v }); } }), el(ToggleControl, { label: __('Show A–Z navigation', 'digipublish-core'), checked: !!a.showAlphabet, onChange: function (v) { set({ showAlphabet: v }); } }), el(ToggleControl, { label: __('Show featured definition cards', 'digipublish-core'), checked: !!a.showPopular, onChange: function (v) { set({ showPopular: v }); } }), el(TextControl, { label: __('Featured section heading (blank = default)', 'digipublish-core'), value: a.popularHeading || '', onChange: function (v) { set({ popularHeading: v }); } }))), el(Preview, { name: 'digipublish/term-index', attributes: a })); }, save: function () { return null; }
   });
 
   function registerContextBlock(name, title, icon, controls) {
     if (getBlockType(name)) return;
     registerBlockType(name, {
-      apiVersion: 3, title: title, category: 'digipublish-core', icon: icon,
+      apiVersion: 3, title: title, category: 'digipublish-editorial', icon: icon,
       edit: function (props) { return el(Fragment, {}, controls ? controls(props) : null, el(Preview, { name: name, attributes: props.attributes })); }, save: function () { return null; }
     });
   }

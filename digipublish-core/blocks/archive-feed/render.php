@@ -6,9 +6,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 $per_page = max( 5, min( 20, absint( $attributes['postsPerPage'] ?? 10 ) ) );
 $columns  = max( 2, min( 5, absint( $attributes['columns'] ?? 5 ) ) );
 $show_top = $attributes['showTopPicks'] ?? true;
+$top_ids_for_exclusion = array();
 $paged    = max( 1, get_query_var( 'paged' ), get_query_var( 'page' ) );
 
-$context_label = __( 'Latest Articles', 'techpress-editorial' );
+$context_label = __( 'Latest Articles', 'digipublish-core' );
 $args          = array(
 	'post_type'           => 'post',
 	'post_status'         => 'publish',
@@ -22,11 +23,11 @@ $args          = array(
 if ( is_category() ) {
 	$term             = get_queried_object();
 	$args['cat']      = (int) $term->term_id;
-	$context_label    = __( 'Latest News', 'techpress-editorial' );
+	$context_label    = __( 'Latest News', 'digipublish-core' );
 } elseif ( is_tag() ) {
 	$term             = get_queried_object();
 	$args['tag_id']   = (int) $term->term_id;
-	$context_label    = sprintf( __( 'Latest %s Articles', 'techpress-editorial' ), $term->name );
+	$context_label    = sprintf( __( 'Latest %s Articles', 'digipublish-core' ), $term->name );
 } elseif ( is_tax() ) {
 	$term              = get_queried_object();
 	$args['tax_query'] = array(
@@ -39,10 +40,10 @@ if ( is_category() ) {
 } elseif ( is_author() ) {
 	$author           = get_queried_object();
 	$args['author']   = (int) $author->ID;
-	$context_label    = sprintf( __( 'Latest Articles from %s', 'techpress-editorial' ), $author->display_name );
+	$context_label    = sprintf( __( 'Latest Articles from %s', 'digipublish-core' ), $author->display_name );
 } elseif ( is_search() ) {
 	$args['s']        = get_search_query();
-	$context_label    = __( 'Search Results', 'techpress-editorial' );
+	$context_label    = __( 'Search Results', 'digipublish-core' );
 } elseif ( is_day() ) {
 	$args['year']     = get_query_var( 'year' );
 	$args['monthnum'] = get_query_var( 'monthnum' );
@@ -68,7 +69,7 @@ $query      = $use_main_query ? $wp_query : new WP_Query( $args );
 $post_items = $query->posts;
 
 if ( empty( $post_items ) ) {
-	echo '<section class="tp-archive-feed alignwide"><p>' . esc_html__( 'No matching content found.', 'techpress-editorial' ) . '</p></section>';
+	echo '<section class="tp-archive-feed alignwide"><p>' . esc_html__( 'No matching content found.', 'digipublish-core' ) . '</p></section>';
 	return;
 }
 
@@ -95,20 +96,32 @@ if ( $show_top && is_category() && 1 === $paged ) {
 	}
 
 	if ( $top_ids ) {
-		echo '<section class="tp-archive-top-picks"><h2 class="tp-section-title">' . esc_html__( 'Our Top Picks', 'techpress-editorial' ) . '</h2><div class="tp-archive-top-picks__grid">';
+		$top_ids_for_exclusion = $top_ids;
+		echo '<section class="tp-archive-top-picks"><h2 class="tp-section-title">' . esc_html__( 'Our Top Picks', 'digipublish-core' ) . '</h2><div class="tp-archive-top-picks__grid">';
 		foreach ( $top_ids as $i => $post_id ) {
 			$cls        = 0 === $i ? 'tp-top-pick tp-top-pick--lead' : 'tp-top-pick';
 			$image_size = 0 === $i ? 'medium_large' : 'medium';
-			echo '<article class="' . esc_attr( $cls ) . '"><a class="tp-top-pick__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' . techpress_editorial_image_markup( $post_id, $image_size ) . '</a><div class="tp-top-pick__body">' . techpress_editorial_category_markup( $post_id ) . '<h3><a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html( get_the_title( $post_id ) ) . '</a></h3>' . techpress_editorial_meta_markup( $post_id, true, true ) . '</div></article>';
+			echo '<article class="' . esc_attr( $cls ) . '"><a class="tp-top-pick__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' . techpress_editorial_image_markup( $post_id, $image_size, false, 0 === $i ? '(max-width: 760px) 86vw, 45vw' : '(max-width: 760px) 86vw, 22vw' ) . '</a><div class="tp-top-pick__body">' . techpress_editorial_category_markup( $post_id ) . '<h3><a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html( get_the_title( $post_id ) ) . '</a></h3>' . techpress_editorial_meta_markup( $post_id, true, true ) . '</div></article>';
 		}
 		echo '</div></section>';
 	}
 }
 
+if ( $top_ids_for_exclusion ) {
+	$post_items = array_values(
+		array_filter(
+			$post_items,
+			static function ( $item ) use ( $top_ids_for_exclusion ) {
+				return $item instanceof WP_Post && ! in_array( (int) $item->ID, $top_ids_for_exclusion, true );
+			}
+		)
+	);
+}
+
 echo '<section class="tp-archive-feed alignwide"><div class="tp-archive-feed__heading"><h2 class="tp-section-title">' . esc_html( $context_label ) . '</h2></div><div class="tp-archive-story-grid" style="--tp-archive-columns:' . esc_attr( $columns ) . '">';
 foreach ( $post_items as $item ) {
 	$id = (int) $item->ID;
-	echo '<article class="tp-archive-story"><a class="tp-archive-story__image" href="' . esc_url( get_permalink( $id ) ) . '">' . techpress_editorial_image_markup( $id, 'medium' ) . '</a>' . techpress_editorial_category_markup( $id ) . '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>' . techpress_editorial_meta_markup( $id, true, true ) . '</article>';
+	echo '<article class="tp-archive-story"><a class="tp-archive-story__image" href="' . esc_url( get_permalink( $id ) ) . '">' . techpress_editorial_image_markup( $id, 'medium', false, '(max-width: 420px) 100vw, (max-width: 760px) 50vw, 20vw' ) . '</a>' . techpress_editorial_category_markup( $id ) . '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>' . techpress_editorial_meta_markup( $id, true, true ) . '</article>';
 }
 echo '</div>';
 
@@ -122,6 +135,6 @@ $links = paginate_links(
 	)
 );
 if ( $links ) {
-	echo '<nav class="tp-pagination" aria-label="' . esc_attr__( 'Posts pagination', 'techpress-editorial' ) . '">' . wp_kses_post( $links ) . '</nav>';
+	echo '<nav class="tp-pagination" aria-label="' . esc_attr__( 'Posts pagination', 'digipublish-core' ) . '">' . wp_kses_post( $links ) . '</nav>';
 }
 echo '</section>';
