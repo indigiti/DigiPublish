@@ -23,7 +23,7 @@
     },
     "buttonStyle": {
       "type": "boolean",
-      "default": true
+      "default": false
     },
     "styleVariant": {
       "type": "string",
