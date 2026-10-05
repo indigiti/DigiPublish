@@ -68,6 +68,35 @@ if ( 'image-grid' === $layout ) {
 			}
 			$posts[] = $post;
 		}
+
+		if ( count( $posts ) < $count ) {
+			$latest_attributes = $feed_attributes;
+			$latest_attributes['sourceMode'] = 'latest';
+			$latest_attributes['categoryId'] = 0;
+			$latest_args = techpress_editorial_feed_query_args( $latest_attributes );
+			$latest_args['posts_per_page'] = $count - count( $posts );
+			$latest_args['meta_query'] = array(
+				array(
+					'key'     => '_thumbnail_id',
+					'compare' => 'EXISTS',
+				),
+			);
+			$latest_args['post__not_in'] = array_values(
+				array_unique(
+					array_merge(
+						wp_list_pluck( $posts, 'ID' ),
+						is_singular( 'post' ) ? array( get_queried_object_id() ) : array()
+					)
+				)
+			);
+			$latest = new WP_Query( $latest_args );
+			foreach ( $latest->posts as $post ) {
+				if ( count( $posts ) >= $count ) {
+					break;
+				}
+				$posts[] = $post;
+			}
+		}
 	}
 }
 
