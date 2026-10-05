@@ -1,11 +1,9 @@
-DigiPublish Theme 0.10.0
+DigiPublish Theme 0.10.1
 
-Photo-gallery publishing release.
+Read Next article-discovery release.
 
-- Adds dedicated single and archive block templates for Photo Galleries.
-- Adds gallery archive/category presentation and Related Galleries.
-- Adds gallery template shell styling for desktop and mobile.
-- Adds Photo Galleries to publication navigation through DigiPublish Core.
-- Retains all homepage, mobile and article-sidebar work from 0.9.0.
+- Adds a four-card Read Next section below the default article.
+- Desktop uses four cards, tablet two columns, and mobile a horizontal swipe rail.
+- Retains the Photo Gallery, sidebar, homepage and mobile work from 0.10.0.
 
-Requires DigiPublish Core 0.10.0.
+Requires DigiPublish Core 0.10.1.

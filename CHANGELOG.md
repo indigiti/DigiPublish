@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.10.1
+
+- Added a new Read Next presentation mode to the existing Related Posts block.
+- Default single-post template now shows a four-card Read Next section below the article.
+- Related stories are ranked by overlap with all current article categories and tags.
+- Category matches receive stronger relevance weight than tag matches; recency breaks ties.
+- Falls back to recent non-duplicate posts only when the taxonomy-related pool is too small.
+- Read Next cards show headline, publish date, excerpt, responsive image, reading time, and real views/shares when available.
+- Added responsive four-column desktop / two-column tablet / horizontal-swipe mobile layouts.
+- Added Gutenberg controls for layout, taxonomy relation mode, story count and excerpt visibility.
+- Added a direct Read Next block variation while preserving the existing Related Features layout.
+- Added CI guards for the Read Next query, template placement, variation and styling.
+- Bumped theme, Core and all custom blocks to 0.10.1.
+
+
 ## 0.10.0
 
 - Added first-class Photo Gallery posts with the public `/photo-gallery/` archive.

@@ -1,16 +1,12 @@
-DigiPublish Core 0.10.0
+DigiPublish Core 0.10.1
 
-First-class photo-gallery publishing release.
+Read Next related-story release.
 
-- Adds the public digipublish_gallery post type with categories, tags, authors, revisions and editorial attribution.
-- Adds Gallery, Gallery Slide and Gallery Archive dynamic Gutenberg blocks.
-- Bulk image selection creates reorderable slides with caption, credit and alt-text controls.
-- Modes: Story, Swipe and Grid.
-- Server-rendered slides plus lightweight progressive enhancement for swipe, counters, fullscreen, sharing and analytics events.
-- One canonical gallery URL with slide anchors; no thin per-slide pages.
-- Responsive/lazy image strategy and ImageGallery structured data.
-- Optional Story-mode ad insertion through the existing ad-slot block.
-- Photo counts, category filters, related galleries and dynamic first-slide cover fallback.
-- Sidebar feeds support Articles, Galleries or Mixed content.
+- Extends digipublish/related-posts with Read Next and Related Features layouts.
+- Read Next ranks candidates by shared categories and tags, with category matches weighted more heavily.
+- Recency breaks relevance ties.
+- Recent non-duplicate posts fill sparse related pools.
+- Cards expose real analytics metrics only when available and always include deterministic reading time.
+- Adds Gutenberg controls and a direct Read Next inserter variation.
 
-Use with DigiPublish theme 0.10.0.
+Use with DigiPublish theme 0.10.1.
