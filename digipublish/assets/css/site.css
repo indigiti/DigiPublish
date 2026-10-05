@@ -408,6 +408,7 @@ body.dp-caards-shell :where(h1,h2,h3,h4,h5,h6,.wp-block-post-title){letter-spaci
 }
 .dp-caards-mosaic-card--social .tp-card__outer{
 	min-height:292px;
+	border:0!important;
 	position:relative;
 	background:#fff;
 	padding-top:38px;
@@ -433,6 +434,7 @@ body.dp-caards-shell :where(h1,h2,h3,h4,h5,h6,.wp-block-post-title){letter-spaci
 .dp-caards-mosaic-card--social .tp-card__excerpt{font-size:.88rem;color:var(--dp-caards-primary)}
 .dp-caards-mosaic-card--dark .tp-card__outer{
 	min-height:310px;
+	border:0!important;
 	background:#171A18;
 	color:#fff;
 }
