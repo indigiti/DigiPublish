@@ -35,7 +35,39 @@
     },
     "layout": {
       "type": "string",
-      "default": "carousel"
+      "default": "default"
+    },
+    "number": {
+      "type": "integer",
+      "default": 6
+    },
+    "imageSize": {
+      "type": "string",
+      "default": "medium"
+    },
+    "target": {
+      "type": "string",
+      "default": "_blank"
+    },
+    "diagonalCardMinHeight": {
+      "type": "string",
+      "default": "480px"
+    },
+    "hideDesktop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLaptop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideMobile": {
+      "type": "boolean",
+      "default": false
     }
   },
   "supports": {
@@ -44,7 +76,18 @@
       "full"
     ],
     "html": false,
-    "anchor": true
+    "anchor": true,
+    "customClassName": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "border": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true
+    }
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
