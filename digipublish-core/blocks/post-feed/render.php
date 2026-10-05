@@ -1,12 +1,13 @@
 <?php
+/**
+ * DigiPublish Posts block renderer.
+ *
+ * Layout semantics and pagination behavior are adapted from the GPL-3.0
+ * Caards theme by Code Supply Co. See THIRD_PARTY_NOTICES.md.
+ */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
-}
-
-$query_args = techpress_editorial_post_query_args( $attributes );
-$query = new WP_Query( $query_args );
-if ( ! $query->have_posts() ) {
-	return;
 }
 
 $layout = isset( $attributes['layout'] ) ? sanitize_key( $attributes['layout'] ) : 'grid-3';
@@ -25,6 +26,24 @@ if ( ! in_array( $layout, $allowed, true ) ) {
 $is_horizontal = str_starts_with( $layout, 'horizontal-' ) || 'list' === $layout;
 $is_carousel   = str_starts_with( $layout, 'carousel-' );
 $is_modern     = ! in_array( $layout, array( 'list', 'grid-2', 'grid-3', 'grid-4', 'grid-5' ), true );
+
+$pagination_type = isset( $attributes['paginationType'] ) ? sanitize_key( (string) $attributes['paginationType'] ) : 'none';
+$pagination_type = 'standard' === $pagination_type ? 'numbers' : $pagination_type;
+// Caards carousel layouts are slide collections, not paginated post archives.
+if ( $is_carousel ) {
+	$pagination_type = 'none';
+}
+
+$query_attributes = $attributes;
+$query_attributes['paginationType'] = $pagination_type;
+if ( ! empty( $attributes['relatedPosts'] ) && is_singular() ) {
+	$query_attributes['_relatedPostId'] = get_queried_object_id();
+}
+
+$query = new WP_Query( techpress_editorial_post_query_args( $query_attributes ) );
+if ( ! $query->have_posts() ) {
+	return;
+}
 
 $classes = array_merge(
 	array( 'tp-post-feed', 'tp-post-feed--layout-' . $layout ),
@@ -48,11 +67,14 @@ if ( 'list' !== $layout ) {
 }
 
 foreach ( array(
-	'columnGap'       => '--dp-column-gap',
-	'rowGap'          => '--dp-row-gap',
-	'cardRadius'      => '--dp-card-radius',
-	'cardMinHeight'   => '--dp-card-min-height',
-	'headingFontSize' => '--dp-heading-size',
+	'columnGap'           => '--dp-column-gap',
+	'rowGap'              => '--dp-row-gap',
+	'cardRadius'          => '--dp-card-radius',
+	'cardMinHeight'       => '--dp-card-min-height',
+	'headingFontSize'     => '--dp-heading-size',
+	'cardHeadingFontSize' => '--dp-card-heading-size',
+	'excerptFontSize'     => '--dp-excerpt-size',
+	'imageBorderRadius'   => '--dp-image-radius',
 ) as $key => $var ) {
 	$value = digipublish_core_css_length( $attributes[ $key ] ?? '' );
 	if ( $value ) {
@@ -61,14 +83,14 @@ foreach ( array(
 }
 
 foreach ( array(
-	'marginTop'    => 'margin-top',
-	'marginBottom' => 'margin-bottom',
-	'marginLeft'   => 'margin-left',
-	'marginRight'  => 'margin-right',
-	'paddingTop'   => 'padding-top',
-	'paddingBottom'=> 'padding-bottom',
-	'paddingLeft'  => 'padding-left',
-	'paddingRight' => 'padding-right',
+	'marginTop'     => 'margin-top',
+	'marginBottom'  => 'margin-bottom',
+	'marginLeft'    => 'margin-left',
+	'marginRight'   => 'margin-right',
+	'paddingTop'    => 'padding-top',
+	'paddingBottom' => 'padding-bottom',
+	'paddingLeft'   => 'padding-left',
+	'paddingRight'  => 'padding-right',
 ) as $key => $property ) {
 	$value = digipublish_core_css_length( $attributes[ $key ] ?? '' );
 	if ( $value ) {
@@ -76,9 +98,24 @@ foreach ( array(
 	}
 }
 
-$aspect = $attributes['imageAspect'] ?? '';
-if ( in_array( $aspect, array( '16/9', '4/3', '3/2', '1/1' ), true ) ) {
-	$styles[] = '--dp-image-aspect:' . $aspect;
+$orientation_map = array(
+	'stretch'         => 'auto',
+	'landscape'       => '4/3',
+	'landscape-3-2'   => '3/2',
+	'landscape-16-9'  => '16/9',
+	'landscape-21-10' => '21/10',
+	'portrait'        => '3/4',
+	'portrait-2-3'    => '2/3',
+	'square'          => '1/1',
+);
+$orientation = isset( $attributes['imageOrientation'] ) ? sanitize_key( (string) $attributes['imageOrientation'] ) : 'original';
+if ( isset( $orientation_map[ $orientation ] ) ) {
+	$styles[] = '--dp-image-aspect:' . $orientation_map[ $orientation ];
+} else {
+	$legacy_aspect = $attributes['imageAspect'] ?? '';
+	if ( in_array( $legacy_aspect, array( '16/9', '4/3', '3/2', '1/1' ), true ) ) {
+		$styles[] = '--dp-image-aspect:' . $legacy_aspect;
+	}
 }
 
 $block_radius = digipublish_core_css_length( $attributes['blockBorderRadius'] ?? '' );
@@ -104,6 +141,31 @@ $extra = array( 'class' => implode( ' ', array_filter( $classes ) ) );
 if ( $styles ) {
 	$extra['style'] = implode( ';', $styles ) . ';';
 }
+
+$async_pagination = in_array( $pagination_type, array( 'ajax', 'infinite' ), true );
+if ( $async_pagination && $query->max_num_pages > 1 ) {
+	$async_attributes = $attributes;
+	$async_attributes['paginationType'] = $pagination_type;
+	if ( ! empty( $attributes['avoidDuplicates'] ) ) {
+		$async_attributes['_excludePostIds'] = digipublish_core_rendered_post_ids();
+	}
+	if ( ! empty( $attributes['relatedPosts'] ) && is_singular() ) {
+		$async_attributes['_relatedPostId'] = get_queried_object_id();
+	}
+	$extra['data-dp-post-feed'] = '1';
+	$extra['data-dp-pagination'] = $pagination_type;
+	$extra['data-dp-page'] = '1';
+	$extra['data-dp-max-pages'] = (string) $query->max_num_pages;
+	$extra['data-dp-rest-url'] = esc_url_raw( rest_url( 'digipublish/v1/post-feed' ) );
+	$extra['data-dp-attributes'] = wp_json_encode( $async_attributes );
+}
+
+if ( $is_carousel ) {
+	$extra['data-dp-carousel-autoplay'] = ! empty( $attributes['carouselAutoplay'] ) ? '1' : '0';
+	$extra['data-dp-carousel-dots'] = ! empty( $attributes['carouselDots'] ) ? '1' : '0';
+	$extra['data-dp-carousel-wrap'] = ! empty( $attributes['carouselWrap'] ) ? '1' : '0';
+}
+
 $wrapper = get_block_wrapper_attributes( $extra );
 
 echo '<section ' . $wrapper . '>';
@@ -122,29 +184,40 @@ if ( $is_carousel ) {
 }
 echo '>';
 
+$current_page = max( 1, absint( get_query_var( 'paged' ) ?: get_query_var( 'page' ) ) );
+$base_index = ( $current_page - 1 ) * max( 1, absint( $attributes['postsToShow'] ?? 4 ) );
 foreach ( $query->posts as $index => $post ) {
 	$card_attributes = $attributes;
-	$card_attributes['_cardIndex'] = $index + 1;
-	echo techpress_editorial_card_markup( $post->ID, $card_attributes );
+	$card_attributes['_cardIndex'] = $base_index + $index + 1;
+	echo digipublish_core_post_feed_card_markup( $post->ID, $card_attributes );
 }
 echo '</div>';
 
 if ( $is_carousel ) {
+	$total = count( $query->posts );
+	echo '<div class="tp-post-feed__carousel-organizer">';
+	echo '<div class="tp-post-feed__carousel-counter" aria-live="polite"><span data-dp-carousel-current>1</span><span aria-hidden="true"> / </span><span>' . esc_html( $total ) . '</span></div>';
+	if ( ! empty( $attributes['carouselDots'] ) ) {
+		echo '<div class="tp-post-feed__carousel-dots" role="tablist" aria-label="' . esc_attr__( 'Carousel slides', 'digipublish-core' ) . '">';
+		for ( $i = 0; $i < $total; $i++ ) {
+			echo '<button type="button" class="tp-post-feed__carousel-dot' . ( 0 === $i ? ' is-active' : '' ) . '" data-dp-carousel-dot="' . esc_attr( $i ) . '" aria-label="' . esc_attr( sprintf( __( 'Go to slide %d', 'digipublish-core' ), $i + 1 ) ) . '"></button>';
+		}
+		echo '</div>';
+	}
 	echo '<div class="tp-post-feed__carousel-nav" aria-label="' . esc_attr__( 'Posts carousel navigation', 'digipublish-core' ) . '">';
 	echo '<button type="button" class="tp-post-feed__carousel-button" data-dp-carousel-prev aria-label="' . esc_attr__( 'Previous posts', 'digipublish-core' ) . '">←</button>';
 	echo '<button type="button" class="tp-post-feed__carousel-button" data-dp-carousel-next aria-label="' . esc_attr__( 'Next posts', 'digipublish-core' ) . '">→</button>';
-	echo '</div></div>';
+	echo '</div></div></div>';
 }
 
 if ( ! empty( $attributes['avoidDuplicates'] ) ) {
 	digipublish_core_rendered_post_ids( wp_list_pluck( $query->posts, 'ID' ) );
 }
 
-if ( 'numbers' === ( $attributes['paginationType'] ?? 'none' ) && $query->max_num_pages > 1 ) {
-	$current = max( 1, absint( get_query_var( 'paged' ) ?: get_query_var( 'page' ) ) );
+if ( 'numbers' === $pagination_type && $query->max_num_pages > 1 ) {
 	$links = paginate_links(
 		array(
-			'current'   => $current,
+			'current'   => $current_page,
 			'total'     => (int) $query->max_num_pages,
 			'type'      => 'list',
 			'prev_text' => __( 'Previous', 'digipublish-core' ),
@@ -154,6 +227,15 @@ if ( 'numbers' === ( $attributes['paginationType'] ?? 'none' ) && $query->max_nu
 	if ( $links ) {
 		echo '<nav class="tp-post-feed__pagination" aria-label="' . esc_attr__( 'Posts pagination', 'digipublish-core' ) . '">' . wp_kses_post( $links ) . '</nav>';
 	}
+}
+
+if ( $async_pagination && $query->max_num_pages > 1 ) {
+	if ( 'ajax' === $pagination_type ) {
+		echo '<div class="tp-post-feed__load-more-wrap"><button type="button" class="tp-post-feed__load-more" data-dp-load-more>' . esc_html__( 'Load More', 'digipublish-core' ) . '</button></div>';
+	} else {
+		echo '<div class="tp-post-feed__infinite-sentinel" data-dp-infinite-sentinel aria-hidden="true"></div>';
+	}
+	echo '<div class="tp-post-feed__load-status" data-dp-load-status aria-live="polite"></div>';
 }
 
 echo '</section>';

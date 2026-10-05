@@ -265,6 +265,42 @@
     "customCss": {
       "type": "string",
       "default": ""
+    },
+    "cardHeadingFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "cardHeadingTag": {
+      "type": "string",
+      "default": "h2"
+    },
+    "excerptLength": {
+      "type": "integer",
+      "default": 100
+    },
+    "excerptFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "imageOrientation": {
+      "type": "string",
+      "default": "original"
+    },
+    "imageBorderRadius": {
+      "type": "string",
+      "default": ""
+    },
+    "carouselAutoplay": {
+      "type": "boolean",
+      "default": true
+    },
+    "carouselDots": {
+      "type": "boolean",
+      "default": true
+    },
+    "carouselWrap": {
+      "type": "boolean",
+      "default": true
     }
   },
   "supports": {

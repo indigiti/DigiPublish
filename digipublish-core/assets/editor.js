@@ -510,7 +510,9 @@
           value:a.paginationType || 'none',
           options:[
             { label:__('None', 'digipublish-core'), value:'none' },
-            { label:__('Page Numbers', 'digipublish-core'), value:'numbers' }
+            { label:__('Standard', 'digipublish-core'), value:'numbers' },
+            { label:__('Load More', 'digipublish-core'), value:'ajax' },
+            { label:__('Infinite Load', 'digipublish-core'), value:'infinite' }
           ],
           onChange:function(v){ set({paginationType:v}); }
         }),
@@ -521,7 +523,10 @@
         lengthControl(__('Gap between Columns', 'digipublish-core'), a.columnGap, function(v){ set({columnGap:v}); }, '40px'),
         lengthControl(__('Gap between Rows', 'digipublish-core'), a.rowGap, function(v){ set({rowGap:v}); }, '40px'),
         lengthControl(__('Border Radius', 'digipublish-core'), a.cardRadius, function(v){ set({cardRadius:v}); }, '12px'),
-        lengthControl(__('Card Min Height', 'digipublish-core'), a.cardMinHeight, function(v){ set({cardMinHeight:v}); }, __('Auto', 'digipublish-core'))
+        lengthControl(__('Card Min Height', 'digipublish-core'), a.cardMinHeight, function(v){ set({cardMinHeight:v}); }, __('Auto', 'digipublish-core')),
+        /^carousel-/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl, { label:__('Enable autoplay', 'digipublish-core'), checked:a.carouselAutoplay !== false, onChange:function(v){ set({carouselAutoplay:v}); } }) : null,
+        /^carousel-/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl, { label:__('Enable bullets', 'digipublish-core'), checked:a.carouselDots !== false, onChange:function(v){ set({carouselDots:v}); } }) : null,
+        /^carousel-/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl, { label:__('Enable wrap-around', 'digipublish-core'), checked:a.carouselWrap !== false, help:__('At the end of items, wrap around to the other end.', 'digipublish-core'), onChange:function(v){ set({carouselWrap:v}); } }) : null
       ),
       el(PanelBody, { title:__('Meta Settings', 'digipublish-core'), initialOpen:false },
         el(SelectControl, {
@@ -529,6 +534,8 @@
           value:a.topMetaType || 'none',
           options:[
             { label:__('None', 'digipublish-core'), value:'none' },
+            { label:__('Author', 'digipublish-core'), value:'author' },
+            { label:__('Category', 'digipublish-core'), value:'category' },
             { label:__('Count', 'digipublish-core'), value:'count' }
           ],
           onChange:function(v){ set({topMetaType:v}); }
@@ -542,16 +549,18 @@
         el(ToggleControl, { label:__('Shares', 'digipublish-core'), checked:!!a.showShares, onChange:function(v){ set({showShares:v}); } }),
         el(ToggleControl, { label:__('Display compact post meta', 'digipublish-core'), checked:!!a.compactMeta, onChange:function(v){ set({compactMeta:v}); } }),
         el(ToggleControl, { label:__('Display post excerpt', 'digipublish-core'), checked:!!a.showExcerpt, onChange:function(v){ set({showExcerpt:v}); } }),
+        a.showExcerpt ? el(RangeControl, { label:__('Excerpt length', 'digipublish-core'), value:a.excerptLength || 100, min:1, max:1000, onChange:function(v){ set({excerptLength:v || 100}); } }) : null,
         el(ToggleControl, { label:__('Display read more button', 'digipublish-core'), checked:!!a.showReadMore, onChange:function(v){ set({showReadMore:v}); } }),
         a.showReadMore ? el(TextControl, { label:__('More Button Label', 'digipublish-core'), value:a.readMoreLabel || __('Read more','digipublish-core'), onChange:function(v){ set({readMoreLabel:v}); } }) : null
       ),
       el(PanelBody, { title:__('Typography Settings', 'digipublish-core'), initialOpen:false },
-        lengthControl(__('Heading Font Size', 'digipublish-core'), a.headingFontSize, function(v){ set({headingFontSize:v}); }, '1rem'),
+        lengthControl(__('Heading Font Size', 'digipublish-core'), a.cardHeadingFontSize, function(v){ set({cardHeadingFontSize:v}); }, '1rem'),
         el(SelectControl, {
-          label:__('Heading Tag', 'digipublish-core'), value:a.headingTag || 'h2',
-          options:['h2','h3','h4','h5','h6'].map(function(tag){ return {label:tag.toUpperCase(),value:tag}; }),
-          onChange:function(v){ set({headingTag:v}); }
-        })
+          label:__('Heading Tag', 'digipublish-core'), value:a.cardHeadingTag || 'h2',
+          options:['h1','h2','h3','h4','h5','h6','p','div'].map(function(tag){ return {label:tag.toUpperCase(),value:tag}; }),
+          onChange:function(v){ set({cardHeadingTag:v}); }
+        }),
+        a.showExcerpt ? lengthControl(__('Excerpt Font Size', 'digipublish-core'), a.excerptFontSize, function(v){ set({excerptFontSize:v}); }, '0.875rem') : null
       ),
       el(PanelBody, { title:__('Thumbnail Settings', 'digipublish-core'), initialOpen:false },
         el(ToggleControl, { label:__('Display thumbnail', 'digipublish-core'), checked:a.showImage !== false, onChange:function(v){ set({showImage:v}); } }),
@@ -566,12 +575,20 @@
           ], onChange:function(v){ set({imageSize:v}); }
         }),
         el(SelectControl, {
-          label:__('Image Aspect Ratio', 'digipublish-core'), value:a.imageAspect || '',
+          label:__('Image Orientation', 'digipublish-core'), value:a.imageOrientation || 'original',
           options:[
-            {label:__('Automatic', 'digipublish-core'),value:''},{label:'16:9',value:'16/9'},
-            {label:'4:3',value:'4/3'},{label:'3:2',value:'3/2'},{label:'1:1',value:'1/1'}
-          ], onChange:function(v){ set({imageAspect:v}); }
-        })
+            {label:__('Original', 'digipublish-core'),value:'original'},
+            {label:__('Stretch', 'digipublish-core'),value:'stretch'},
+            {label:__('Landscape 4:3', 'digipublish-core'),value:'landscape'},
+            {label:__('Landscape 3:2', 'digipublish-core'),value:'landscape-3-2'},
+            {label:__('Landscape 16:9', 'digipublish-core'),value:'landscape-16-9'},
+            {label:__('Landscape 21:10', 'digipublish-core'),value:'landscape-21-10'},
+            {label:__('Portrait 3:4', 'digipublish-core'),value:'portrait'},
+            {label:__('Portrait 2:3', 'digipublish-core'),value:'portrait-2-3'},
+            {label:__('Square', 'digipublish-core'),value:'square'}
+          ], onChange:function(v){ set({imageOrientation:v}); }
+        }),
+        lengthControl(__('Image Border Radius', 'digipublish-core'), a.imageBorderRadius, function(v){ set({imageBorderRadius:v}); }, '12px')
       ),
       el(PanelBody, { title:__('Query Settings', 'digipublish-core'), initialOpen:false }, postQueryPanelChildren(props)),
       el(PanelBody, { title:__('Spacings', 'digipublish-core'), initialOpen:false },
@@ -724,6 +741,15 @@
       headingTag: { type: 'string', default: 'h2' },
       imageSize: { type: 'string', default: 'medium_large' },
       imageAspect: { type: 'string', default: '' },
+      imageOrientation: { type:'string', default:'original' },
+      imageBorderRadius: { type:'string', default:'' },
+      cardHeadingFontSize: { type:'string', default:'' },
+      cardHeadingTag: { type:'string', default:'h2' },
+      excerptLength: { type:'integer', default:100 },
+      excerptFontSize: { type:'string', default:'' },
+      carouselAutoplay: { type:'boolean', default:true },
+      carouselDots: { type:'boolean', default:true },
+      carouselWrap: { type:'boolean', default:true },
       marginTop:{type:'string',default:''}, marginBottom:{type:'string',default:''}, marginLeft:{type:'string',default:''}, marginRight:{type:'string',default:''},
       paddingTop:{type:'string',default:''}, paddingBottom:{type:'string',default:''}, paddingLeft:{type:'string',default:''}, paddingRight:{type:'string',default:''},
       blockBorderRadius:{type:'string',default:''}, blockBorderStyle:{type:'string',default:'none'}, blockBorderWidth:{type:'string',default:''},

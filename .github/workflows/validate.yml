@@ -121,6 +121,8 @@ jobs:
           editor="digipublish-core/assets/editor.js"
           render="digipublish-core/blocks/post-feed/render.php"
           css="digipublish-core/blocks/post-feed/style.css"
+          view="digipublish-core/blocks/post-feed/view.js"
+          core="digipublish-core/techpress-editorial.php"
 
           jq -e '
             .title == "Posts" and
@@ -131,6 +133,12 @@ jobs:
             .attributes.relatedPosts.default == false and
             .attributes.topMetaType.default == "none" and
             .attributes.compactMeta.default == false and
+            .attributes.cardHeadingTag.default == "h2" and
+            .attributes.excerptLength.default == 100 and
+            .attributes.imageOrientation.default == "original" and
+            .attributes.carouselAutoplay.default == true and
+            .attributes.carouselDots.default == true and
+            .attributes.carouselWrap.default == true and
             .attributes.customCss.type == "string" and
             .supports.anchor == true and
             .supports.customClassName == true
@@ -147,7 +155,7 @@ jobs:
             }
           done
 
-          for label in "Block Settings" "Top Meta Type" "Display compact post meta" "Filter by Formats" "Filter by Taxonomy" "Filter by Terms" "Display Related Posts" "Avoid Duplicate Posts" "Spacings" "Borders" "Responsive Settings" "Additional CSS"; do
+          for label in "Block Settings" "Load More" "Infinite Load" "Top Meta Type" "Author" "Category" "Count" "Display compact post meta" "Excerpt length" "Heading Font Size" "Image Orientation" "Enable autoplay" "Enable bullets" "Enable wrap-around" "Filter by Formats" "Filter by Taxonomy" "Filter by Terms" "Display Related Posts" "Avoid Duplicate Posts" "Spacings" "Borders" "Responsive Settings" "Additional CSS"; do
             grep -Fq "$label" "$editor" || {
               echo "Missing Posts inspector control: $label"
               exit 1
@@ -156,9 +164,14 @@ jobs:
 
           grep -Fq 'safecss_filter_attr' "$render" || exit 1
           grep -Fq 'data-dp-post-carousel-track' "$render" || exit 1
+          grep -Fq 'data-dp-load-more' "$render" || exit 1
+          grep -Fq 'data-dp-infinite-sentinel' "$render" || exit 1
           grep -Fq '.tp-feed--masonry-1' "$css" || exit 1
           grep -Fq '.tp-feed--carousel-1' "$css" || exit 1
-          test -f digipublish-core/blocks/post-feed/view.js
+          grep -Fq 'IntersectionObserver' "$view" || exit 1
+          grep -Fq 'digipublish/v1' "$core" || exit 1
+          grep -Fq 'GPL-3.0 Caards theme by Code Supply Co.' "$core" || exit 1
+          grep -Fq 'Caards 1.0.4' THIRD_PARTY_NOTICES.md || exit 1
 
 
       - name: Guard mobile and carousel regressions
