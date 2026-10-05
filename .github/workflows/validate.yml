@@ -163,3 +163,17 @@ jobs:
             echo "Dictionary fresh-site empty state is missing."
             exit 1
           }
+
+
+      - name: Guard post sidebar widgets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f digipublish-core/blocks/sidebar-feed/block.json
+          jq -e '.name == "digipublish/sidebar-feed"' digipublish-core/blocks/sidebar-feed/block.json >/dev/null
+          grep -Fq "'sidebar-feed'" digipublish-core/techpress-editorial.php || exit 1
+          grep -Fq 'digipublish/article-sidebar-widgets' digipublish/parts/sidebar.html || exit 1
+          grep -Fq '"layout":"meta-list"' digipublish/patterns/article-sidebar-widgets.php || exit 1
+          grep -Fq '"layout":"ranked-list"' digipublish/patterns/article-sidebar-widgets.php || exit 1
+          grep -Fq '"layout":"image-grid"' digipublish/patterns/article-sidebar-widgets.php || exit 1
+          grep -Fq "registerBlockVariation('digipublish/sidebar-feed'" digipublish-core/assets/editor.js || exit 1
