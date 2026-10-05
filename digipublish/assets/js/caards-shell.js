@@ -120,10 +120,6 @@ function initLoadNextPost(){
         current=parseInt(data.postId,10)||0;
         if(current&&loaded.indexOf(current)===-1) loaded.push(current);
         bindHistory(section);
-        section.querySelectorAll('script').forEach(function(script){
-          if(script.src) return;
-          try{Function(script.textContent)();}catch(e){}
-        });
       }
       status.textContent='';
     }catch(error){
