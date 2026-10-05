@@ -442,6 +442,36 @@
     return layout || 'standard-1';
   }
 
+  function postSourceDefaults(layout) {
+    const normalized = normalizedPostLayout(layout);
+    return {
+      columnsDesktop: /^carousel-/.test(normalized) ? 4 : 1,
+      columnsTablet: /^carousel-/.test(normalized) ? 2 : 1,
+      columnsMobile: 1,
+      maxColumns: normalized === 'masonry-1' ? 4 : 6,
+      topMetaType: /^(standard-4|tile-[1-4]|carousel-[12])$/.test(normalized) ? 'author' : '',
+      imageOrientation: /^(tile-[12]|carousel-[12])$/.test(normalized) ? 'stretch' : (/^horizontal-[23]$/.test(normalized) ? 'square' : 'original'),
+      imageWidth: normalized === 'horizontal-3' ? 'half' : 'one-third'
+    };
+  }
+
+  function postImageOrientationOptions(layout) {
+    const normalized = normalizedPostLayout(layout);
+    const base = [
+      {label:__('Landscape 4:3','digipublish-core'),value:'landscape'},
+      {label:__('Landscape 3:2','digipublish-core'),value:'landscape-3-2'},
+      {label:__('Landscape 16:9','digipublish-core'),value:'landscape-16-9'},
+      {label:__('Landscape 21:10','digipublish-core'),value:'landscape-21-10'},
+      {label:__('Portrait 3:4','digipublish-core'),value:'portrait'},
+      {label:__('Portrait 2:3','digipublish-core'),value:'portrait-2-3'},
+      {label:__('Square','digipublish-core'),value:'square'}
+    ];
+    if (/^(tile-[12]|carousel-[12])$/.test(normalized)) {
+      return [{label:__('Stretch','digipublish-core'),value:'stretch'}].concat(base);
+    }
+    return [{label:__('Original','digipublish-core'),value:'original'}].concat(base);
+  }
+
   function postFeedLayoutOptions() {
     return [
       { label:'Standard 1', value:'standard-1', group:'Standard' },
@@ -519,7 +549,8 @@
 
   function postFeedInspectorControls(props) {
     const a = props.attributes, set = props.setAttributes;
-    const defaultColumns = /^grid-([2-5])$/.test(a.layout || '') ? parseInt((a.layout || '').replace('grid-',''),10) : 4;
+    const sourceDefaults = postSourceDefaults(a.layout);
+    const defaultColumns = /^grid-([2-5])$/.test(a.layout || '') ? parseInt((a.layout || '').replace('grid-',''),10) : sourceDefaults.columnsDesktop;
     return el(InspectorControls, {},
       el(PanelBody, { title:__('Layout', 'digipublish-core'), initialOpen:true }, postFeedLayoutPicker(props)),
       el(PanelBody, { title:__('Block Settings', 'digipublish-core'), initialOpen:true },
@@ -535,10 +566,10 @@
           ],
           onChange:function(v){ set({paginationType:v}); }
         }),
-        el(RangeControl, { label:__('Posts Count', 'digipublish-core'), value:a.postsToShow || 6, min:1, max:24, onChange:function(v){ set({postsToShow:v || 1}); } }),
-        el(RangeControl, { label:__('Number of Columns', 'digipublish-core'), value:a.columnsDesktop || defaultColumns, min:1, max:6, onChange:function(v){ set({columnsDesktop:v || 1}); } }),
-        el(RangeControl, { label:__('Columns — Tablet', 'digipublish-core'), value:a.columnsTablet || Math.min(2,a.columnsDesktop || defaultColumns), min:1, max:6, onChange:function(v){ set({columnsTablet:v || 1}); } }),
-        el(RangeControl, { label:__('Columns — Mobile', 'digipublish-core'), value:a.columnsMobile || 1, min:1, max:3, onChange:function(v){ set({columnsMobile:v || 1}); } }),
+        el(RangeControl, { label:/^carousel-/.test(normalizedPostLayout(a.layout)) ? __('Slides','digipublish-core') : __('Posts Count', 'digipublish-core'), value:a.postsToShow || 6, min:1, max:/^carousel-/.test(normalizedPostLayout(a.layout)) ? 100 : 24, onChange:function(v){ set({postsToShow:v || 1}); } }),
+        el(RangeControl, { label:__('Number of Columns', 'digipublish-core'), value:a.columnsDesktop || defaultColumns, min:1, max:sourceDefaults.maxColumns, onChange:function(v){ set({columnsDesktop:v || 1}); } }),
+        el(RangeControl, { label:__('Columns — Tablet', 'digipublish-core'), value:a.columnsTablet || sourceDefaults.columnsTablet, min:1, max:sourceDefaults.maxColumns, onChange:function(v){ set({columnsTablet:v || 1}); } }),
+        el(RangeControl, { label:__('Columns — Mobile', 'digipublish-core'), value:a.columnsMobile || sourceDefaults.columnsMobile, min:1, max:3, onChange:function(v){ set({columnsMobile:v || 1}); } }),
         lengthControl(__('Gap between Columns', 'digipublish-core'), a.columnGap, function(v){ set({columnGap:v}); }, '40px'),
         lengthControl(__('Gap between Rows', 'digipublish-core'), a.rowGap, function(v){ set({rowGap:v}); }, '40px'),
         lengthControl(__('Border Radius', 'digipublish-core'), a.cardRadius, function(v){ set({cardRadius:v}); }, '12px'),
@@ -546,7 +577,7 @@
         /^(standard-[1-4]|horizontal-[1-3])$/.test(normalizedPostLayout(a.layout)) ? lengthControl(__('Margin Content', 'digipublish-core'), a.contentGap, function(v){ set({contentGap:v}); }, '16px') : null,
         /^horizontal-[1-3]$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl,{label:__('Vertical Align Content','digipublish-core'),value:a.contentAlign||'space-between',options:[{label:__('Top','digipublish-core'),value:'flex-start'},{label:__('Center','digipublish-core'),value:'center'},{label:__('Bottom','digipublish-core'),value:'flex-end'},{label:__('Space Between','digipublish-core'),value:'space-between'}],onChange:function(v){set({contentAlign:v});}}) : null,
         /^horizontal-1$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl,{label:__('Vertical Align Image','digipublish-core'),value:a.imageAlign||'flex-start',options:[{label:__('Top','digipublish-core'),value:'flex-start'},{label:__('Center','digipublish-core'),value:'center'},{label:__('Bottom','digipublish-core'),value:'flex-end'},{label:__('Stretch','digipublish-core'),value:'stretch'}],onChange:function(v){set({imageAlign:v});}}) : null,
-        /^horizontal-[1-3]$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl,{label:__('Image Width','digipublish-core'),value:a.imageWidth||(normalizedPostLayout(a.layout)==='horizontal-3'?'half':'one-third'),options:[{label:__('One Fourth','digipublish-core'),value:'one-fourth'},{label:__('One Third','digipublish-core'),value:'one-third'},{label:__('Half','digipublish-core'),value:'half'}],onChange:function(v){set({imageWidth:v});}}) : null,
+        /^horizontal-[1-3]$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl,{label:__('Image Width','digipublish-core'),value:a.imageWidth||sourceDefaults.imageWidth,options:[{label:__('One Fourth','digipublish-core'),value:'one-fourth'},{label:__('One Third','digipublish-core'),value:'one-third'},{label:__('Half','digipublish-core'),value:'half'}],onChange:function(v){set({imageWidth:v});}}) : null,
         /^(standard-[1-4]|horizontal-[1-3]|masonry-1)$/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl,{label:__('Enable post format','digipublish-core'),checked:a.showPostFormat!==false,onChange:function(v){set({showPostFormat:v});}}) : null,
         /^(standard-[1-4]|horizontal-3|masonry-1|tile-[12])$/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl,{label:__('Enable video backgrounds','digipublish-core'),checked:!!a.enableVideoBackgrounds,onChange:function(v){set({enableVideoBackgrounds:v});}}) : null,
         a.enableVideoBackgrounds && /^(standard-[1-4]|horizontal-3|masonry-1|tile-[12])$/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl,{label:__('Enable video controls','digipublish-core'),checked:!!a.enableVideoControls,onChange:function(v){set({enableVideoControls:v});}}) : null,
@@ -557,7 +588,7 @@
       el(PanelBody, { title:__('Meta Settings', 'digipublish-core'), initialOpen:false },
         /^(standard-4|tile-[1-4]|carousel-[12])$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl, {
           label:__('Top Meta Type', 'digipublish-core'),
-          value:a.topMetaType || 'none',
+          value:a.topMetaType || sourceDefaults.topMetaType || 'author',
           options:[
             { label:__('None', 'digipublish-core'), value:'none' },
             { label:__('Author', 'digipublish-core'), value:'author' },
@@ -600,20 +631,12 @@
             {label:__('Full', 'digipublish-core'),value:'full'}
           ], onChange:function(v){ set({imageSize:v}); }
         }),
-        el(SelectControl, {
-          label:__('Image Orientation', 'digipublish-core'), value:a.imageOrientation || 'original',
-          options:[
-            {label:__('Original', 'digipublish-core'),value:'original'},
-            {label:__('Stretch', 'digipublish-core'),value:'stretch'},
-            {label:__('Landscape 4:3', 'digipublish-core'),value:'landscape'},
-            {label:__('Landscape 3:2', 'digipublish-core'),value:'landscape-3-2'},
-            {label:__('Landscape 16:9', 'digipublish-core'),value:'landscape-16-9'},
-            {label:__('Landscape 21:10', 'digipublish-core'),value:'landscape-21-10'},
-            {label:__('Portrait 3:4', 'digipublish-core'),value:'portrait'},
-            {label:__('Portrait 2:3', 'digipublish-core'),value:'portrait-2-3'},
-            {label:__('Square', 'digipublish-core'),value:'square'}
-          ], onChange:function(v){ set({imageOrientation:v}); }
-        }),
+        !/^(tile-[34]|horizontal-[45])$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl, {
+          label:__('Image Orientation', 'digipublish-core'),
+          value:a.imageOrientation || sourceDefaults.imageOrientation,
+          options:postImageOrientationOptions(a.layout),
+          onChange:function(v){ set({imageOrientation:v}); }
+        }) : null,
         lengthControl(__('Image Border Radius', 'digipublish-core'), a.imageBorderRadius, function(v){ set({imageBorderRadius:v}); }, '12px')
       ),
       el(PanelBody, { title:__('Color Settings', 'digipublish-core'), initialOpen:false },
@@ -773,7 +796,7 @@
       showShares: { type: 'boolean', default: false },
       showReadMore: { type: 'boolean', default: false },
       readMoreLabel: { type: 'string', default: 'Read more' },
-      topMetaType: { type:'string', default:'none' },
+      topMetaType: { type:'string', default:'' },
       compactMeta: { type:'boolean', default:false },
       columnsDesktop: { type: 'integer', default: 0 },
       columnsTablet: { type: 'integer', default: 0 },
@@ -786,7 +809,7 @@
       headingTag: { type: 'string', default: 'h2' },
       imageSize: { type: 'string', default: 'medium_large' },
       imageAspect: { type: 'string', default: '' },
-      imageOrientation: { type:'string', default:'original' },
+      imageOrientation: { type:'string', default:'' },
       imageBorderRadius: { type:'string', default:'' },
       cardHeadingFontSize: { type:'string', default:'' },
       cardHeadingTag: { type:'string', default:'h2' },
@@ -795,7 +818,7 @@
       carouselAutoplay: { type:'boolean', default:true },
       carouselDots: { type:'boolean', default:true },
       carouselWrap: { type:'boolean', default:true },
-      contentGap:{type:'string',default:''},contentAlign:{type:'string',default:'space-between'},imageAlign:{type:'string',default:'flex-start'},imageWidth:{type:'string',default:'one-third'},
+      contentGap:{type:'string',default:''},contentAlign:{type:'string',default:''},imageAlign:{type:'string',default:''},imageWidth:{type:'string',default:''},
       showPostFormat:{type:'boolean',default:true},enableVideoBackgrounds:{type:'boolean',default:false},enableVideoControls:{type:'boolean',default:false},
       headingColor:{type:'string',default:''},headingHoverColor:{type:'string',default:''},excerptColor:{type:'string',default:''},metaColor:{type:'string',default:''},metaLinksColor:{type:'string',default:''},metaLinksHoverColor:{type:'string',default:''},categoryColor:{type:'string',default:''},categoryHoverColor:{type:'string',default:''},readMoreColor:{type:'string',default:''},readMoreHoverColor:{type:'string',default:''},borderColor:{type:'string',default:''},
       masonryWidgets:{type:'boolean',default:false},masonryWidgetArea:{type:'string',default:'sidebar-archive'},masonryWidgetsAfter:{type:'integer',default:3},masonryWidgetsRepeat:{type:'boolean',default:false},
