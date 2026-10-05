@@ -29,6 +29,7 @@ $feed_attributes = array(
 	'orderBy'         => $order_by,
 	'period'          => $period,
 	'avoidDuplicates' => false,
+	'fallbackRandom'   => true,
 );
 
 $posts = techpress_editorial_feed_get_posts( $feed_attributes );
