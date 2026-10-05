@@ -428,8 +428,6 @@ function digipublish_core_gallery_schema() {
 		'mainEntityOfPage' => get_permalink( $post_id ),
 	);
 
-	echo "
-<script type="application/ld+json">" . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "</script>
-";
+	echo "\n<script type=\"application/ld+json\">" . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . "</script>\n";
 }
 add_action( 'wp_head', 'digipublish_core_gallery_schema', 30 );
