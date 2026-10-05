@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "digipublish/sidebar-feed",
+  "version": "0.9.0",
+  "title": "Post Sidebar Feed",
+  "category": "digipublish-editorial",
+  "icon": "columns",
+  "description": "Compact post-sidebar modules with recent-story, ranked-story and visual-mosaic layouts.",
+  "textdomain": "digipublish-core",
+  "attributes": {
+    "heading": { "type": "string", "default": "Recent Stories" },
+    "layout": { "type": "string", "default": "meta-list" },
+    "sourceMode": { "type": "string", "default": "current" },
+    "categoryId": { "type": "integer", "default": 0 },
+    "postsToShow": { "type": "integer", "default": 5 },
+    "orderBy": { "type": "string", "default": "date" },
+    "period": { "type": "string", "default": "all" },
+    "showHeading": { "type": "boolean", "default": true }
+  },
+  "supports": {
+    "html": false,
+    "anchor": true
+  },
+  "editorScript": "digipublish-core-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}
