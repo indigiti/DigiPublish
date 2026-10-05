@@ -3,10 +3,10 @@
   "apiVersion": 3,
   "name": "digipublish/post-feed",
   "version": "0.10.2",
-  "title": "Editorial Post Feed",
+  "title": "Posts",
   "category": "digipublish-editorial",
   "icon": "screenoptions",
-  "description": "Reusable latest, trending, popular, or category-based post feed.",
+  "description": "Flexible editorial Posts block with standard, masonry, horizontal, tile and carousel layouts plus advanced query controls.",
   "textdomain": "digipublish-core",
   "attributes": {
     "heading": {
