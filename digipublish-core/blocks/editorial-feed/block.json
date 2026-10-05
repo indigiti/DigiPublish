@@ -21,6 +21,7 @@
     "orderBy": { "type": "string", "default": "date" },
     "period": { "type": "string", "default": "all" },
     "avoidDuplicates": { "type": "boolean", "default": false },
+    "fallbackRandom": { "type": "boolean", "default": false },
     "showCategory": { "type": "boolean", "default": true },
     "showExcerpt": { "type": "boolean", "default": false },
     "showAuthor": { "type": "boolean", "default": false },
