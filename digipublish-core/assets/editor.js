@@ -372,14 +372,17 @@
 
   registerBlockType('digipublish/featured-posts', {
     apiVersion: 3, title: __('Featured Stories', 'digipublish-core'), category: 'digipublish-editorial', icon: 'star-filled',
-    attributes: { heading: { type: 'string', default: 'Latest Features' }, categoryId: { type: 'integer', default: 0 }, postsToShow: { type: 'integer', default: 7 }, layout: { type: 'string', default: 'magazine' }, showExcerpt: { type: 'boolean', default: true }, showAuthor: { type: 'boolean', default: true }, showDate: { type: 'boolean', default: true }, showFilters: { type: 'boolean', default: true }, filterLimit: { type: 'integer', default: 6 } },
+    attributes: { heading: { type: 'string', default: 'Latest Features' }, categoryId: { type: 'integer', default: 0 }, postsToShow: { type: 'integer', default: 7 }, layout: { type: 'string', default: 'magazine' }, showExcerpt: { type: 'boolean', default: true }, showAuthor: { type: 'boolean', default: true }, showDate: { type: 'boolean', default: true }, showCategory: { type: 'boolean', default: true }, showComments: { type: 'boolean', default: false }, showReadTime: { type: 'boolean', default: false }, showViews: { type: 'boolean', default: false }, showShares: { type: 'boolean', default: false }, showFilters: { type: 'boolean', default: true }, filterLimit: { type: 'integer', default: 6 }, order: { type:'string', default:'DESC' }, offset:{type:'integer',default:0}, filterCategoryIds:{type:'array',default:[]}, filterTagIds:{type:'array',default:[]}, excludeCategoryIds:{type:'array',default:[]}, excludeTagIds:{type:'array',default:[]}, filterPostIds:{type:'array',default:[]}, avoidDuplicates:{type:'boolean',default:false}, columnGap:{type:'string',default:''}, rowGap:{type:'string',default:''}, cardRadius:{type:'string',default:''}, cardMinHeight:{type:'string',default:''}, headingFontSize:{type:'string',default:''}, headingTag:{type:'string',default:'h2'}, imageSize:{type:'string',default:''}, imageAspect:{type:'string',default:''}, hideDesktop:{type:'boolean',default:false}, hideLaptop:{type:'boolean',default:false}, hideTablet:{type:'boolean',default:false}, hideMobile:{type:'boolean',default:false} },
     edit: function (props) {
       const a = props.attributes, set = props.setAttributes;
       return el(Fragment, {}, editorialControls(props, { layouts: [{ label: __('Magazine / Tech publication', 'digipublish-core'), value: 'magazine' }, { label: __('Lead + supporting list', 'digipublish-core'), value: 'lead-list' }, { label: __('3-column grid', 'digipublish-core'), value: 'grid-3' }, { label: __('4-column grid', 'digipublish-core'), value: 'grid-4' }] }),
         el(InspectorControls, {}, el(PanelBody, { title: __('Feature navigation', 'digipublish-core'), initialOpen: false },
           el(ToggleControl, { label: __('Show category filters', 'digipublish-core'), checked: !!a.showFilters, onChange: function (v) { set({ showFilters: v }); } }),
           el(RangeControl, { label: __('Filter links', 'digipublish-core'), value: a.filterLimit || 6, min: 3, max: 8, onChange: function (v) { set({ filterLimit: v }); } })
-        )), el(Preview, { name: 'digipublish/featured-posts', attributes: a }));
+        )),
+        sharedDesignControls(props, { columns:false, defaultColumnGap:'20px', defaultRowGap:'20px', defaultRadius:'4px', defaultHeadingSize:'22px' }),
+        postQueryControls(props),
+        el(Preview, { name: 'digipublish/featured-posts', attributes: a }));
     }, save: function () { return null; }
   });
 
@@ -614,7 +617,21 @@
     if (getBlockType(name)) return;
     registerBlockType(name, {
       apiVersion: 3, title: title, category: 'digipublish-editorial', icon: icon,
-      edit: function (props) { return el(Fragment, {}, controls ? controls(props) : null, el(Preview, { name: name, attributes: props.attributes })); }, save: function () { return null; }
+      edit: function (props) {
+        return el(Fragment, {},
+          controls ? controls(props) : null,
+          sharedDesignControls(props, {
+            columns: hasAttribute(props.attributes, 'columnsDesktop'),
+            defaultColumns: props.attributes.columns || 4,
+            maxColumns: 6,
+            defaultColumnGap: '20px',
+            defaultRowGap: '20px',
+            defaultRadius: '4px',
+            defaultHeadingSize: '22px'
+          }),
+          el(Preview, { name: name, attributes: props.attributes })
+        );
+      }, save: function () { return null; }
     });
   }
 
@@ -761,7 +778,10 @@
       columns:{type:'integer',default:4},
       showFilters:{type:'boolean',default:true},
       showExcerpt:{type:'boolean',default:false},
-      showPagination:{type:'boolean',default:true}
+      showPagination:{type:'boolean',default:true},
+      showCategory:{type:'boolean',default:true},showDate:{type:'boolean',default:true},
+      columnsDesktop:{type:'integer',default:0},columnsTablet:{type:'integer',default:0},columnsMobile:{type:'integer',default:0},
+      columnGap:{type:'string',default:''},rowGap:{type:'string',default:''},cardRadius:{type:'string',default:''},cardMinHeight:{type:'string',default:''},headingFontSize:{type:'string',default:''},headingTag:{type:'string',default:'h2'},imageSize:{type:'string',default:''},imageAspect:{type:'string',default:''},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}
     },
     edit:function(props){
       const a=props.attributes,set=props.setAttributes;
@@ -781,6 +801,7 @@
             el(ToggleControl,{label:__('Show pagination','digipublish-core'),checked:a.showPagination!==false,onChange:function(v){set({showPagination:v});}})
           )
         ),
+        sharedDesignControls(props,{columns:true,defaultColumns:a.columns||4,maxColumns:6,defaultColumnGap:'20px',defaultRowGap:'20px',defaultRadius:'4px',defaultHeadingSize:'22px'}),
         el(Preview,{name:'digipublish/gallery-archive',attributes:a})
       );
     },
@@ -826,7 +847,9 @@
       postsToShow: { type: 'integer', default: 5 },
       orderBy: { type: 'string', default: 'date' },
       period: { type: 'string', default: 'all' },
-      showHeading: { type: 'boolean', default: true }
+      showHeading: { type: 'boolean', default: true },
+      showAuthor:{type:'boolean',default:true},showDate:{type:'boolean',default:true},
+      columnGap:{type:'string',default:''},rowGap:{type:'string',default:''},cardRadius:{type:'string',default:''},cardMinHeight:{type:'string',default:''},headingFontSize:{type:'string',default:''},headingTag:{type:'string',default:'h2'},imageSize:{type:'string',default:''},imageAspect:{type:'string',default:''},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}
     },
     edit: function (props) {
       const a = props.attributes, set = props.setAttributes, categoryOptions = useCategoryOptions();
@@ -866,6 +889,7 @@
             el(ToggleControl, { label: __('Show heading', 'digipublish-core'), checked: a.showHeading !== false, onChange: function(v){ set({ showHeading:v }); } })
           )
         ),
+        sharedDesignControls(props,{columns:false,metaKeys:['showAuthor','showDate'],defaultColumnGap:'12px',defaultRowGap:'12px',defaultRadius:'4px',defaultHeadingSize:'18px'}),
         el(Preview, { name:'digipublish/sidebar-feed', attributes:a })
       );
     },
