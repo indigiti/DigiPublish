@@ -32,3 +32,15 @@
 @media(max-width:480px){
   .tp-editorial-feed__header{gap:10px}.tp-editorial-card-grid,.tp-weekly-mosaic,.tp-featured-trio{grid-auto-columns:88%}.tp-editorial-carousel{grid-auto-columns:88%}.tp-compact-grid{grid-auto-columns:92%}.tp-latest-card{grid-template-columns:1fr 102px;padding:13px;gap:11px}.tp-latest-card .tp-feed-story__title{font-size:17px}.tp-feed-story__category{font-size:10px;margin-bottom:6px}.tp-feed-story__stats{font-size:9.5px;gap:10px}
 }
+
+
+.tp-editorial-feed[style*="--dp-heading-size"] .tp-editorial-feed__title{font-size:var(--dp-heading-size)}
+.tp-editorial-feed[style*="--dp-column-gap"] .tp-editorial-card-grid,.tp-editorial-feed[style*="--dp-column-gap"] .tp-latest-card-grid,.tp-editorial-feed[style*="--dp-column-gap"] .tp-compact-grid,.tp-editorial-feed[style*="--dp-column-gap"] .tp-featured-trio,.tp-editorial-feed[style*="--dp-column-gap"] .tp-weekly-mosaic{column-gap:var(--dp-column-gap)}
+.tp-editorial-feed[style*="--dp-row-gap"] .tp-editorial-card-grid,.tp-editorial-feed[style*="--dp-row-gap"] .tp-latest-card-grid,.tp-editorial-feed[style*="--dp-row-gap"] .tp-compact-grid,.tp-editorial-feed[style*="--dp-row-gap"] .tp-featured-trio,.tp-editorial-feed[style*="--dp-row-gap"] .tp-weekly-mosaic{row-gap:var(--dp-row-gap)}
+.tp-editorial-feed[style*="--dp-card-radius"] .tp-editorial-card,.tp-editorial-feed[style*="--dp-card-radius"] .tp-weekly-card,.tp-editorial-feed[style*="--dp-card-radius"] .tp-carousel-card,.tp-editorial-feed[style*="--dp-card-radius"] .tp-featured-trio>article,.tp-editorial-feed[style*="--dp-card-radius"] .tp-compact-card,.tp-editorial-feed[style*="--dp-card-radius"] .tp-latest-card{border-radius:var(--dp-card-radius)}
+.tp-editorial-feed[style*="--dp-card-min-height"] .tp-feed-story{min-height:var(--dp-card-min-height)}
+.tp-editorial-feed[style*="--dp-image-aspect"] .tp-feed-story__image{aspect-ratio:var(--dp-image-aspect)}
+@media(min-width:1121px){.dp-hide-desktop{display:none!important}}
+@media(min-width:721px) and (max-width:1120px){.dp-hide-laptop{display:none!important}}
+@media(min-width:481px) and (max-width:720px){.dp-hide-tablet{display:none!important}}
+@media(max-width:480px){.dp-hide-mobile{display:none!important}}
