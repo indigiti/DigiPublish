@@ -294,7 +294,7 @@
             el(ToggleControl,{label:__('Show thumbnail strip','digipublish-core'),checked:!!a.showThumbnails,onChange:function(v){set({showThumbnails:v});}}),
             el(ToggleControl,{label:__('Allow fullscreen','digipublish-core'),checked:a.allowFullscreen!==false,onChange:function(v){set({allowFullscreen:v});}}),
             el(ToggleControl,{label:__('Show share control','digipublish-core'),checked:a.showSharing!==false,onChange:function(v){set({showSharing:v});}}),
-            el(RangeControl,{label:__('Insert advertisement every N photos','digipublish-core'),help:__('Set to 0 to disable inline gallery ads.','digipublish-core'),value:a.adInterval||0,min:0,max:10,onChange:function(v){set({adInterval:v||0});}})
+            el(RangeControl,{label:__('Insert advertisement every N photos','digipublish-core'),help:__('Story mode only. Set to 0 to disable inline gallery ads.','digipublish-core'),value:a.adInterval||0,min:0,max:10,onChange:function(v){set({adInterval:v||0});}})
           )
         ),
         el('div',blockProps,
