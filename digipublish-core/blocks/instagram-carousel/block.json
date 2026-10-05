@@ -91,5 +91,6 @@
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
-  "render": "file:./render.php"
+  "render": "file:./render.php",
+  "viewScript": "file:./view.js"
 }
