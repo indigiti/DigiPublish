@@ -3,6 +3,16 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 $limit   = max( 4, min( 12, absint( $attributes['limit'] ?? 8 ) ) );
 $heading = $attributes['heading'] ?? __( 'Popular Categories', 'digipublish-core' );
 $cats    = techpress_editorial_get_top_categories( $limit, false );
+if ( ! $cats ) {
+	$cats = get_categories(
+		array(
+			'hide_empty' => false,
+			'number'     => $limit,
+			'orderby'    => 'name',
+			'order'      => 'ASC',
+		)
+	);
+}
 if ( ! $cats ) { return; }
 $categories_page = get_page_by_path( 'categories' );
 $posts_page      = (int) get_option( 'page_for_posts' );
