@@ -137,3 +137,29 @@ jobs:
           grep -Fq '.tp-featured__more{display:none}' "$css" || exit 1
           grep -Fq 'padding:12px 16px 22px!important' "$site" || exit 1
           grep -Fq 'min-height:44px' "$css" || exit 1
+
+
+      - name: Guard homepage resilience
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq '"fallbackRandom":true' digipublish/patterns/top-weekly.php || {
+            echo "Top Weekly random fallback is missing."
+            exit 1
+          }
+          grep -Fq 'fallbackRandom' digipublish-core/blocks/editorial-feed/block.json || {
+            echo "Editorial Feed random fallback attribute is missing."
+            exit 1
+          }
+          if grep -R --line-number -E 'ORDER[[:space:]]+BY[[:space:]]+RAND\(' digipublish digipublish-core; then
+            echo "Expensive SQL ORDER BY RAND() must not be used."
+            exit 1
+          fi
+          grep -Fq "'hide_empty' => false" digipublish-core/blocks/popular-categories/render.php || {
+            echo "Popular Categories sparse-site fallback is missing."
+            exit 1
+          }
+          grep -Fq 'tp-term-index__empty' digipublish-core/blocks/term-index/render.php || {
+            echo "Dictionary fresh-site empty state is missing."
+            exit 1
+          }
