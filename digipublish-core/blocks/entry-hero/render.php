@@ -4,7 +4,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-$post_id = ! empty( $block->context['postId'] ) ? absint( $block->context['postId'] ) : get_queried_object_id();
+$post_id = ! empty( $block->context['postId'] ) ? absint( $block->context['postId'] ) : ( get_the_ID() ?: get_queried_object_id() );
 if ( ! $post_id ) { return; }
 
 $layout = sanitize_key( $attributes['layout'] ?? 'auto' );
