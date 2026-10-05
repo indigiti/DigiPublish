@@ -149,22 +149,30 @@ $image_align = isset( $attributes['imageAlign'] ) && in_array( $attributes['imag
 $styles[] = '--dp-content-align:' . $content_align;
 $styles[] = '--dp-image-align:' . $image_align;
 
-foreach ( array(
-	'headingColor'        => '--dp-post-heading-color',
-	'headingHoverColor'   => '--dp-post-heading-hover',
-	'excerptColor'        => '--dp-post-excerpt-color',
-	'metaColor'           => '--dp-post-meta-color',
-	'metaLinksColor'      => '--dp-post-meta-link-color',
-	'metaLinksHoverColor' => '--dp-post-meta-link-hover',
-	'categoryColor'       => '--dp-post-category-color',
-	'categoryHoverColor'  => '--dp-post-category-hover',
-	'readMoreColor'       => '--dp-post-more-color',
-	'readMoreHoverColor'  => '--dp-post-more-hover',
-	'borderColor'         => '--dp-post-border-color',
-) as $key => $var ) {
-	$value = sanitize_hex_color( $attributes[ $key ] ?? '' );
-	if ( $value ) {
-		$styles[] = $var . ':' . $value;
+$color_layouts = array( 'standard-1', 'standard-2', 'standard-3', 'standard-4', 'masonry-1', 'horizontal-1', 'horizontal-2', 'horizontal-3', 'horizontal-4', 'horizontal-5' );
+if ( in_array( $layout, $color_layouts, true ) ) {
+	$color_map = array(
+		'headingColor'        => '--dp-post-heading-color',
+		'headingHoverColor'   => '--dp-post-heading-hover',
+		'excerptColor'        => '--dp-post-excerpt-color',
+		'metaColor'           => '--dp-post-meta-color',
+		'metaLinksColor'      => '--dp-post-meta-link-color',
+		'metaLinksHoverColor' => '--dp-post-meta-link-hover',
+		'categoryColor'       => '--dp-post-category-color',
+		'categoryHoverColor'  => '--dp-post-category-hover',
+	);
+	if ( ! in_array( $layout, array( 'horizontal-4', 'horizontal-5' ), true ) ) {
+		$color_map['readMoreColor'] = '--dp-post-more-color';
+		$color_map['readMoreHoverColor'] = '--dp-post-more-hover';
+	}
+	if ( in_array( $layout, array( 'horizontal-4', 'horizontal-5' ), true ) ) {
+		$color_map['borderColor'] = '--dp-post-border-color';
+	}
+	foreach ( $color_map as $key => $var ) {
+		$value = sanitize_hex_color( $attributes[ $key ] ?? '' );
+		if ( $value ) {
+			$styles[] = $var . ':' . $value;
+		}
 	}
 }
 
