@@ -9,7 +9,7 @@ DigiPublish is a Gutenberg-first publishing framework for WordPress, built as a 
 
 ## Current version
 
-**0.10.0**
+**0.10.1**
 
 ## Capabilities
 
@@ -24,7 +24,7 @@ DigiPublish is a Gutenberg-first publishing framework for WordPress, built as a 
 
 ## Backward compatibility
 
-DigiPublish was initially developed under the internal TechPress name. Version 0.10.0 uses the canonical `digipublish/*` Gutenberg namespace throughout the theme and plugin. Existing saved content from earlier releases is automatically migrated on upgrade.
+DigiPublish was initially developed under the internal TechPress name. Version 0.10.1 uses the canonical `digipublish/*` Gutenberg namespace throughout the theme and plugin. Existing saved content from earlier releases is automatically migrated on upgrade.
 
 ## Installation
 
@@ -72,3 +72,10 @@ DigiPublish 0.10.0 adds a first-class `Photo Gallery` content type.
 New galleries start with the Gallery block already inserted. Editors can bulk-select images, reorder generated slides, and edit each slide's heading, caption, credit and alt text.
 
 All slides are server-rendered under one canonical URL. JavaScript only enhances swipe/counter/fullscreen/share behavior.
+
+
+## Read Next
+
+DigiPublish 0.10.1 adds a Read Next mode to `digipublish/related-posts`.
+
+The default article template shows four cards below the article. Candidates are ranked using all shared categories and tags, then recent posts fill any remaining positions without repeating the current article. Editors can switch between Read Next and the previous Related Features layout.
