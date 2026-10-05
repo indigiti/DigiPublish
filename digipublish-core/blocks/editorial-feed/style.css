@@ -34,10 +34,11 @@
 }
 
 
-.tp-editorial-feed{--dp-column-gap:28px;--dp-row-gap:28px;--dp-card-radius:4px;--dp-card-min-height:auto;--dp-heading-size:28px;--dp-image-aspect:auto}
-.tp-editorial-feed__title{font-size:var(--dp-heading-size)}
-.tp-editorial-card-grid,.tp-latest-card-grid,.tp-compact-grid,.tp-featured-trio,.tp-weekly-mosaic{column-gap:var(--dp-column-gap);row-gap:var(--dp-row-gap)}
-.tp-editorial-card,.tp-weekly-card,.tp-carousel-card,.tp-featured-trio>article,.tp-compact-card,.tp-latest-card{border-radius:var(--dp-card-radius);min-height:var(--dp-card-min-height)}
+.tp-editorial-feed[style*="--dp-heading-size"] .tp-editorial-feed__title{font-size:var(--dp-heading-size)}
+.tp-editorial-feed[style*="--dp-column-gap"] .tp-editorial-card-grid,.tp-editorial-feed[style*="--dp-column-gap"] .tp-latest-card-grid,.tp-editorial-feed[style*="--dp-column-gap"] .tp-compact-grid,.tp-editorial-feed[style*="--dp-column-gap"] .tp-featured-trio,.tp-editorial-feed[style*="--dp-column-gap"] .tp-weekly-mosaic{column-gap:var(--dp-column-gap)}
+.tp-editorial-feed[style*="--dp-row-gap"] .tp-editorial-card-grid,.tp-editorial-feed[style*="--dp-row-gap"] .tp-latest-card-grid,.tp-editorial-feed[style*="--dp-row-gap"] .tp-compact-grid,.tp-editorial-feed[style*="--dp-row-gap"] .tp-featured-trio,.tp-editorial-feed[style*="--dp-row-gap"] .tp-weekly-mosaic{row-gap:var(--dp-row-gap)}
+.tp-editorial-feed[style*="--dp-card-radius"] .tp-editorial-card,.tp-editorial-feed[style*="--dp-card-radius"] .tp-weekly-card,.tp-editorial-feed[style*="--dp-card-radius"] .tp-carousel-card,.tp-editorial-feed[style*="--dp-card-radius"] .tp-featured-trio>article,.tp-editorial-feed[style*="--dp-card-radius"] .tp-compact-card,.tp-editorial-feed[style*="--dp-card-radius"] .tp-latest-card{border-radius:var(--dp-card-radius)}
+.tp-editorial-feed[style*="--dp-card-min-height"] .tp-feed-story{min-height:var(--dp-card-min-height)}
 .tp-editorial-feed[style*="--dp-image-aspect"] .tp-feed-story__image{aspect-ratio:var(--dp-image-aspect)}
 @media(min-width:1121px){.dp-hide-desktop{display:none!important}}
 @media(min-width:721px) and (max-width:1120px){.dp-hide-laptop{display:none!important}}
