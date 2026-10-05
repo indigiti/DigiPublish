@@ -177,3 +177,38 @@ jobs:
           grep -Fq '"layout":"ranked-list"' digipublish/patterns/article-sidebar-widgets.php || exit 1
           grep -Fq '"layout":"image-grid"' digipublish/patterns/article-sidebar-widgets.php || exit 1
           grep -Fq "registerBlockVariation('digipublish/sidebar-feed'" digipublish-core/assets/editor.js || exit 1
+
+
+      - name: Guard photo gallery publishing system
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f digipublish-core/includes/gallery.php
+          test -f digipublish-core/blocks/gallery/block.json
+          test -f digipublish-core/blocks/gallery-slide/block.json
+          test -f digipublish-core/blocks/gallery-archive/block.json
+          test -f digipublish/templates/single-digipublish_gallery.html
+          test -f digipublish/templates/archive-digipublish_gallery.html
+
+          jq -e '.name == "digipublish/gallery" and .version == "0.10.0"' digipublish-core/blocks/gallery/block.json >/dev/null
+          jq -e '.name == "digipublish/gallery-slide" and .version == "0.10.0"' digipublish-core/blocks/gallery-slide/block.json >/dev/null
+          jq -e '.name == "digipublish/gallery-archive" and .version == "0.10.0"' digipublish-core/blocks/gallery-archive/block.json >/dev/null
+
+          grep -Fq "require_once DIGIPUBLISH_CORE_DIR . 'includes/gallery.php'" digipublish-core/techpress-editorial.php || exit 1
+          grep -Fq "register_post_type(" digipublish-core/includes/gallery.php || exit 1
+          grep -Fq "'digipublish_gallery'" digipublish-core/includes/gallery.php || exit 1
+          grep -Fq "^photo-gallery/(?!category/)" digipublish-core/includes/gallery.php || exit 1
+          grep -Fq "'@type'            => 'ImageGallery'" digipublish-core/includes/gallery.php || exit 1
+          grep -Fq "registerBlockType('digipublish/gallery'" digipublish-core/assets/editor.js || exit 1
+          grep -Fq "registerBlockType('digipublish/gallery-slide'" digipublish-core/assets/editor.js || exit 1
+          grep -Fq "registerBlockType('digipublish/gallery-archive'" digipublish-core/assets/editor.js || exit 1
+          grep -Fq '"contentType"' digipublish-core/blocks/sidebar-feed/block.json || exit 1
+          grep -Fq 'digipublish_gallery' digipublish-core/blocks/sidebar-feed/render.php || exit 1
+          grep -Fq 'Photo Galleries' digipublish-core/blocks/category-nav/render.php || exit 1
+
+          for block_json in digipublish-core/blocks/*/block.json; do
+            jq -e '.version == "0.10.0"' "$block_json" >/dev/null || {
+              echo "Block version mismatch: $block_json"
+              exit 1
+            }
+          done
