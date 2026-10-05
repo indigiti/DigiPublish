@@ -39,6 +39,11 @@ if ( 'archive' === $source ) {
 }
 
 $query = new WP_Query( $args );
+if ( 'related' === $source && ! $query->posts && is_singular( 'digipublish_gallery' ) ) {
+	unset( $args['category__in'] );
+	$args['posts_per_page'] = $count;
+	$query = new WP_Query( $args );
+}
 if ( ! $query->posts ) {
 	if ( is_admin() ) {
 		$empty = get_block_wrapper_attributes( array( 'class' => 'tp-gallery-archive tp-gallery-archive--empty' ) );
