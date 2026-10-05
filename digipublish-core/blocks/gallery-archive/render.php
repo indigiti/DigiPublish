@@ -45,7 +45,7 @@ if ( 'related' === $source && ! $query->posts && is_singular( 'digipublish_galle
 	$query = new WP_Query( $args );
 }
 if ( ! $query->posts ) {
-	if ( is_admin() ) {
+	if ( 'archive' === $source || is_admin() ) {
 		$empty = get_block_wrapper_attributes( array( 'class' => 'tp-gallery-archive tp-gallery-archive--empty' ) );
 		echo '<section ' . $empty . '><p>' . esc_html__( 'No photo galleries are available yet.', 'digipublish-core' ) . '</p></section>';
 	}
