@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "digipublish/section-heading",
+  "version": "0.11.0",
+  "title": "Section Heading",
+  "category": "digipublish-editorial",
+  "icon": "heading",
+  "description": "Caards-compatible section heading with border, accent and text color controls.",
+  "textdomain": "digipublish-core",
+  "attributes": {
+    "text": {
+      "type": "string",
+      "default": "Section Heading"
+    },
+    "level": {
+      "type": "integer",
+      "default": 2
+    },
+    "borderColor": {
+      "type": "string",
+      "default": ""
+    },
+    "accentColor": {
+      "type": "string",
+      "default": ""
+    },
+    "accentContrastColor": {
+      "type": "string",
+      "default": ""
+    },
+    "textColor": {
+      "type": "string",
+      "default": ""
+    },
+    "styleVariant": {
+      "type": "string",
+      "default": "style-1"
+    }
+  },
+  "supports": {
+    "html": false,
+    "anchor": true,
+    "customClassName": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "border": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true
+    }
+  },
+  "editorScript": "digipublish-core-editor",
+  "style": "file:./style.css"
+}
