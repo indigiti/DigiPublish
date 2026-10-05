@@ -146,7 +146,16 @@ $orientation_map = array(
 	'portrait-2-3'    => '2/3',
 	'square'          => '1/1',
 );
-$orientation = isset( $attributes['imageOrientation'] ) ? sanitize_key( (string) $attributes['imageOrientation'] ) : 'original';
+$orientation = isset( $attributes['imageOrientation'] ) ? sanitize_key( (string) $attributes['imageOrientation'] ) : '';
+if ( ! $orientation ) {
+	if ( in_array( $layout, array( 'tile-1','tile-2','carousel-1','carousel-2' ), true ) ) {
+		$orientation = 'stretch';
+	} elseif ( in_array( $layout, array( 'horizontal-2','horizontal-3' ), true ) ) {
+		$orientation = 'square';
+	} elseif ( ! in_array( $layout, array( 'tile-3','tile-4','horizontal-4','horizontal-5' ), true ) ) {
+		$orientation = 'original';
+	}
+}
 if ( isset( $orientation_map[ $orientation ] ) ) {
 	$styles[] = '--dp-image-aspect:' . $orientation_map[ $orientation ];
 } else {
