@@ -1101,6 +1101,7 @@ function techpress_editorial_feed_story_markup( $post_id, $attributes, $class = 
 	$layout = isset( $attributes['layout'] ) ? sanitize_key( $attributes['layout'] ) : 'cards-4';
 	$image_size = 'medium_large';
 	$image_sizes = '(max-width: 720px) 86vw, (max-width: 1120px) 50vw, 25vw';
+	$requested_image_size = isset( $attributes['imageSize'] ) ? sanitize_key( (string) $attributes['imageSize'] ) : '';
 	if ( 'compact-grid' === $layout ) {
 		$image_size = 'medium';
 		$image_sizes = '(max-width: 720px) 92px, 112px';
@@ -1114,6 +1115,9 @@ function techpress_editorial_feed_story_markup( $post_id, $attributes, $class = 
 		$image_sizes = str_contains( $class, '--mini' ) ? '(max-width: 720px) 88vw, 112px' : '(max-width: 720px) 88vw, 28vw';
 	} elseif ( 'latest-cards' === $layout ) {
 		$image_sizes = '(max-width: 720px) 118px, 25vw';
+	}
+	if ( in_array( $requested_image_size, array( 'thumbnail', 'medium', 'medium_large', 'large', 'full' ), true ) ) {
+		$image_size = $requested_image_size;
 	}
 	$image = '<a class="tp-feed-story__image" href="' . esc_url( $url ) . '">' . techpress_editorial_image_markup( $post_id, $image_size, false, $image_sizes ) . '</a>';
 	$stats = techpress_editorial_feed_stats_markup( $post_id, $attributes );
