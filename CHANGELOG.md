@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.10.0
+
+- Added first-class Photo Gallery posts with the public `/photo-gallery/` archive.
+- Added category-aware gallery permalinks: `/photo-gallery/category-slug/gallery-title/`.
+- Added pretty gallery category archives under `/photo-gallery/category/category-slug/`.
+- Added nested Gutenberg `digipublish/gallery` and `digipublish/gallery-slide` blocks.
+- Added bulk image selection that creates reorderable gallery slides in the editor.
+- Added Story, Swipe and Grid gallery display modes without duplicating stored content.
+- Added per-slide heading, caption, alt text and photo credit.
+- Added counters, thumbnail navigation, keyboard arrows, native fullscreen and Web Share/clipboard sharing.
+- Added server-rendered HTML with progressive enhancement so gallery content remains indexable without JavaScript.
+- Added responsive image delivery: first photo eager/high-priority, later photos lazy/async.
+- Added optional inline gallery ads in Story mode through the existing DigiPublish ad-slot system.
+- Added `ImageGallery` structured data while retaining one canonical gallery URL and slide anchors.
+- Added gallery photo-count caching and photo-count badges on archive/sidebar cards.
+- Added dynamic gallery covers: explicit Featured Image first, otherwise the current first gallery slide.
+- Added `digipublish/gallery-archive` for archive/latest/related gallery grids and category filters.
+- Added dedicated single and archive block-theme templates.
+- Added Related Galleries with sparse-category fallback.
+- Added Photo Galleries to desktop/mobile publication navigation.
+- Extended editorial attribution/byline support to gallery posts.
+- Extended Post Sidebar Feed to Articles, Galleries or Mixed content and added a Latest Galleries variation.
+- Added gallery-specific body/template styling and CI guards.
+- Bumped theme, plugin and all 19 custom blocks to 0.10.0.
+
+
 ## 0.9.0
 
 - Added the new dynamic `digipublish/sidebar-feed` block for article sidebars.
