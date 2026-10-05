@@ -55,7 +55,7 @@ if ( $is_carousel ) {
 
 $styles = array();
 $legacy_columns = str_starts_with( $layout, 'grid-' ) ? max( 1, min( 5, absint( substr( $layout, 5 ) ) ) ) : 1;
-$default_columns = $is_horizontal ? 1 : ( $is_modern ? 4 : $legacy_columns );
+$default_columns = $is_carousel ? 4 : ( $is_modern ? 1 : $legacy_columns );
 $desktop = absint( $attributes['columnsDesktop'] ?? 0 ) ?: $default_columns;
 $tablet  = absint( $attributes['columnsTablet'] ?? 0 ) ?: ( $is_horizontal ? 1 : min( 2, $desktop ) );
 $mobile  = absint( $attributes['columnsMobile'] ?? 0 ) ?: 1;
@@ -82,17 +82,22 @@ foreach ( array(
 	}
 }
 
-foreach ( array(
-	'contentGap' => '--dp-content-gap',
-	'imageWidth' => '--dp-image-width',
-) as $key => $var ) {
-	$value = digipublish_core_css_length( $attributes[ $key ] ?? '' );
-	if ( $value ) {
-		$styles[] = $var . ':' . $value;
-	}
+$content_gap_defaults = array(
+	'standard-1'=>'32px','standard-2'=>'32px','standard-3'=>'32px','standard-4'=>'32px',
+	'horizontal-1'=>'16px','horizontal-2'=>'40px','horizontal-3'=>'40px',
+);
+$content_gap = digipublish_core_css_length( $attributes['contentGap'] ?? '', $content_gap_defaults[ $layout ] ?? '16px' );
+$styles[] = '--dp-content-gap:' . $content_gap;
+
+$image_width_map = array( 'one-fourth'=>'25%', 'one-third'=>'33.333%', 'half'=>'50%' );
+$image_width_key = sanitize_key( (string) ( $attributes['imageWidth'] ?? '' ) );
+if ( ! $image_width_key ) {
+	$image_width_key = 'horizontal-3' === $layout ? 'half' : 'one-third';
 }
-$content_align = isset( $attributes['contentAlign'] ) && in_array( $attributes['contentAlign'], array( 'start','center','end' ), true ) ? $attributes['contentAlign'] : 'center';
-$image_align = isset( $attributes['imageAlign'] ) && in_array( $attributes['imageAlign'], array( 'start','center','end','stretch' ), true ) ? $attributes['imageAlign'] : 'center';
+$styles[] = '--dp-image-width:' . ( $image_width_map[ $image_width_key ] ?? '33.333%' );
+
+$content_align = isset( $attributes['contentAlign'] ) && in_array( $attributes['contentAlign'], array( 'flex-start','center','flex-end','space-between' ), true ) ? $attributes['contentAlign'] : 'space-between';
+$image_align = isset( $attributes['imageAlign'] ) && in_array( $attributes['imageAlign'], array( 'flex-start','center','flex-end','stretch' ), true ) ? $attributes['imageAlign'] : 'flex-start';
 $styles[] = '--dp-content-align:' . $content_align;
 $styles[] = '--dp-image-align:' . $image_align;
 
