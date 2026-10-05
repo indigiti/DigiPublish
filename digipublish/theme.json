@@ -6,7 +6,7 @@
     "useRootPaddingAwareAlignments": true,
     "layout": {
       "contentSize": "677px",
-      "wideSize": "1440px",
+      "wideSize": "1360px",
       "allowEditing": true,
       "allowCustomContentAndWideSize": true
     },
