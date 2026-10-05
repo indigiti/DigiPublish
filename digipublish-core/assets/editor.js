@@ -520,7 +520,7 @@
       description:__('Featured-image mosaic for the post sidebar.', 'digipublish-core'),
       icon:'format-gallery',
       attributes:{ heading:'Visual Stories', layout:'image-grid', sourceMode:'latest', contentType:'mixed', postsToShow:12, orderBy:'date', period:'all', showHeading:true }
-    }
+    },
     {
       name:'sidebar-latest-galleries',
       title:__('Sidebar: Latest Galleries', 'digipublish-core'),
