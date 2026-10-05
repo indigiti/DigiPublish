@@ -17,12 +17,16 @@ if ( ! in_array( $layout, $allowed, true ) ) {
 
 $classes = array_merge( array( 'tp-post-feed' ), digipublish_core_visibility_classes( $attributes ) );
 $styles = array();
-$desktop = absint( $attributes['columnsDesktop'] ?? 0 );
-$tablet  = absint( $attributes['columnsTablet'] ?? 0 );
-$mobile  = absint( $attributes['columnsMobile'] ?? 0 );
-if ( $desktop ) { $styles[] = '--dp-columns-desktop:' . max( 1, min( 6, $desktop ) ); }
-if ( $tablet ) { $styles[] = '--dp-columns-tablet:' . max( 1, min( 6, $tablet ) ); }
-if ( $mobile ) { $styles[] = '--dp-columns-mobile:' . max( 1, min( 3, $mobile ) ); }
+$layout_columns = str_starts_with( $layout, 'grid-' ) ? max( 1, min( 5, absint( substr( $layout, 5 ) ) ) ) : 1;
+$desktop = absint( $attributes['columnsDesktop'] ?? 0 ) ?: $layout_columns;
+$tablet_default = in_array( $layout, array( 'grid-4', 'grid-5' ), true ) ? 2 : $layout_columns;
+$tablet  = absint( $attributes['columnsTablet'] ?? 0 ) ?: $tablet_default;
+$mobile  = absint( $attributes['columnsMobile'] ?? 0 ) ?: 1;
+if ( 'list' !== $layout ) {
+	$styles[] = '--dp-columns-desktop:' . max( 1, min( 6, $desktop ) );
+	$styles[] = '--dp-columns-tablet:' . max( 1, min( 6, $tablet ) );
+	$styles[] = '--dp-columns-mobile:' . max( 1, min( 3, $mobile ) );
+}
 foreach ( array( 'columnGap' => '--dp-column-gap', 'rowGap' => '--dp-row-gap', 'cardRadius' => '--dp-card-radius', 'cardMinHeight' => '--dp-card-min-height', 'headingFontSize' => '--dp-heading-size' ) as $key => $var ) {
 	$value = digipublish_core_css_length( $attributes[ $key ] ?? '' );
 	if ( $value ) { $styles[] = $var . ':' . $value; }
