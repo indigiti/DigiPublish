@@ -133,7 +133,7 @@ function techpress_editorial_register_blocks() {
 		true
 	);
 
-	$blocks = array( 'featured-posts', 'post-feed', 'editorial-feed', 'ad-slot', 'term-index', 'category-nav', 'archive-hero', 'archive-feed', 'author-profile', 'popular-categories', 'category-experts', 'related-posts', 'post-author-card', 'article-toc', 'article-byline' );
+	$blocks = array( 'featured-posts', 'post-feed', 'editorial-feed', 'ad-slot', 'term-index', 'category-nav', 'archive-hero', 'archive-feed', 'author-profile', 'popular-categories', 'category-experts', 'related-posts', 'post-author-card', 'article-toc', 'article-byline', 'sidebar-feed' );
 	foreach ( $blocks as $block ) {
 		register_block_type( TECHPRESS_EDITORIAL_DIR . 'blocks/' . $block );
 	}
