@@ -1462,6 +1462,134 @@
   registerBlockType('digipublish/twitter-carousel',{apiVersion:3,title:__('Twitter / X','digipublish-core'),category:'digipublish-editorial',icon:'format-chat',
     attributes:{heading:{type:'string',default:'Twitter Feed'},profileUrl:{type:'string',default:''},items:{type:'string',default:''},showHeader:{type:'boolean',default:true},showFollowButton:{type:'boolean',default:true},columns:{type:'integer',default:3},layout:{type:'string',default:'default'},number:{type:'integer',default:5},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
     edit:function(p){return socialCarouselEdit(p,'twitter');},save:function(){return null;}});
+  registerBlockType('digipublish/section-heading',{
+    apiVersion:3,title:__('Section Heading','digipublish-core'),category:'digipublish-editorial',icon:'heading',
+    supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
+    attributes:{text:{type:'string',default:'Section Heading'},level:{type:'integer',default:2},borderColor:{type:'string',default:''},accentColor:{type:'string',default:''},accentContrastColor:{type:'string',default:''},textColor:{type:'string',default:''},styleVariant:{type:'string',default:'style-1'}},
+    edit:function(props){
+      const a=props.attributes,set=props.setAttributes;
+      const styles={};
+      if(a.borderColor)styles['--dp-section-heading-border']=a.borderColor;
+      if(a.accentColor)styles['--dp-section-heading-accent']=a.accentColor;
+      if(a.accentContrastColor)styles['--dp-section-heading-accent-contrast']=a.accentContrastColor;
+      if(a.textColor)styles['--dp-section-heading-color']=a.textColor;
+      const bp=useBlockProps({className:'is-style-'+(a.styleVariant||'style-1'),style:styles});
+      return el(Fragment,{},
+        el(InspectorControls,{},
+          el(PanelBody,{title:__('Block Settings','digipublish-core'),initialOpen:true},
+            el(SelectControl,{label:__('Style','digipublish-core'),value:a.styleVariant||'style-1',options:[{label:__('Style 1','digipublish-core'),value:'style-1'},{label:__('Style 2','digipublish-core'),value:'style-2'}],onChange:function(v){set({styleVariant:v});}}),
+            el(SelectControl,{label:__('Heading Level','digipublish-core'),value:a.level||2,options:[2,3,4,5,6].map(function(v){return{label:'H'+v,value:v};}),onChange:function(v){set({level:parseInt(v,10)||2});}})
+          ),
+          el(PanelBody,{title:__('Color Settings','digipublish-core'),initialOpen:false},
+            colorControl(__('Border Color','digipublish-core'),a.borderColor,function(v){set({borderColor:v});}),
+            colorControl(__('Accent Color','digipublish-core'),a.accentColor,function(v){set({accentColor:v});}),
+            colorControl(__('Accent Contrast Color','digipublish-core'),a.accentContrastColor,function(v){set({accentContrastColor:v});}),
+            colorControl(__('Text Color','digipublish-core'),a.textColor,function(v){set({textColor:v});})
+          )
+        ),
+        el('div',bp,el(RichText,{tagName:'h'+(a.level||2),className:'wp-block-digipublish-section-heading__text',value:a.text,onChange:function(v){set({text:v});},placeholder:__('Section Heading','digipublish-core')}))
+      );
+    },
+    save:function(props){
+      const a=props.attributes,styles={};
+      if(a.borderColor)styles['--dp-section-heading-border']=a.borderColor;
+      if(a.accentColor)styles['--dp-section-heading-accent']=a.accentColor;
+      if(a.accentContrastColor)styles['--dp-section-heading-accent-contrast']=a.accentContrastColor;
+      if(a.textColor)styles['--dp-section-heading-color']=a.textColor;
+      const bp=useBlockProps.save({className:'is-style-'+(a.styleVariant||'style-1'),style:styles});
+      return el('div',bp,el(RichText.Content,{tagName:'h'+(a.level||2),className:'wp-block-digipublish-section-heading__text',value:a.text}));
+    }
+  });
+
+  function sectionStyle(a){
+    const s={};
+    [['gapDesktop','--dp-section-gap-d'],['gapLaptop','--dp-section-gap-l'],['gapTablet','--dp-section-gap-t'],['gapMobile','--dp-section-gap-m'],['sidebarWidthDesktop','--dp-section-sidebar-d'],['sidebarWidthLaptop','--dp-section-sidebar-l'],['sidebarWidthTablet','--dp-section-sidebar-t'],['sidebarWidthMobile','--dp-section-sidebar-m']].forEach(function(pair){if(a[pair[0]])s[pair[1]]=a[pair[0]];});
+    return s;
+  }
+  function sectionClasses(a){
+    const list=['wp-block-digipublish-section--'+(a.layout==='left-sidebar'?'left':a.layout==='full'?'full':'right')];
+    if(a.hideDesktop)list.push('dp-hide-desktop');if(a.hideLaptop)list.push('dp-hide-laptop');if(a.hideTablet)list.push('dp-hide-tablet');if(a.hideMobile)list.push('dp-hide-mobile');
+    return list.join(' ');
+  }
+  registerBlockType('digipublish/section',{
+    apiVersion:3,title:__('Section','digipublish-core'),category:'digipublish-editorial',icon:'columns',
+    supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
+    attributes:{layout:{type:'string',default:'right-sidebar'},gapDesktop:{type:'string',default:'40px'},gapLaptop:{type:'string',default:'40px'},gapTablet:{type:'string',default:'40px'},gapMobile:{type:'string',default:'40px'},sidebarWidthDesktop:{type:'string',default:'390px'},sidebarWidthLaptop:{type:'string',default:'390px'},sidebarWidthTablet:{type:'string',default:'300px'},sidebarWidthMobile:{type:'string',default:'300px'},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
+    edit:function(props){const a=props.attributes,set=props.setAttributes,bp=useBlockProps({className:sectionClasses(a),style:sectionStyle(a)});return el(Fragment,{},
+      el(InspectorControls,{},
+        el(PanelBody,{title:__('Block Settings','digipublish-core'),initialOpen:true},
+          el(SelectControl,{label:__('Layout','digipublish-core'),value:a.layout||'right-sidebar',options:[{label:__('Right Sidebar','digipublish-core'),value:'right-sidebar'},{label:__('Left Sidebar','digipublish-core'),value:'left-sidebar'},{label:__('Full Width','digipublish-core'),value:'full'}],onChange:function(v){set({layout:v});}}),
+          lengthControl(__('Gap — Desktop','digipublish-core'),a.gapDesktop,function(v){set({gapDesktop:v});},'40px'),
+          lengthControl(__('Gap — Laptop','digipublish-core'),a.gapLaptop,function(v){set({gapLaptop:v});},'40px'),
+          lengthControl(__('Gap — Tablet','digipublish-core'),a.gapTablet,function(v){set({gapTablet:v});},'40px'),
+          lengthControl(__('Gap — Mobile','digipublish-core'),a.gapMobile,function(v){set({gapMobile:v});},'40px'),
+          a.layout!=='full'?lengthControl(__('Sidebar Width — Desktop','digipublish-core'),a.sidebarWidthDesktop,function(v){set({sidebarWidthDesktop:v});},'390px'):null,
+          a.layout!=='full'?lengthControl(__('Sidebar Width — Laptop','digipublish-core'),a.sidebarWidthLaptop,function(v){set({sidebarWidthLaptop:v});},'390px'):null,
+          a.layout!=='full'?lengthControl(__('Sidebar Width — Tablet','digipublish-core'),a.sidebarWidthTablet,function(v){set({sidebarWidthTablet:v});},'300px'):null,
+          a.layout!=='full'?lengthControl(__('Sidebar Width — Mobile','digipublish-core'),a.sidebarWidthMobile,function(v){set({sidebarWidthMobile:v});},'300px'):null
+        ),
+        el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
+      ),
+      el('div',bp,el('div',{className:'wp-block-digipublish-section__inner'},el(InnerBlocks,{allowedBlocks:['digipublish/section-content','digipublish/section-sidebar'],template:a.layout==='full'?[['digipublish/section-content']]:[['digipublish/section-content'],['digipublish/section-sidebar']],templateLock:false})))
+    );},
+    save:function(props){const a=props.attributes,bp=useBlockProps.save({className:sectionClasses(a),style:sectionStyle(a)});return el('div',bp,el('div',{className:'wp-block-digipublish-section__inner'},el(InnerBlocks.Content))); }
+  });
+
+  function sectionColumnBlock(name,title,icon,className){
+    registerBlockType(name,{
+      apiVersion:3,title:title,category:'digipublish-editorial',icon:icon,parent:['digipublish/section'],
+      supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
+      attributes:{textColor:{type:'string',default:''},backgroundColor:{type:'string',default:''}},
+      edit:function(props){const a=props.attributes,set=props.setAttributes,styles={};if(a.textColor)styles['--dp-section-'+className+'-color']=a.textColor;if(a.backgroundColor)styles['--dp-section-'+className+'-bg']=a.backgroundColor;const bp=useBlockProps({style:styles});return el(Fragment,{},
+        el(InspectorControls,{},el(PanelBody,{title:__('Color Settings','digipublish-core'),initialOpen:true},
+          colorControl(__('Text Color','digipublish-core'),a.textColor,function(v){set({textColor:v});}),
+          colorControl(__('Background Color','digipublish-core'),a.backgroundColor,function(v){set({backgroundColor:v});})
+        )),
+        el('div',bp,el(InnerBlocks,{}))
+      );},
+      save:function(props){const a=props.attributes,styles={};if(a.textColor)styles['--dp-section-'+className+'-color']=a.textColor;if(a.backgroundColor)styles['--dp-section-'+className+'-bg']=a.backgroundColor;return el('div',useBlockProps.save({style:styles}),el(InnerBlocks.Content));}
+    });
+  }
+  sectionColumnBlock('digipublish/section-content',__('Section Content','digipublish-core'),'align-wide','content');
+  sectionColumnBlock('digipublish/section-sidebar',__('Section Sidebar','digipublish-core'),'align-pull-right','sidebar');
+
+  registerBlockType('digipublish/opt-in-form',{
+    apiVersion:3,title:__('Opt-In Form','digipublish-core'),category:'digipublish-editorial',icon:'email',
+    attributes:{heading:{type:'string',default:'Stay in the loop'},description:{type:'string',default:'Get the latest stories in your inbox.'},buttonLabel:{type:'string',default:'Subscribe'},actionUrl:{type:'string',default:''},emailFieldName:{type:'string',default:'email'},inputBackground:{type:'string',default:''},inputColor:{type:'string',default:''},buttonBackground:{type:'string',default:''},buttonColor:{type:'string',default:''},buttonHoverBackground:{type:'string',default:''},buttonHoverColor:{type:'string',default:''},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
+    edit:function(props){const a=props.attributes,set=props.setAttributes;return el(Fragment,{},
+      el(InspectorControls,{},
+        el(PanelBody,{title:__('Block Settings','digipublish-core'),initialOpen:true},
+          el(TextControl,{label:__('Heading','digipublish-core'),value:a.heading||'',onChange:function(v){set({heading:v});}}),
+          el(TextareaControl,{label:__('Description','digipublish-core'),value:a.description||'',onChange:function(v){set({description:v});}}),
+          el(TextControl,{label:__('Button Label','digipublish-core'),value:a.buttonLabel||'',onChange:function(v){set({buttonLabel:v});}}),
+          el(TextControl,{label:__('Form Action URL','digipublish-core'),value:a.actionUrl||'',onChange:function(v){set({actionUrl:v});}}),
+          el(TextControl,{label:__('Email Field Name','digipublish-core'),value:a.emailFieldName||'email',onChange:function(v){set({emailFieldName:v});}})
+        ),
+        el(PanelBody,{title:__('Color Settings','digipublish-core'),initialOpen:false},
+          colorControl(__('Input Background','digipublish-core'),a.inputBackground,function(v){set({inputBackground:v});}),
+          colorControl(__('Input Color','digipublish-core'),a.inputColor,function(v){set({inputColor:v});}),
+          colorControl(__('Button Background','digipublish-core'),a.buttonBackground,function(v){set({buttonBackground:v});}),
+          colorControl(__('Button Color','digipublish-core'),a.buttonColor,function(v){set({buttonColor:v});}),
+          colorControl(__('Button Background Hover','digipublish-core'),a.buttonHoverBackground,function(v){set({buttonHoverBackground:v});}),
+          colorControl(__('Button Color Hover','digipublish-core'),a.buttonHoverColor,function(v){set({buttonHoverColor:v});})
+        ),
+        el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
+      ),el(Preview,{name:'digipublish/opt-in-form',attributes:a}));},save:function(){return null;}
+  });
+
+  registerBlockType('digipublish/featured-categories',{
+    apiVersion:3,title:__('Featured Categories','digipublish-core'),category:'digipublish-editorial',icon:'category',
+    attributes:{heading:{type:'string',default:'Featured Categories'},categoryIds:{type:'array',default:[]},limit:{type:'integer',default:6},layout:{type:'string',default:'vertical-list-alt'},showCount:{type:'boolean',default:true}},
+    edit:function(props){const a=props.attributes,set=props.setAttributes,categoryOptions=useCategoryOptions().filter(function(o){return parseInt(o.value,10)>0;});return el(Fragment,{},
+      el(InspectorControls,{},el(PanelBody,{title:__('Block Settings','digipublish-core'),initialOpen:true},
+        el(TextControl,{label:__('Heading','digipublish-core'),value:a.heading||'',onChange:function(v){set({heading:v});}}),
+        tokenIdsControl(__('Categories','digipublish-core'),a.categoryIds||[],categoryOptions,function(ids){set({categoryIds:ids});}),
+        el(SelectControl,{label:__('Layout','digipublish-core'),value:a.layout||'vertical-list-alt',options:[{label:__('Vertical List Alt','digipublish-core'),value:'vertical-list-alt'},{label:__('Default','digipublish-core'),value:'default'}],onChange:function(v){set({layout:v});}}),
+        el(RangeControl,{label:__('Maximum count','digipublish-core'),value:a.limit||6,min:1,max:50,onChange:function(v){set({limit:v||1});}}),
+        el(ToggleControl,{label:__('Show count','digipublish-core'),checked:a.showCount!==false,onChange:function(v){set({showCount:v});}})
+      )),el(Preview,{name:'digipublish/featured-categories',attributes:a}));},save:function(){return null;}
+  });
+
   registerBlockType('digipublish/team-grid',{apiVersion:3,title:__('Meet Team','digipublish-core'),category:'digipublish-editorial',icon:'groups',
     attributes:{heading:{type:'string',default:'Meet the Team'},limit:{type:'integer',default:12},columns:{type:'integer',default:3},showBio:{type:'boolean',default:true},showRole:{type:'boolean',default:true}},
     edit:function(props){const a=props.attributes,set=props.setAttributes;return el(Fragment,{},el(InspectorControls,{},el(PanelBody,{title:__('Team Settings','digipublish-core')},
