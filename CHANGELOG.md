@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.10.2
+
+- Added a shared Gutenberg Inspector framework for configurable DigiPublish editorial blocks.
+- Added responsive column controls, column/row gaps, card radius and minimum-height controls where layouts support them.
+- Added heading typography controls, configurable heading tags, image size and image aspect-ratio controls.
+- Added responsive visibility controls for desktop, laptop, tablet and mobile.
+- Added native Gutenberg spacing and border support to configurable editorial blocks.
+- Extended Post Feed with category/tag include and exclude filters, selected-post filtering, offset, sort order, duplicate avoidance and numbered pagination.
+- Extended Featured Stories with richer query controls while preserving its existing magazine, lead-list and grid layouts.
+- Extended Editorial Feed, Related / Read Next, Archive Story Feed, Sidebar Feed and Gallery Archive with block-specific design and metadata controls.
+- Preserved existing responsive defaults and mobile swipe/rail behavior unless an editor explicitly changes responsive column settings.
+- Added safe frontend CSS-variable sanitization and shared rendering helpers instead of duplicating block-specific settings logic.
+- All release changes passed PHP, JSON, JavaScript, homepage, mobile/carousel, sidebar, gallery and Read Next regression checks.
+- Bumped theme, Core and all 19 custom blocks to 0.10.2.
+
+
 ## 0.10.1
 
 - Added a new Read Next presentation mode to the existing Related Posts block.

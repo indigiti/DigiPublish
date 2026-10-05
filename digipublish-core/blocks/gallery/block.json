@@ -2,24 +2,51 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "digipublish/gallery",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "title": "Photo Gallery",
   "category": "digipublish-editorial",
   "icon": "format-gallery",
   "description": "Editorial photo gallery with story, swipe and grid display modes.",
   "textdomain": "digipublish-core",
   "attributes": {
-    "displayMode": { "type": "string", "default": "story" },
-    "showCounter": { "type": "boolean", "default": true },
-    "showCaptions": { "type": "boolean", "default": true },
-    "showCredits": { "type": "boolean", "default": true },
-    "showThumbnails": { "type": "boolean", "default": false },
-    "allowFullscreen": { "type": "boolean", "default": true },
-    "showSharing": { "type": "boolean", "default": true },
-    "adInterval": { "type": "integer", "default": 0 }
+    "displayMode": {
+      "type": "string",
+      "default": "story"
+    },
+    "showCounter": {
+      "type": "boolean",
+      "default": true
+    },
+    "showCaptions": {
+      "type": "boolean",
+      "default": true
+    },
+    "showCredits": {
+      "type": "boolean",
+      "default": true
+    },
+    "showThumbnails": {
+      "type": "boolean",
+      "default": false
+    },
+    "allowFullscreen": {
+      "type": "boolean",
+      "default": true
+    },
+    "showSharing": {
+      "type": "boolean",
+      "default": true
+    },
+    "adInterval": {
+      "type": "integer",
+      "default": 0
+    }
   },
   "supports": {
-    "align": ["wide", "full"],
+    "align": [
+      "wide",
+      "full"
+    ],
     "html": false,
     "anchor": true
   },
