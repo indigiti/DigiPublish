@@ -283,7 +283,8 @@
       "color": true,
       "width": true,
       "style": true
-    }
+    },
+    "customClassName": true
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
