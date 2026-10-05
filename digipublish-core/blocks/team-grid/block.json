@@ -1,16 +1,44 @@
 {
-  "$schema":"https://schemas.wp.org/trunk/block.json",
-  "apiVersion":3,
-  "name":"digipublish/team-grid",
-  "version":"0.10.2",
-  "title":"Meet Team",
-  "category":"digipublish-editorial",
-  "icon":"groups",
-  "description":"Caards-style editorial team grid from WordPress users.",
-  "textdomain":"digipublish-core",
-  "attributes":{"heading":{"type":"string","default":"Meet the Team"},"limit":{"type":"integer","default":12},"columns":{"type":"integer","default":3},"showBio":{"type":"boolean","default":true},"showRole":{"type":"boolean","default":true}},
-  "supports":{"align":["wide","full"],"html":false,"anchor":true},
-  "editorScript":"digipublish-core-editor",
-  "style":"file:./style.css",
-  "render":"file:./render.php"
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "digipublish/team-grid",
+  "version": "0.11.0",
+  "title": "Meet Team",
+  "category": "digipublish-editorial",
+  "icon": "groups",
+  "description": "Caards-style editorial team grid from WordPress users.",
+  "textdomain": "digipublish-core",
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Meet the Team"
+    },
+    "limit": {
+      "type": "integer",
+      "default": 12
+    },
+    "columns": {
+      "type": "integer",
+      "default": 3
+    },
+    "showBio": {
+      "type": "boolean",
+      "default": true
+    },
+    "showRole": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false,
+    "anchor": true
+  },
+  "editorScript": "digipublish-core-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
 }
