@@ -957,11 +957,37 @@ function digipublish_core_post_feed_card_markup( $post_id, $attributes = array()
 		$classes[] = 'tp-card--compact-meta';
 	}
 
-	$image = '';
+	$media = '';
 	if ( $has_image ) {
-		$image = '<a class="tp-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' .
-			techpress_editorial_image_markup( $post_id, $image_size, false, '(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw' ) .
-			'</a>';
+		$video_url = ! empty( $attributes['enableVideoBackgrounds'] )
+			? esc_url_raw( (string) get_post_meta( $post_id, 'digipublish_post_video_url', true ) )
+			: '';
+		$video_path = $video_url ? wp_parse_url( $video_url, PHP_URL_PATH ) : '';
+		$video_ext = $video_path ? strtolower( (string) pathinfo( $video_path, PATHINFO_EXTENSION ) ) : '';
+		$can_video = $video_url && in_array( $video_ext, array( 'mp4', 'webm', 'ogg' ), true );
+
+		if ( $can_video ) {
+			$controls = ! empty( $attributes['enableVideoControls'] );
+			$media = '<div class="tp-card__image tp-card__image--video"><video ' .
+				( $controls ? 'controls ' : 'autoplay muted loop ' ) .
+				'playsinline preload="metadata" src="' . esc_url( $video_url ) . '"></video></div>';
+		} else {
+			$media = '<a class="tp-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' .
+				techpress_editorial_image_markup( $post_id, $image_size, false, '(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw' ) .
+				'</a>';
+		}
+
+		if ( $media && ( $attributes['showPostFormat'] ?? true ) ) {
+			$format = get_post_format( $post_id );
+			if ( $format ) {
+				$labels = array(
+					'video' => '▶', 'audio' => '♪', 'gallery' => '▦', 'image' => '▧',
+					'quote' => '“', 'link' => '↗', 'aside' => '•', 'status' => '●', 'chat' => '☰',
+				);
+				$symbol = $labels[ $format ] ?? '•';
+				$media = '<div class="tp-card__media">' . $media . '<span class="tp-card__format-icon" aria-label="' . esc_attr( ucfirst( $format ) ) . '">' . esc_html( $symbol ) . '</span></div>';
+			}
+		}
 	}
 
 	$top_meta = in_array( $semantic_layout, array( 'standard-4', 'tile-1', 'tile-2', 'tile-3', 'tile-4', 'carousel-1', 'carousel-2' ), true )
@@ -987,20 +1013,67 @@ function digipublish_core_post_feed_card_markup( $post_id, $attributes = array()
 
 	$html = '<article class="' . esc_attr( implode( ' ', $classes ) ) . '" data-post-id="' . absint( $post_id ) . '"><div class="tp-card__outer">';
 	if ( in_array( $semantic_layout, array( 'standard-3' ), true ) ) {
-		$html .= $top_meta . $content . $image . $footer;
+		$html .= $top_meta . $content . $media . $footer;
 	} elseif ( 'standard-4' === $semantic_layout ) {
 		$html .= $top_meta . $content . $footer;
 	} elseif ( $is_overlay ) {
-		$html .= $image . '<div class="tp-card__overlay-content">' . $top_meta . $content . $footer . '</div>';
+		$html .= $media . '<div class="tp-card__overlay-content">' . $top_meta . $content . $footer . '</div>';
 	} elseif ( in_array( $semantic_layout, array( 'horizontal-1', 'horizontal-2', 'horizontal-3', 'horizontal-5' ), true ) ) {
-		$html .= $image . '<div class="tp-card__horizontal-content">' . $top_meta . $content . $footer . '</div>';
+		$html .= $media . '<div class="tp-card__horizontal-content">' . $top_meta . $content . $footer . '</div>';
 	} elseif ( 'horizontal-4' === $semantic_layout ) {
 		$html .= $content . $footer;
 	} else {
-		$html .= $top_meta . $image . $content . $footer;
+		$html .= $top_meta . $media . $content . $footer;
 	}
 	$html .= '<a class="tp-card__overlay-link" href="' . esc_url( get_permalink( $post_id ) ) . '" aria-label="' . esc_attr( get_the_title( $post_id ) ) . '"></a>';
 	return $html . '</div></article>';
+}
+
+/**
+ * Render one widget from a sidebar at a repeated Masonry interval.
+ * Adapted from Caards' GPL widget-loop behavior.
+ */
+function digipublish_core_post_feed_loop_widget( $sidebar, $current = 1, $iteration = 3, $repeat = false ) {
+	global $wp_registered_widgets;
+	$sidebars = wp_get_sidebars_widgets();
+	if ( empty( $sidebars[ $sidebar ] ) || ! is_array( $sidebars[ $sidebar ] ) ) {
+		return '';
+	}
+	$widgets = array_values( $sidebars[ $sidebar ] );
+	$total = count( $widgets );
+	if ( ! $total ) {
+		return '';
+	}
+	$slot = (int) floor( $current / max( 1, $iteration ) ) - 1;
+	if ( $slot < 0 || ( ! $repeat && $slot >= $total ) ) {
+		return '';
+	}
+	$widget_slug = $widgets[ $slot % $total ];
+	if ( empty( $wp_registered_widgets[ $widget_slug ] ) || empty( $wp_registered_widgets[ $widget_slug ]['callback'][0] ) ) {
+		return '';
+	}
+	$registered = $wp_registered_widgets[ $widget_slug ];
+	$widget = isset( $registered['LWL_original_callback'][0] ) ? $registered['LWL_original_callback'][0] : $registered['callback'][0];
+	if ( ! is_object( $widget ) || ! method_exists( $widget, 'get_settings' ) ) {
+		return '';
+	}
+	$number = $registered['params'][0]['number'] ?? null;
+	$settings = $widget->get_settings();
+	if ( null === $number || ! isset( $settings[ $number ] ) ) {
+		return '';
+	}
+	ob_start();
+	the_widget(
+		get_class( $widget ),
+		$settings[ $number ],
+		array(
+			'before_widget' => '<div class="tp-card tp-post-feed__widget-card"><div class="tp-post-feed__widget %1$s">',
+			'after_widget'  => '</div></div>',
+			'before_title'  => '<h3 class="tp-post-feed__widget-title">',
+			'after_title'   => '</h3>',
+		)
+	);
+	return (string) ob_get_clean();
 }
 
 /**
