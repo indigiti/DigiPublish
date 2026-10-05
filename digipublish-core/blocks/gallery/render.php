@@ -71,7 +71,7 @@ foreach ( $slides as $index => $slide ) {
 	$number = $index + 1;
 	echo digipublish_core_render_gallery_slide( $slide, $number, $total, $settings );
 
-	if ( $settings['adInterval'] && 0 === $number % $settings['adInterval'] && $number < $total ) {
+	if ( 'story' === $mode && $settings['adInterval'] && 0 === $number % $settings['adInterval'] && $number < $total ) {
 		echo '<div class="tp-gallery__ad">';
 		echo do_blocks( '<!-- wp:digipublish/ad-slot {"slotName":"gallery-inline","minHeight":250,"label":"Advertisement"} /-->' );
 		echo '</div>';
