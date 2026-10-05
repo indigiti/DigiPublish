@@ -224,6 +224,45 @@ jobs:
           grep -Fq 'Caards 1.0.4' THIRD_PARTY_NOTICES.md || exit 1
 
 
+      - name: Guard Caards visual fidelity cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          css="digipublish/assets/css/site.css"
+          home="digipublish/patterns/caards-home.php"
+          header="digipublish/parts/header-one.html"
+          funcs="digipublish/functions.php"
+
+          ! grep -Fq -- '--tp-ink:#101d3d' "$css" || {
+            echo "Legacy DigiPublish blue/ink shell returned."
+            exit 1
+          }
+          ! grep -Fq 'techpress-site' "$funcs" || {
+            echo "Obsolete Techpress frontend class returned."
+            exit 1
+          }
+
+          for class in dp-caards-demo-mosaic dp-caards-mosaic-card--feature dp-caards-mosaic-card--social dp-caards-mosaic-card--dark dp-caards-mosaic-card--portrait dp-caards-mosaic-card--mini dp-caards-mosaic-card--rail-feature; do
+            grep -Fq "$class" "$home" || {
+              echo "Missing Caards homepage mosaic element: $class"
+              exit 1
+            }
+            grep -Fq "$class" "$css" || {
+              echo "Missing Caards homepage mosaic styling: $class"
+              exit 1
+            }
+          done
+
+          grep -Fq 'border-radius:var(--dp-caards-radius)' "$css" || exit 1
+          grep -Fq 'max-width:var(--dp-caards-container)' "$css" || exit 1
+          grep -Fq 'dp-caards-nav-more' "$header" || exit 1
+          grep -Fq '⚡ Features' "$header" || exit 1
+          ! grep -Fq 'digipublish/current-date' "$header" || {
+            echo "Header 1 still contains the non-Caards date control."
+            exit 1
+          }
+
+
       - name: Guard mobile and carousel regressions
         shell: bash
         run: |
