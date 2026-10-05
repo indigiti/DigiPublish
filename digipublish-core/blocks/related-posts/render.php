@@ -108,8 +108,7 @@ if ( 'read-next' === $layout ) {
 	$wrapper = get_block_wrapper_attributes(
 		digipublish_core_design_wrapper_args(
 			$attributes,
-			array( 'tp-related-posts', 'tp-related-posts--read-next', 'alignwide' ),
-			array( 'desktop' => 4, 'tablet' => 2, 'mobile' => 1 )
+			array( 'tp-related-posts', 'tp-related-posts--read-next', 'alignwide' )
 		)
 	);
 	echo '<section ' . $wrapper . '>';
@@ -160,8 +159,7 @@ if ( 'read-next' === $layout ) {
 $wrapper = get_block_wrapper_attributes(
 	digipublish_core_design_wrapper_args(
 		$attributes,
-		array( 'tp-related-posts', 'alignwide' ),
-		array( 'desktop' => 3, 'tablet' => 2, 'mobile' => 1 )
+		array( 'tp-related-posts', 'alignwide' )
 	)
 );
 $heading_tag = digipublish_core_heading_tag( $attributes );
