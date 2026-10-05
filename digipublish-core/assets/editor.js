@@ -448,6 +448,7 @@
       heading: { type: 'string', default: 'Recent Stories' },
       layout: { type: 'string', default: 'meta-list' },
       sourceMode: { type: 'string', default: 'current' },
+      contentType: { type: 'string', default: 'post' },
       categoryId: { type: 'integer', default: 0 },
       postsToShow: { type: 'integer', default: 5 },
       orderBy: { type: 'string', default: 'date' },
@@ -470,6 +471,11 @@
               { label: __('Latest posts', 'digipublish-core'), value:'latest' },
               { label: __('Selected category', 'digipublish-core'), value:'category' }
             ], onChange: function(v){ set({ sourceMode:v }); } }),
+            el(SelectControl, { label: __('Content type', 'digipublish-core'), value: a.contentType || 'post', options: [
+              { label: __('Articles', 'digipublish-core'), value:'post' },
+              { label: __('Photo galleries', 'digipublish-core'), value:'gallery' },
+              { label: __('Articles + galleries', 'digipublish-core'), value:'mixed' }
+            ], onChange: function(v){ set({ contentType:v }); } }),
             a.sourceMode === 'category' ? el(SelectControl, { label: __('Category', 'digipublish-core'), value: a.categoryId || 0, options: categoryOptions, onChange: function(v){ set({ categoryId:parseInt(v,10)||0 }); } }) : null,
             el(RangeControl, { label: __('Stories', 'digipublish-core'), value: a.postsToShow || 5, min:3, max:12, onChange: function(v){ set({ postsToShow:v }); } }),
             el(SelectControl, { label: __('Order by', 'digipublish-core'), value: a.orderBy || 'date', options: [
@@ -513,7 +519,14 @@
       title:__('Sidebar: Visual Stories', 'digipublish-core'),
       description:__('Featured-image mosaic for the post sidebar.', 'digipublish-core'),
       icon:'format-gallery',
-      attributes:{ heading:'Visual Stories', layout:'image-grid', sourceMode:'latest', postsToShow:12, orderBy:'date', period:'all', showHeading:true }
+      attributes:{ heading:'Visual Stories', layout:'image-grid', sourceMode:'latest', contentType:'mixed', postsToShow:12, orderBy:'date', period:'all', showHeading:true }
+    }
+    {
+      name:'sidebar-latest-galleries',
+      title:__('Sidebar: Latest Galleries', 'digipublish-core'),
+      description:__('Recent photo galleries with photo-count metadata.', 'digipublish-core'),
+      icon:'images-alt2',
+      attributes:{ heading:'Latest Galleries', layout:'meta-list', sourceMode:'latest', contentType:'gallery', postsToShow:5, orderBy:'date', period:'all', showHeading:true }
     }
   ].forEach(function(variation){
     registerBlockVariation('digipublish/sidebar-feed', Object.assign({ scope:['inserter'] }, variation));
