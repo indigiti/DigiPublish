@@ -151,8 +151,8 @@ jobs:
             echo "Editorial Feed random fallback attribute is missing."
             exit 1
           }
-          if grep -R --line-number -E 'ORDER[[:space:]]+BY[[:space:]]+RAND\(' digipublish digipublish-core; then
-            echo "Expensive SQL ORDER BY RAND() must not be used."
+          if grep -R --line-number --include='*.php' -E "['\"]orderby['\"][[:space:]]*=>[[:space:]]*['\"]rand['\"]|['\"][^'\"]*ORDER[[:space:]]+BY[[:space:]]+RAND\(" digipublish digipublish-core; then
+            echo "Database-level random ordering must not be used."
             exit 1
           fi
           grep -Fq "'hide_empty' => false" digipublish-core/blocks/popular-categories/render.php || {
