@@ -1,1 +1,37 @@
-{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"digipublish/custom-link","version":"0.10.2","title":"Custom Link","category":"digipublish-editorial","icon":"admin-links","description":"Caards-style custom link or header button.","textdomain":"digipublish-core","attributes":{"label":{"type":"string","default":"Buy Now"},"url":{"type":"string","default":"#"},"target":{"type":"string","default":"_self"},"buttonStyle":{"type":"boolean","default":true}},"supports":{"html":false,"anchor":true,"className":true},"editorScript":"digipublish-core-editor","style":"file:./style.css","render":"file:./render.php"}
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "digipublish/custom-link",
+  "version": "0.11.0",
+  "title": "Custom Link",
+  "category": "digipublish-editorial",
+  "icon": "admin-links",
+  "description": "Caards-style custom link or header button.",
+  "textdomain": "digipublish-core",
+  "attributes": {
+    "label": {
+      "type": "string",
+      "default": "Buy Now"
+    },
+    "url": {
+      "type": "string",
+      "default": "#"
+    },
+    "target": {
+      "type": "string",
+      "default": "_self"
+    },
+    "buttonStyle": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "supports": {
+    "html": false,
+    "anchor": true,
+    "className": true
+  },
+  "editorScript": "digipublish-core-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}
