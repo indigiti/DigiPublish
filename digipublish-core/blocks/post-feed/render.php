@@ -146,6 +146,9 @@ $async_pagination = in_array( $pagination_type, array( 'ajax', 'infinite' ), tru
 if ( $async_pagination && $query->max_num_pages > 1 ) {
 	$async_attributes = $attributes;
 	$async_attributes['paginationType'] = $pagination_type;
+	if ( ! empty( $attributes['avoidDuplicates'] ) ) {
+		$async_attributes['_excludePostIds'] = digipublish_core_rendered_post_ids();
+	}
 	if ( ! empty( $attributes['relatedPosts'] ) && is_singular() ) {
 		$async_attributes['_relatedPostId'] = get_queried_object_id();
 	}
