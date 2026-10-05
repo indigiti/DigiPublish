@@ -9,9 +9,9 @@
 }
 @media(max-width:900px){
   .tp-article-sidebar{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .tp-article-sidebar>.wp-block-digipublish-sidebar-feed--image-grid{grid-column:1/-1}
+  .tp-article-sidebar>.tp-sidebar-feed--image-grid{grid-column:1/-1}
 }
 @media(max-width:680px){
   .tp-article-sidebar{grid-template-columns:1fr;gap:16px;margin-top:24px}
-  .tp-article-sidebar>.wp-block-digipublish-sidebar-feed--image-grid{grid-column:auto}
+  .tp-article-sidebar>.tp-sidebar-feed--image-grid{grid-column:auto}
 }
