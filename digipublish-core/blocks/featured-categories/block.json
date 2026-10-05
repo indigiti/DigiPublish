@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "digipublish/featured-categories",
+  "version": "0.11.0",
+  "title": "Featured Categories",
+  "category": "digipublish-editorial",
+  "icon": "category",
+  "description": "Caards/Powerkit-compatible featured categories including Vertical List Alt.",
+  "textdomain": "digipublish-core",
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Featured Categories"
+    },
+    "categoryIds": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "integer"
+      }
+    },
+    "limit": {
+      "type": "integer",
+      "default": 6
+    },
+    "layout": {
+      "type": "string",
+      "default": "vertical-list-alt"
+    },
+    "showCount": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false,
+    "anchor": true,
+    "customClassName": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "border": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true
+    }
+  },
+  "editorScript": "digipublish-core-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}
