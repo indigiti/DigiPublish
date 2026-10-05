@@ -184,7 +184,12 @@ function digipublish_core_update_gallery_slide_count( $post_id ) {
 	if ( ! $post_id || wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) || 'digipublish_gallery' !== get_post_type( $post_id ) ) {
 		return;
 	}
-	update_post_meta( $post_id, '_digipublish_gallery_slide_count', count( digipublish_core_get_gallery_slides( $post_id ) ) );
+	$slides = digipublish_core_get_gallery_slides( $post_id );
+	update_post_meta( $post_id, '_digipublish_gallery_slide_count', count( $slides ) );
+
+	if ( ! has_post_thumbnail( $post_id ) && ! empty( $slides[0]['imageId'] ) ) {
+		set_post_thumbnail( $post_id, absint( $slides[0]['imageId'] ) );
+	}
 }
 add_action( 'save_post_digipublish_gallery', 'digipublish_core_update_gallery_slide_count', 20 );
 
@@ -269,6 +274,65 @@ function digipublish_core_render_gallery_slide( $attributes, $index = 1, $total 
 	$html .= '</figure></article>';
 	return $html;
 }
+
+/**
+ * Cached list of categories that actually contain published galleries.
+ */
+function digipublish_core_get_gallery_categories( $limit = 10 ) {
+	$limit = max( 1, min( 30, absint( $limit ) ) );
+	$key   = 'v' . techpress_editorial_cache_version() . '_gallery_categories_' . $limit;
+	$terms = wp_cache_get( $key, 'techpress_editorial' );
+	if ( false !== $terms ) {
+		return $terms;
+	}
+
+	$ids = get_posts(
+		array(
+			'post_type'              => 'digipublish_gallery',
+			'post_status'            => 'publish',
+			'posts_per_page'         => 200,
+			'fields'                 => 'ids',
+			'orderby'                => 'date',
+			'order'                  => 'DESC',
+			'no_found_rows'          => true,
+			'update_post_meta_cache' => false,
+			'update_post_term_cache' => false,
+		)
+	);
+
+	if ( ! $ids ) {
+		wp_cache_set( $key, array(), 'techpress_editorial', HOUR_IN_SECONDS );
+		return array();
+	}
+
+	$terms = wp_get_object_terms(
+		$ids,
+		'category',
+		array(
+			'orderby' => 'count',
+			'order'   => 'DESC',
+		)
+	);
+	if ( is_wp_error( $terms ) ) {
+		$terms = array();
+	}
+	$terms = array_slice( $terms, 0, $limit );
+	wp_cache_set( $key, $terms, 'techpress_editorial', HOUR_IN_SECONDS );
+	return $terms;
+}
+
+/**
+ * Refresh rewrite rules once when a plugin version introduces routing changes.
+ */
+function digipublish_core_maybe_refresh_gallery_rewrites() {
+	$version = (string) get_option( 'digipublish_gallery_rewrite_version', '' );
+	if ( DIGIPUBLISH_CORE_VERSION === $version ) {
+		return;
+	}
+	flush_rewrite_rules( false );
+	update_option( 'digipublish_gallery_rewrite_version', DIGIPUBLISH_CORE_VERSION, false );
+}
+add_action( 'init', 'digipublish_core_maybe_refresh_gallery_rewrites', 99 );
 
 /**
  * Lightweight ImageGallery structured data. WordPress already provides canonical
