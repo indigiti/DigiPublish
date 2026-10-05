@@ -11,11 +11,11 @@
   "attributes": {
     "label": {
       "type": "string",
-      "default": "Buy Now"
+      "default": "View All"
     },
     "url": {
       "type": "string",
-      "default": "#"
+      "default": "/"
     },
     "target": {
       "type": "string",
@@ -24,12 +24,87 @@
     "buttonStyle": {
       "type": "boolean",
       "default": true
+    },
+    "styleVariant": {
+      "type": "string",
+      "default": "default"
+    },
+    "textAlign": {
+      "type": "string",
+      "default": "left"
+    },
+    "disableLabelMobile": {
+      "type": "boolean",
+      "default": false
+    },
+    "textColor": {
+      "type": "string",
+      "default": ""
+    },
+    "textHoverColor": {
+      "type": "string",
+      "default": ""
+    },
+    "circleBackground": {
+      "type": "string",
+      "default": ""
+    },
+    "circleColor": {
+      "type": "string",
+      "default": ""
+    },
+    "circleHoverBackground": {
+      "type": "string",
+      "default": ""
+    },
+    "circleHoverColor": {
+      "type": "string",
+      "default": ""
+    },
+    "fontSizeDesktop": {
+      "type": "string",
+      "default": ""
+    },
+    "fontSizeTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "fontSizeMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "hideDesktop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLaptop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideMobile": {
+      "type": "boolean",
+      "default": false
     }
   },
   "supports": {
     "html": false,
     "anchor": true,
-    "className": true
+    "className": true,
+    "customClassName": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "border": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true
+    }
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
