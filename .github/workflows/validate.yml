@@ -113,6 +113,54 @@ jobs:
             }
           done
 
+      - name: Guard Posts block controls and layouts
+        shell: bash
+        run: |
+          set -euo pipefail
+          block="digipublish-core/blocks/post-feed/block.json"
+          editor="digipublish-core/assets/editor.js"
+          render="digipublish-core/blocks/post-feed/render.php"
+          css="digipublish-core/blocks/post-feed/style.css"
+
+          jq -e '
+            .title == "Posts" and
+            .attributes.postType.default == "post" and
+            .attributes.postFormats.type == "array" and
+            .attributes.filterTaxonomy.type == "string" and
+            .attributes.filterTermIds.type == "array" and
+            .attributes.relatedPosts.default == false and
+            .attributes.topMetaType.default == "none" and
+            .attributes.compactMeta.default == false and
+            .attributes.customCss.type == "string" and
+            .supports.anchor == true and
+            .supports.customClassName == true
+          ' "$block" >/dev/null
+
+          for layout in standard-1 standard-2 standard-3 standard-4 masonry-1 horizontal-1 horizontal-2 horizontal-3 horizontal-4 horizontal-5 tile-1 tile-2 tile-3 tile-4 carousel-1 carousel-2; do
+            grep -Fq "value:'$layout'" "$editor" || {
+              echo "Missing Posts editor layout: $layout"
+              exit 1
+            }
+            grep -Fq "'$layout'" "$render" || {
+              echo "Missing Posts renderer layout: $layout"
+              exit 1
+            }
+          done
+
+          for label in "Block Settings" "Top Meta Type" "Display compact post meta" "Filter by Formats" "Filter by Taxonomy" "Filter by Terms" "Display Related Posts" "Avoid Duplicate Posts" "Spacings" "Borders" "Responsive Settings" "Additional CSS"; do
+            grep -Fq "$label" "$editor" || {
+              echo "Missing Posts inspector control: $label"
+              exit 1
+            }
+          done
+
+          grep -Fq 'safecss_filter_attr' "$render" || exit 1
+          grep -Fq 'data-dp-post-carousel-track' "$render" || exit 1
+          grep -Fq '.tp-feed--masonry-1' "$css" || exit 1
+          grep -Fq '.tp-feed--carousel-1' "$css" || exit 1
+          test -f digipublish-core/blocks/post-feed/view.js
+
+
       - name: Guard mobile and carousel regressions
         shell: bash
         run: |
