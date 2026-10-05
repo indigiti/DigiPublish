@@ -652,6 +652,8 @@ body.dp-caards-shell :where(h1,h2,h3,h4,h5,h6,.wp-block-post-title){letter-spaci
 	.dp-caards-header .wp-block-site-tagline{display:none}
 }
 @media(max-width:1100px){
+	.tp-article-layout{grid-template-columns:1fr;gap:30px}
+	.tp-article-sidebar{position:static}
 	.dp-caards-header{padding:14px 0 0}
 	.dp-caards-header__desktop,.dp-caards-topbar{display:none}
 	.dp-caards-header__mobile{display:flex}
@@ -664,6 +666,10 @@ body.dp-caards-shell :where(h1,h2,h3,h4,h5,h6,.wp-block-post-title){letter-spaci
 	.dp-caards-demo-mosaic{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:760px){
+	.tp-section{padding:32px 16px}
+	.tp-home-top{padding:20px 16px}
+	.tp-home-popular-categories{padding:30px 16px}
+	.tp-internal-shell,.tp-article-page{width:calc(100% - 32px);padding-top:30px}
 	.admin-bar .dp-caards-header.is-sticky{top:46px}
 	.dp-caards-home-hero{padding:48px 18px 30px}
 	.dp-caards-home-hero h1{font-size:clamp(2.35rem,12vw,3.7rem)!important}
