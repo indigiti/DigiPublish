@@ -6,7 +6,7 @@
   const Fragment = wp.element.Fragment;
   const { registerBlockType, registerBlockVariation, getBlockType, createBlock } = wp.blocks;
   const { InspectorControls, useBlockProps, InnerBlocks, MediaUpload, MediaUploadCheck, RichText } = wp.blockEditor;
-  const { PanelBody, TextControl, RangeControl, SelectControl, ToggleControl, Notice, Button, FormTokenField } = wp.components;
+  const { PanelBody, TextControl, TextareaControl, RangeControl, SelectControl, ToggleControl, Notice, Button, FormTokenField } = wp.components;
   const { __ } = wp.i18n;
   const useSelect = wp.data.useSelect;
   const SSRPackage = wp.serverSideRender;
@@ -43,10 +43,52 @@
     return options;
   }
 
-  function usePostOptions() {
-    const posts = useSelect(function (select) {
-      return select('core').getEntityRecords('postType', 'post', { per_page: 100, orderby: 'date', order: 'desc', _fields: 'id,title' });
+  function usePostTypeOptions() {
+    const types = useSelect(function (select) {
+      return select('core').getPostTypes({ per_page: -1 });
     }, []);
+    const options = [{ label: __('Posts', 'digipublish-core'), value: 'post' }];
+    if (Array.isArray(types)) {
+      types.forEach(function (type) {
+        if (!type || !type.slug || type.slug === 'post' || type.slug === 'attachment' || type.slug === 'wp_block' || type.viewable === false) return;
+        options.push({ label: type.name || type.slug, value: type.slug });
+      });
+    }
+    return options;
+  }
+
+  function useTaxonomyOptions(postType) {
+    const taxonomies = useSelect(function (select) {
+      return select('core').getTaxonomies({ per_page: -1 });
+    }, []);
+    const options = [{ label: __('Select...', 'digipublish-core'), value: '' }];
+    if (Array.isArray(taxonomies)) {
+      taxonomies.forEach(function (taxonomy) {
+        if (!taxonomy || !taxonomy.slug || taxonomy.slug === 'category' || taxonomy.slug === 'post_tag') return;
+        if (Array.isArray(taxonomy.types) && postType && taxonomy.types.indexOf(postType) === -1) return;
+        options.push({ label: taxonomy.name || taxonomy.slug, value: taxonomy.slug });
+      });
+    }
+    return options;
+  }
+
+  function useTermOptions(taxonomy) {
+    const terms = useSelect(function (select) {
+      if (!taxonomy) return [];
+      return select('core').getEntityRecords('taxonomy', taxonomy, { per_page: 100, orderby: 'name', order: 'asc' });
+    }, [taxonomy]);
+    const options = [];
+    if (Array.isArray(terms)) {
+      terms.forEach(function (term) { options.push({ label: term.name, value: term.id }); });
+    }
+    return options;
+  }
+
+  function usePostOptions(postType) {
+    const type = postType || 'post';
+    const posts = useSelect(function (select) {
+      return select('core').getEntityRecords('postType', type, { per_page: 100, orderby: 'date', order: 'desc', _fields: 'id,title' });
+    }, [type]);
     const options = [];
     if (Array.isArray(posts)) {
       posts.forEach(function (post) {
@@ -276,55 +318,304 @@
     return panels.length ? el(InspectorControls, {}, panels) : null;
   }
 
-  function postQueryControls(props) {
+  function postFormatControl(selectedFormats, onChange) {
+    const formats = [
+      { label: __('Standard', 'digipublish-core'), value: 'standard' },
+      { label: __('Aside', 'digipublish-core'), value: 'aside' },
+      { label: __('Gallery', 'digipublish-core'), value: 'gallery' },
+      { label: __('Link', 'digipublish-core'), value: 'link' },
+      { label: __('Image', 'digipublish-core'), value: 'image' },
+      { label: __('Quote', 'digipublish-core'), value: 'quote' },
+      { label: __('Status', 'digipublish-core'), value: 'status' },
+      { label: __('Video', 'digipublish-core'), value: 'video' },
+      { label: __('Audio', 'digipublish-core'), value: 'audio' },
+      { label: __('Chat', 'digipublish-core'), value: 'chat' }
+    ];
+    const byLabel = {}, byValue = {};
+    formats.forEach(function (format) { byLabel[format.label] = format.value; byValue[format.value] = format.label; });
+    const value = (Array.isArray(selectedFormats) ? selectedFormats : []).map(function (format) { return byValue[format]; }).filter(Boolean);
+    return el(FormTokenField, {
+      label: __('Filter by Formats', 'digipublish-core'),
+      value: value,
+      suggestions: formats.map(function (format) { return format.label; }),
+      onChange: function (tokens) {
+        onChange(Array.from(new Set((tokens || []).map(function (token) { return byLabel[token] || ''; }).filter(Boolean))));
+      }
+    });
+  }
+
+  function postQueryPanelChildren(props) {
     const a = props.attributes;
     const set = props.setAttributes;
+    const postType = a.postType || 'post';
     const categoryOptions = useCategoryOptions().filter(function (option) { return parseInt(option.value, 10) > 0; });
     const tagOptions = useTagOptions();
-    const postOptions = usePostOptions();
+    const postTypeOptions = usePostTypeOptions();
+    const taxonomyOptions = useTaxonomyOptions(postType);
+    const termOptions = useTermOptions(a.filterTaxonomy || '');
+    const postOptions = usePostOptions(postType);
     const selectedCategories = Array.isArray(a.filterCategoryIds) && a.filterCategoryIds.length
       ? a.filterCategoryIds
       : (a.categoryId ? [a.categoryId] : []);
+    const children = [];
 
+    if (hasAttribute(a, 'postType')) {
+      children.push(el(SelectControl, {
+        label: __('Post Type', 'digipublish-core'),
+        value: postType,
+        options: postTypeOptions,
+        onChange: function (v) { set({ postType: v || 'post', filterPostIds: [], filterTaxonomy: '', filterTermIds: [] }); }
+      }));
+    }
+    children.push(
+      tokenIdsControl(__('Filter by Categories', 'digipublish-core'), selectedCategories, categoryOptions, function (ids) {
+        set({ filterCategoryIds: ids, categoryId: ids.length === 1 ? ids[0] : 0 });
+      }),
+      tokenIdsControl(__('Filter by Tags', 'digipublish-core'), a.filterTagIds || [], tagOptions, function (ids) { set({ filterTagIds: ids }); }),
+      tokenIdsControl(__('Exclude Categories', 'digipublish-core'), a.excludeCategoryIds || [], categoryOptions, function (ids) { set({ excludeCategoryIds: ids }); }),
+      tokenIdsControl(__('Exclude Tags', 'digipublish-core'), a.excludeTagIds || [], tagOptions, function (ids) { set({ excludeTagIds: ids }); })
+    );
+    if (hasAttribute(a, 'postFormats') && postType === 'post') {
+      children.push(postFormatControl(a.postFormats || [], function (formats) { set({ postFormats: formats }); }));
+    }
+    children.push(
+      tokenIdsControl(__('Filter by Posts', 'digipublish-core'), a.filterPostIds || [], postOptions, function (ids) { set({ filterPostIds: ids }); }, __('Choose from the latest 100 items.', 'digipublish-core')),
+      el(RangeControl, { label: __('Offset', 'digipublish-core'), value: a.offset || 0, min: 0, max: 100, onChange: function (v) { set({ offset: v || 0 }); } }),
+      el(SelectControl, {
+        label: __('Order by', 'digipublish-core'),
+        value: a.orderBy || 'date',
+        options: [
+          { label: __('Published Date', 'digipublish-core'), value: 'date' },
+          { label: __('Modified Date', 'digipublish-core'), value: 'modified' },
+          { label: __('Comment Count', 'digipublish-core'), value: 'comment_count' },
+          { label: __('Title', 'digipublish-core'), value: 'title' }
+        ],
+        onChange: function (v) { set({ orderBy: v }); }
+      }),
+      el(SelectControl, {
+        label: __('Order', 'digipublish-core'),
+        value: a.order || 'DESC',
+        options: [
+          { label: __('Descending', 'digipublish-core'), value: 'DESC' },
+          { label: __('Ascending', 'digipublish-core'), value: 'ASC' }
+        ],
+        onChange: function (v) { set({ order: v }); }
+      })
+    );
+    if (hasAttribute(a, 'filterTaxonomy')) {
+      children.push(
+        el(SelectControl, {
+          label: __('Filter by Taxonomy', 'digipublish-core'),
+          value: a.filterTaxonomy || '',
+          options: taxonomyOptions,
+          onChange: function (v) { set({ filterTaxonomy: v || '', filterTermIds: [] }); }
+        }),
+        a.filterTaxonomy ? tokenIdsControl(__('Filter by Terms', 'digipublish-core'), a.filterTermIds || [], termOptions, function (ids) { set({ filterTermIds: ids }); }) : null
+      );
+    }
+    if (hasAttribute(a, 'relatedPosts')) {
+      children.push(el(ToggleControl, {
+        label: __('Display Related Posts', 'digipublish-core'),
+        help: __('Changes will be visible on frontend only. When enabled on a single post, results are filtered by the current post categories.', 'digipublish-core'),
+        checked: !!a.relatedPosts,
+        onChange: function (v) { set({ relatedPosts: v }); }
+      }));
+    }
+    children.push(el(ToggleControl, {
+      label: __('Avoid Duplicate Posts', 'digipublish-core'),
+      help: __('Changes will be visible on frontend only. Avoid items already emitted by compatible DigiPublish feed blocks earlier on the page.', 'digipublish-core'),
+      checked: !!a.avoidDuplicates,
+      onChange: function (v) { set({ avoidDuplicates: v }); }
+    }));
+    return children;
+  }
+
+  function postQueryControls(props) {
     return el(InspectorControls, {},
-      el(PanelBody, { title: __('Query Settings', 'digipublish-core'), initialOpen: false },
-        tokenIdsControl(__('Filter by categories', 'digipublish-core'), selectedCategories, categoryOptions, function (ids) {
-          set({ filterCategoryIds: ids, categoryId: ids.length === 1 ? ids[0] : 0 });
-        }),
-        tokenIdsControl(__('Filter by tags', 'digipublish-core'), a.filterTagIds || [], tagOptions, function (ids) { set({ filterTagIds: ids }); }),
-        tokenIdsControl(__('Exclude categories', 'digipublish-core'), a.excludeCategoryIds || [], categoryOptions, function (ids) { set({ excludeCategoryIds: ids }); }),
-        tokenIdsControl(__('Exclude tags', 'digipublish-core'), a.excludeTagIds || [], tagOptions, function (ids) { set({ excludeTagIds: ids }); }),
-        tokenIdsControl(__('Filter by posts', 'digipublish-core'), a.filterPostIds || [], postOptions, function (ids) { set({ filterPostIds: ids }); }, __('Choose from the latest 100 posts.', 'digipublish-core')),
-        el(RangeControl, { label: __('Offset', 'digipublish-core'), value: a.offset || 0, min: 0, max: 50, onChange: function (v) { set({ offset: v || 0 }); } }),
+      el(PanelBody, { title: __('Query Settings', 'digipublish-core'), initialOpen: false }, postQueryPanelChildren(props))
+    );
+  }
+
+  function normalizedPostLayout(layout) {
+    if (layout === 'list') return 'horizontal-1';
+    if (/^grid-[2-5]$/.test(layout || '')) return 'standard-1';
+    return layout || 'standard-1';
+  }
+
+  function postFeedLayoutOptions() {
+    return [
+      { label:'Standard 1', value:'standard-1', group:'Standard' },
+      { label:'Standard 2', value:'standard-2', group:'Standard' },
+      { label:'Standard 3', value:'standard-3', group:'Standard' },
+      { label:'Standard 4', value:'standard-4', group:'Standard' },
+      { label:'Masonry 1', value:'masonry-1', group:'Masonry' },
+      { label:'Horizontal 1', value:'horizontal-1', group:'Horizontal' },
+      { label:'Horizontal 2', value:'horizontal-2', group:'Horizontal' },
+      { label:'Horizontal 3', value:'horizontal-3', group:'Horizontal' },
+      { label:'Horizontal 4', value:'horizontal-4', group:'Horizontal' },
+      { label:'Horizontal 5', value:'horizontal-5', group:'Horizontal' },
+      { label:'Tile 1', value:'tile-1', group:'Tile' },
+      { label:'Tile 2', value:'tile-2', group:'Tile' },
+      { label:'Tile 3', value:'tile-3', group:'Tile' },
+      { label:'Tile 4', value:'tile-4', group:'Tile' },
+      { label:'Carousel 1', value:'carousel-1', group:'Carousel' },
+      { label:'Carousel 2', value:'carousel-2', group:'Carousel' }
+    ];
+  }
+
+  function postFeedLayoutPicker(props) {
+    const active = normalizedPostLayout(props.attributes.layout);
+    const groups = ['Standard','Masonry','Horizontal','Tile','Carousel'];
+    const options = postFeedLayoutOptions();
+    return el('div', {},
+      groups.map(function (group) {
+        const items = options.filter(function (item) { return item.group === group; });
+        return el('div', { key:group, style:{ marginBottom:'14px' } },
+          el('div', { style:{ fontSize:'11px', fontWeight:'600', marginBottom:'6px', textTransform:'uppercase', opacity:0.72 } }, group),
+          el('div', { style:{ display:'grid', gridTemplateColumns:'repeat(2,minmax(0,1fr))', gap:'6px' } },
+            items.map(function (item) {
+              return el(Button, {
+                key:item.value,
+                variant:active === item.value ? 'primary' : 'secondary',
+                isPressed:active === item.value,
+                style:{ justifyContent:'center', minHeight:'36px' },
+                onClick:function(){ props.setAttributes({ layout:item.value }); }
+              }, item.label);
+            })
+          )
+        );
+      })
+    );
+  }
+
+  function lengthControl(label, value, onChange, placeholder) {
+    return el(TextControl, {
+      label:label,
+      value:value || '',
+      placeholder:placeholder || '0px',
+      help:__('Use a CSS length such as 12px, 1rem, 5%.', 'digipublish-core'),
+      onChange:onChange
+    });
+  }
+
+  function postFeedInspectorControls(props) {
+    const a = props.attributes, set = props.setAttributes;
+    const defaultColumns = /^grid-([2-5])$/.test(a.layout || '') ? parseInt((a.layout || '').replace('grid-',''),10) : 4;
+    return el(InspectorControls, {},
+      el(PanelBody, { title:__('Layout', 'digipublish-core'), initialOpen:true }, postFeedLayoutPicker(props)),
+      el(PanelBody, { title:__('Block Settings', 'digipublish-core'), initialOpen:true },
+        el(TextControl, { label:__('Section Heading', 'digipublish-core'), value:a.heading || '', onChange:function(v){ set({heading:v}); } }),
         el(SelectControl, {
-          label: __('Order by', 'digipublish-core'),
-          value: a.orderBy || 'date',
-          options: [
-            { label: __('Published date', 'digipublish-core'), value: 'date' },
-            { label: __('Modified date', 'digipublish-core'), value: 'modified' },
-            { label: __('Comment count', 'digipublish-core'), value: 'comment_count' },
-            { label: __('Title', 'digipublish-core'), value: 'title' }
+          label:__('Pagination Type', 'digipublish-core'),
+          value:a.paginationType || 'none',
+          options:[
+            { label:__('None', 'digipublish-core'), value:'none' },
+            { label:__('Page Numbers', 'digipublish-core'), value:'numbers' }
           ],
-          onChange: function (v) { set({ orderBy: v }); }
+          onChange:function(v){ set({paginationType:v}); }
+        }),
+        el(RangeControl, { label:__('Posts Count', 'digipublish-core'), value:a.postsToShow || 6, min:1, max:24, onChange:function(v){ set({postsToShow:v || 1}); } }),
+        el(RangeControl, { label:__('Number of Columns', 'digipublish-core'), value:a.columnsDesktop || defaultColumns, min:1, max:6, onChange:function(v){ set({columnsDesktop:v || 1}); } }),
+        el(RangeControl, { label:__('Columns — Tablet', 'digipublish-core'), value:a.columnsTablet || Math.min(2,a.columnsDesktop || defaultColumns), min:1, max:6, onChange:function(v){ set({columnsTablet:v || 1}); } }),
+        el(RangeControl, { label:__('Columns — Mobile', 'digipublish-core'), value:a.columnsMobile || 1, min:1, max:3, onChange:function(v){ set({columnsMobile:v || 1}); } }),
+        lengthControl(__('Gap between Columns', 'digipublish-core'), a.columnGap, function(v){ set({columnGap:v}); }, '40px'),
+        lengthControl(__('Gap between Rows', 'digipublish-core'), a.rowGap, function(v){ set({rowGap:v}); }, '40px'),
+        lengthControl(__('Border Radius', 'digipublish-core'), a.cardRadius, function(v){ set({cardRadius:v}); }, '12px'),
+        lengthControl(__('Card Min Height', 'digipublish-core'), a.cardMinHeight, function(v){ set({cardMinHeight:v}); }, __('Auto', 'digipublish-core'))
+      ),
+      el(PanelBody, { title:__('Meta Settings', 'digipublish-core'), initialOpen:false },
+        el(SelectControl, {
+          label:__('Top Meta Type', 'digipublish-core'),
+          value:a.topMetaType || 'none',
+          options:[
+            { label:__('None', 'digipublish-core'), value:'none' },
+            { label:__('Count', 'digipublish-core'), value:'count' }
+          ],
+          onChange:function(v){ set({topMetaType:v}); }
+        }),
+        el(ToggleControl, { label:__('Category', 'digipublish-core'), checked:!!a.showCategory, onChange:function(v){ set({showCategory:v}); } }),
+        el(ToggleControl, { label:__('Author', 'digipublish-core'), checked:!!a.showAuthor, onChange:function(v){ set({showAuthor:v}); } }),
+        el(ToggleControl, { label:__('Date', 'digipublish-core'), checked:!!a.showDate, onChange:function(v){ set({showDate:v}); } }),
+        el(ToggleControl, { label:__('Comments', 'digipublish-core'), checked:!!a.showComments, onChange:function(v){ set({showComments:v}); } }),
+        el(ToggleControl, { label:__('Views', 'digipublish-core'), checked:!!a.showViews, onChange:function(v){ set({showViews:v}); } }),
+        el(ToggleControl, { label:__('Reading Time', 'digipublish-core'), checked:!!a.showReadTime, onChange:function(v){ set({showReadTime:v}); } }),
+        el(ToggleControl, { label:__('Shares', 'digipublish-core'), checked:!!a.showShares, onChange:function(v){ set({showShares:v}); } }),
+        el(ToggleControl, { label:__('Display compact post meta', 'digipublish-core'), checked:!!a.compactMeta, onChange:function(v){ set({compactMeta:v}); } }),
+        el(ToggleControl, { label:__('Display post excerpt', 'digipublish-core'), checked:!!a.showExcerpt, onChange:function(v){ set({showExcerpt:v}); } }),
+        el(ToggleControl, { label:__('Display read more button', 'digipublish-core'), checked:!!a.showReadMore, onChange:function(v){ set({showReadMore:v}); } }),
+        a.showReadMore ? el(TextControl, { label:__('More Button Label', 'digipublish-core'), value:a.readMoreLabel || __('Read more','digipublish-core'), onChange:function(v){ set({readMoreLabel:v}); } }) : null
+      ),
+      el(PanelBody, { title:__('Typography Settings', 'digipublish-core'), initialOpen:false },
+        lengthControl(__('Heading Font Size', 'digipublish-core'), a.headingFontSize, function(v){ set({headingFontSize:v}); }, '1rem'),
+        el(SelectControl, {
+          label:__('Heading Tag', 'digipublish-core'), value:a.headingTag || 'h2',
+          options:['h2','h3','h4','h5','h6'].map(function(tag){ return {label:tag.toUpperCase(),value:tag}; }),
+          onChange:function(v){ set({headingTag:v}); }
+        })
+      ),
+      el(PanelBody, { title:__('Thumbnail Settings', 'digipublish-core'), initialOpen:false },
+        el(ToggleControl, { label:__('Display thumbnail', 'digipublish-core'), checked:a.showImage !== false, onChange:function(v){ set({showImage:v}); } }),
+        el(SelectControl, {
+          label:__('Images Size', 'digipublish-core'), value:a.imageSize || 'medium_large',
+          options:[
+            {label:__('Thumbnail', 'digipublish-core'),value:'thumbnail'},
+            {label:__('Medium', 'digipublish-core'),value:'medium'},
+            {label:__('Medium Large', 'digipublish-core')+' [800px, ~]',value:'medium_large'},
+            {label:__('Large', 'digipublish-core'),value:'large'},
+            {label:__('Full', 'digipublish-core'),value:'full'}
+          ], onChange:function(v){ set({imageSize:v}); }
         }),
         el(SelectControl, {
-          label: __('Order', 'digipublish-core'),
-          value: a.order || 'DESC',
-          options: [
-            { label: __('Descending', 'digipublish-core'), value: 'DESC' },
-            { label: __('Ascending', 'digipublish-core'), value: 'ASC' }
-          ],
-          onChange: function (v) { set({ order: v }); }
+          label:__('Image Aspect Ratio', 'digipublish-core'), value:a.imageAspect || '',
+          options:[
+            {label:__('Automatic', 'digipublish-core'),value:''},{label:'16:9',value:'16/9'},
+            {label:'4:3',value:'4/3'},{label:'3:2',value:'3/2'},{label:'1:1',value:'1/1'}
+          ], onChange:function(v){ set({imageAspect:v}); }
+        })
+      ),
+      el(PanelBody, { title:__('Query Settings', 'digipublish-core'), initialOpen:false }, postQueryPanelChildren(props)),
+      el(PanelBody, { title:__('Spacings', 'digipublish-core'), initialOpen:false },
+        el('strong', {}, __('Margins', 'digipublish-core')),
+        lengthControl(__('Top', 'digipublish-core'), a.marginTop, function(v){ set({marginTop:v}); }),
+        lengthControl(__('Bottom', 'digipublish-core'), a.marginBottom, function(v){ set({marginBottom:v}); }),
+        lengthControl(__('Left', 'digipublish-core'), a.marginLeft, function(v){ set({marginLeft:v}); }),
+        lengthControl(__('Right', 'digipublish-core'), a.marginRight, function(v){ set({marginRight:v}); }),
+        el('strong', {}, __('Paddings', 'digipublish-core')),
+        lengthControl(__('Top', 'digipublish-core'), a.paddingTop, function(v){ set({paddingTop:v}); }),
+        lengthControl(__('Bottom', 'digipublish-core'), a.paddingBottom, function(v){ set({paddingBottom:v}); }),
+        lengthControl(__('Left', 'digipublish-core'), a.paddingLeft, function(v){ set({paddingLeft:v}); }),
+        lengthControl(__('Right', 'digipublish-core'), a.paddingRight, function(v){ set({paddingRight:v}); })
+      ),
+      el(PanelBody, { title:__('Borders', 'digipublish-core'), initialOpen:false },
+        lengthControl(__('Radius', 'digipublish-core'), a.blockBorderRadius, function(v){ set({blockBorderRadius:v}); }, '0px'),
+        el(SelectControl, {
+          label:__('Border', 'digipublish-core'), value:a.blockBorderStyle || 'none',
+          options:[
+            {label:__('None', 'digipublish-core'),value:'none'},{label:__('Solid', 'digipublish-core'),value:'solid'},
+            {label:__('Dashed', 'digipublish-core'),value:'dashed'},{label:__('Dotted', 'digipublish-core'),value:'dotted'},
+            {label:__('Double', 'digipublish-core'),value:'double'}
+          ], onChange:function(v){ set({blockBorderStyle:v}); }
         }),
-        el(ToggleControl, {
-          label: __('Avoid duplicate posts', 'digipublish-core'),
-          help: __('Avoid stories already emitted by compatible DigiPublish feed blocks earlier on the page.', 'digipublish-core'),
-          checked: !!a.avoidDuplicates,
-          onChange: function (v) { set({ avoidDuplicates: v }); }
+        a.blockBorderStyle && a.blockBorderStyle !== 'none' ? lengthControl(__('Border Width', 'digipublish-core'), a.blockBorderWidth, function(v){ set({blockBorderWidth:v}); }, '1px') : null
+      ),
+      el(PanelBody, { title:__('Responsive Settings', 'digipublish-core'), initialOpen:false },
+        el(ToggleControl, { label:__('Hide On Desktop', 'digipublish-core'), checked:!!a.hideDesktop, onChange:function(v){ set({hideDesktop:v}); } }),
+        el(ToggleControl, { label:__('Hide On Laptop', 'digipublish-core'), checked:!!a.hideLaptop, onChange:function(v){ set({hideLaptop:v}); } }),
+        el(ToggleControl, { label:__('Hide On Tablet', 'digipublish-core'), checked:!!a.hideTablet, onChange:function(v){ set({hideTablet:v}); } }),
+        el(ToggleControl, { label:__('Hide On Mobile', 'digipublish-core'), checked:!!a.hideMobile, onChange:function(v){ set({hideMobile:v}); } })
+      ),
+      el(PanelBody, { title:__('Advanced', 'digipublish-core'), initialOpen:false },
+        el(Notice, { status:'info', isDismissible:false }, __('HTML anchor and Additional CSS class(es) are available in WordPress block Advanced settings. The field below adds safe inline CSS declarations to this Posts block only.', 'digipublish-core')),
+        el(TextareaControl, {
+          label:__('Additional CSS', 'digipublish-core'),
+          help:__('Add declarations only, for example: color: red; background: #fff;', 'digipublish-core'),
+          value:a.customCss || '',
+          onChange:function(v){ set({customCss:v}); }
         })
       )
     );
   }
+
 
   function editorialControls(props, config) {
     const a = props.attributes;
@@ -387,14 +678,15 @@
   });
 
   registerBlockType('digipublish/post-feed', {
-    apiVersion: 3, title: __('Editorial Post Feed', 'digipublish-core'), category: 'digipublish-editorial', icon: 'screenoptions',
-    supports: { align: ['wide','full'], html: false, anchor: true, spacing: { margin: true, padding: true }, border: { radius: true, color: true, width: true, style: true } },
+    apiVersion: 3, title: __('Posts', 'digipublish-core'), category: 'digipublish-editorial', icon: 'screenoptions',
+    supports: { align: ['wide','full'], html: false, anchor: true, customClassName: true, spacing: { margin: true, padding: true }, border: { radius: true, color: true, width: true, style: true } },
     attributes: {
       heading: { type: 'string', default: 'Latest' },
       categoryId: { type: 'integer', default: 0 },
       postsToShow: { type: 'integer', default: 6 },
       layout: { type: 'string', default: 'grid-3' },
       paginationType: { type: 'string', default: 'none' },
+      postType: { type:'string', default:'post' },
       orderBy: { type: 'string', default: 'date' },
       order: { type: 'string', default: 'DESC' },
       offset: { type: 'integer', default: 0 },
@@ -403,6 +695,10 @@
       excludeCategoryIds: { type: 'array', default: [], items: { type: 'integer' } },
       excludeTagIds: { type: 'array', default: [], items: { type: 'integer' } },
       filterPostIds: { type: 'array', default: [], items: { type: 'integer' } },
+      postFormats: { type:'array', default:[], items:{type:'string'} },
+      filterTaxonomy: { type:'string', default:'' },
+      filterTermIds: { type:'array', default:[], items:{type:'integer'} },
+      relatedPosts: { type:'boolean', default:false },
       avoidDuplicates: { type: 'boolean', default: false },
       showImage: { type: 'boolean', default: true },
       showCategory: { type: 'boolean', default: true },
@@ -415,6 +711,8 @@
       showShares: { type: 'boolean', default: false },
       showReadMore: { type: 'boolean', default: false },
       readMoreLabel: { type: 'string', default: 'Read more' },
+      topMetaType: { type:'string', default:'none' },
+      compactMeta: { type:'boolean', default:false },
       columnsDesktop: { type: 'integer', default: 0 },
       columnsTablet: { type: 'integer', default: 0 },
       columnsMobile: { type: 'integer', default: 0 },
@@ -426,6 +724,10 @@
       headingTag: { type: 'string', default: 'h2' },
       imageSize: { type: 'string', default: 'medium_large' },
       imageAspect: { type: 'string', default: '' },
+      marginTop:{type:'string',default:''}, marginBottom:{type:'string',default:''}, marginLeft:{type:'string',default:''}, marginRight:{type:'string',default:''},
+      paddingTop:{type:'string',default:''}, paddingBottom:{type:'string',default:''}, paddingLeft:{type:'string',default:''}, paddingRight:{type:'string',default:''},
+      blockBorderRadius:{type:'string',default:''}, blockBorderStyle:{type:'string',default:'none'}, blockBorderWidth:{type:'string',default:''},
+      customCss:{type:'string',default:''},
       hideDesktop: { type: 'boolean', default: false },
       hideLaptop: { type: 'boolean', default: false },
       hideTablet: { type: 'boolean', default: false },
@@ -433,28 +735,7 @@
     },
     edit: function (props) {
       return el(Fragment, {},
-        editorialControls(props, {
-          category: false,
-          orderBy: false,
-          meta: false,
-          layouts: [
-            { label: __('List', 'digipublish-core'), value: 'list' },
-            { label: __('2-column grid', 'digipublish-core'), value: 'grid-2' },
-            { label: __('3-column grid', 'digipublish-core'), value: 'grid-3' },
-            { label: __('4-column grid', 'digipublish-core'), value: 'grid-4' },
-            { label: __('5-column grid', 'digipublish-core'), value: 'grid-5' }
-          ]
-        }),
-        sharedDesignControls(props, {
-          columns: props.attributes.layout !== 'list',
-          defaultColumns: parseInt((props.attributes.layout || 'grid-3').replace('grid-', ''), 10) || 3,
-          maxColumns: 6,
-          defaultColumnGap: '16px',
-          defaultRowGap: '16px',
-          defaultRadius: 'var(--tp-radius)',
-          defaultHeadingSize: '22px'
-        }),
-        postQueryControls(props),
+        postFeedInspectorControls(props),
         el(Preview, { name: 'digipublish/post-feed', attributes: props.attributes })
       );
     },

@@ -3,10 +3,10 @@
   "apiVersion": 3,
   "name": "digipublish/post-feed",
   "version": "0.10.2",
-  "title": "Editorial Post Feed",
+  "title": "Posts",
   "category": "digipublish-editorial",
   "icon": "screenoptions",
-  "description": "Reusable latest, trending, popular, or category-based post feed.",
+  "description": "Flexible editorial Posts block with standard, masonry, horizontal, tile and carousel layouts plus advanced query controls.",
   "textdomain": "digipublish-core",
   "attributes": {
     "heading": {
@@ -183,6 +183,88 @@
     "hideMobile": {
       "type": "boolean",
       "default": false
+    },
+    "postType": {
+      "type": "string",
+      "default": "post"
+    },
+    "postFormats": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "string"
+      }
+    },
+    "filterTaxonomy": {
+      "type": "string",
+      "default": ""
+    },
+    "filterTermIds": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "integer"
+      }
+    },
+    "relatedPosts": {
+      "type": "boolean",
+      "default": false
+    },
+    "topMetaType": {
+      "type": "string",
+      "default": "none"
+    },
+    "compactMeta": {
+      "type": "boolean",
+      "default": false
+    },
+    "marginTop": {
+      "type": "string",
+      "default": ""
+    },
+    "marginBottom": {
+      "type": "string",
+      "default": ""
+    },
+    "marginLeft": {
+      "type": "string",
+      "default": ""
+    },
+    "marginRight": {
+      "type": "string",
+      "default": ""
+    },
+    "paddingTop": {
+      "type": "string",
+      "default": ""
+    },
+    "paddingBottom": {
+      "type": "string",
+      "default": ""
+    },
+    "paddingLeft": {
+      "type": "string",
+      "default": ""
+    },
+    "paddingRight": {
+      "type": "string",
+      "default": ""
+    },
+    "blockBorderRadius": {
+      "type": "string",
+      "default": ""
+    },
+    "blockBorderStyle": {
+      "type": "string",
+      "default": "none"
+    },
+    "blockBorderWidth": {
+      "type": "string",
+      "default": ""
+    },
+    "customCss": {
+      "type": "string",
+      "default": ""
     }
   },
   "supports": {
@@ -201,9 +283,11 @@
       "color": true,
       "width": true,
       "style": true
-    }
+    },
+    "customClassName": true
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
-  "render": "file:./render.php"
+  "render": "file:./render.php",
+  "viewScript": "file:./view.js"
 }
