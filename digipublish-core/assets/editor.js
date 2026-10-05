@@ -958,16 +958,35 @@
   });
 
   registerBlockType('digipublish/category-nav', {
-    apiVersion: 3, title: __('Editorial Category Navigation', 'digipublish-core'), category: 'digipublish-editorial', icon: 'menu-alt3',
-    attributes: { limit: { type: 'integer', default: 5 }, showDictionary: { type: 'boolean', default: true }, showSearch: { type: 'boolean', default: true }, filterSlugs:{type:'string',default:''}, orderBy:{type:'string',default:'count'}, order:{type:'string',default:'DESC'} },
-    edit: function (props) { const a = props.attributes, set = props.setAttributes; return el(Fragment, {}, el(InspectorControls, {}, el(PanelBody, { title: __('Navigation settings', 'digipublish-core'), initialOpen: true },
-      el(RangeControl, { label: __('Maximum categories', 'digipublish-core'), value: a.limit, min: 1, max: 20, onChange: function (v) { set({ limit: v }); } }),
-      el(TextControl,{label:__('Filter category slugs','digipublish-core'),help:__('Comma-separated. Leave blank for automatic categories.','digipublish-core'),value:a.filterSlugs||'',onChange:function(v){set({filterSlugs:v});}}),
-      el(SelectControl,{label:__('Order by','digipublish-core'),value:a.orderBy||'count',options:[{label:__('Post count','digipublish-core'),value:'count'},{label:__('Name','digipublish-core'),value:'name'},{label:__('Term ID','digipublish-core'),value:'term_id'}],onChange:function(v){set({orderBy:v});}}),
-      el(SelectControl,{label:__('Order','digipublish-core'),value:a.order||'DESC',options:[{label:__('Descending','digipublish-core'),value:'DESC'},{label:__('Ascending','digipublish-core'),value:'ASC'}],onChange:function(v){set({order:v});}}),
-      el(ToggleControl, { label: __('Show Dictionary', 'digipublish-core'), checked: !!a.showDictionary, onChange: function (v) { set({ showDictionary: v }); } }),
-      el(ToggleControl, { label: __('Show search', 'digipublish-core'), checked: !!a.showSearch, onChange: function (v) { set({ showSearch: v }); } })
-    )), el(Preview, { name: 'digipublish/category-nav', attributes: a })); }, save: function () { return null; }
+    apiVersion:3,title:__('Category Navigation','digipublish-core'),category:'digipublish-editorial',icon:'menu-alt3',
+    supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
+    attributes:{
+      limit:{type:'integer',default:5},showDictionary:{type:'boolean',default:true},showSearch:{type:'boolean',default:true},filterSlugs:{type:'string',default:''},
+      filterCategoryIds:{type:'array',default:[]},orderBy:{type:'string',default:'name'},order:{type:'string',default:'ASC'},maximum:{type:'integer',default:0},alignment:{type:'string',default:'center'},
+      hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}
+    },
+    edit:function(props){
+      const a=props.attributes,set=props.setAttributes;
+      const categoryOptions=useCategoryOptions().filter(function(option){return parseInt(option.value,10)>0;});
+      return el(Fragment,{},
+        el(InspectorControls,{},
+          el(PanelBody,{title:__('Block Settings','digipublish-core'),initialOpen:true},
+            tokenIdsControl(__('Filter by Categories','digipublish-core'),a.filterCategoryIds||[],categoryOptions,function(ids){set({filterCategoryIds:ids});}),
+            el(SelectControl,{label:__('Order By','digipublish-core'),value:a.orderBy||'name',options:[
+              {label:__('Name','digipublish-core'),value:'name'},{label:__('Posts count','digipublish-core'),value:'count'},
+              {label:__('Filter include','digipublish-core'),value:'slug__in'},{label:__('ID','digipublish-core'),value:'id'}
+            ],onChange:function(v){set({orderBy:v});}}),
+            el(SelectControl,{label:__('Order','digipublish-core'),value:a.order||'ASC',options:[{label:'ASC',value:'ASC'},{label:'DESC',value:'DESC'}],onChange:function(v){set({order:v});}}),
+            el(RangeControl,{label:__('Maximum count','digipublish-core'),value:a.maximum||0,min:0,max:1000,onChange:function(v){set({maximum:v||0});}}),
+            el(SelectControl,{label:__('Alignment','digipublish-core'),value:a.alignment||'center',options:[{label:__('Left','digipublish-core'),value:'flex-start'},{label:__('Right','digipublish-core'),value:'flex-end'},{label:__('Center','digipublish-core'),value:'center'}],onChange:function(v){set({alignment:v});}}),
+            el(ToggleControl,{label:__('Show Dictionary','digipublish-core'),checked:!!a.showDictionary,onChange:function(v){set({showDictionary:v});}}),
+            el(ToggleControl,{label:__('Show search','digipublish-core'),checked:!!a.showSearch,onChange:function(v){set({showSearch:v});}})
+          ),
+          el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
+        ),
+        el(Preview,{name:'digipublish/category-nav',attributes:a})
+      );
+    },save:function(){return null;}
   });
 
   registerBlockType('digipublish/term-index', {
@@ -1356,43 +1375,92 @@
 
   registerBlockType('digipublish/current-date', {
     apiVersion:3,title:__('Current Date','digipublish-core'),category:'digipublish-editorial',icon:'calendar-alt',
-    attributes:{format:{type:'string',default:'F j, Y'}},
-    edit:function(props){return el(Fragment,{},el(InspectorControls,{},el(PanelBody,{title:__('Date Settings','digipublish-core')},el(TextControl,{label:__('PHP date format','digipublish-core'),value:props.attributes.format||'F j, Y',onChange:function(v){props.setAttributes({format:v});}}))),el(Preview,{name:'digipublish/current-date',attributes:props.attributes}));},
+    supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
+    attributes:{format:{type:'string',default:'F d, Y'},textAlign:{type:'string',default:'left'},textColor:{type:'string',default:''},fontSizeDesktop:{type:'string',default:'0.75rem'},fontSizeTablet:{type:'string',default:''},fontSizeMobile:{type:'string',default:''},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
+    edit:function(props){const a=props.attributes,set=props.setAttributes;return el(Fragment,{},
+      el(InspectorControls,{},
+        el(PanelBody,{title:__('Block Settings','digipublish-core'),initialOpen:true},
+          el(TextControl,{label:__('Format','digipublish-core'),value:a.format||'F d, Y',onChange:function(v){set({format:v});}}),
+          el(SelectControl,{label:__('Text Align','digipublish-core'),value:a.textAlign||'left',options:[{label:__('Left','digipublish-core'),value:'left'},{label:__('Right','digipublish-core'),value:'right'},{label:__('Center','digipublish-core'),value:'center'}],onChange:function(v){set({textAlign:v});}})
+        ),
+        el(PanelBody,{title:__('Color Settings','digipublish-core'),initialOpen:false},colorControl(__('Color','digipublish-core'),a.textColor,function(v){set({textColor:v});})),
+        el(PanelBody,{title:__('Typography Settings','digipublish-core'),initialOpen:false},
+          lengthControl(__('Font Size — Desktop','digipublish-core'),a.fontSizeDesktop,function(v){set({fontSizeDesktop:v});},'0.75rem'),
+          lengthControl(__('Font Size — Tablet','digipublish-core'),a.fontSizeTablet,function(v){set({fontSizeTablet:v});},'0.75rem'),
+          lengthControl(__('Font Size — Mobile','digipublish-core'),a.fontSizeMobile,function(v){set({fontSizeMobile:v});},'0.75rem')
+        ),
+        el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
+      ),el(Preview,{name:'digipublish/current-date',attributes:a}));},
     save:function(){return null;}
   });
 
   registerBlockType('digipublish/custom-link', {
     apiVersion:3,title:__('Custom Link','digipublish-core'),category:'digipublish-editorial',icon:'admin-links',
-    attributes:{label:{type:'string',default:'Buy Now'},url:{type:'string',default:'#'},target:{type:'string',default:'_self'},buttonStyle:{type:'boolean',default:true}},
-    edit:function(props){const a=props.attributes,set=props.setAttributes;return el(Fragment,{},el(InspectorControls,{},el(PanelBody,{title:__('Link Settings','digipublish-core')},
-      el(TextControl,{label:__('Label','digipublish-core'),value:a.label||'',onChange:function(v){set({label:v});}}),
-      el(TextControl,{label:__('URL','digipublish-core'),value:a.url||'',onChange:function(v){set({url:v});}}),
-      el(SelectControl,{label:__('Target','digipublish-core'),value:a.target||'_self',options:[{label:__('Same tab','digipublish-core'),value:'_self'},{label:__('New tab','digipublish-core'),value:'_blank'}],onChange:function(v){set({target:v});}}),
-      el(ToggleControl,{label:__('Button style','digipublish-core'),checked:a.buttonStyle!==false,onChange:function(v){set({buttonStyle:v});}})
-    )),el(Preview,{name:'digipublish/custom-link',attributes:a}));},save:function(){return null;}
+    supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
+    attributes:{
+      label:{type:'string',default:'View All'},url:{type:'string',default:'/'},target:{type:'string',default:'_self'},buttonStyle:{type:'boolean',default:false},styleVariant:{type:'string',default:'default'},
+      textAlign:{type:'string',default:'left'},disableLabelMobile:{type:'boolean',default:false},textColor:{type:'string',default:''},textHoverColor:{type:'string',default:''},
+      circleBackground:{type:'string',default:''},circleColor:{type:'string',default:''},circleHoverBackground:{type:'string',default:''},circleHoverColor:{type:'string',default:''},
+      fontSizeDesktop:{type:'string',default:''},fontSizeTablet:{type:'string',default:''},fontSizeMobile:{type:'string',default:''},
+      hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}
+    },
+    edit:function(props){const a=props.attributes,set=props.setAttributes;return el(Fragment,{},
+      el(InspectorControls,{},
+        el(PanelBody,{title:__('Block Settings','digipublish-core'),initialOpen:true},
+          el(TextControl,{label:__('Label','digipublish-core'),value:a.label||'',onChange:function(v){set({label:v});}}),
+          el(TextControl,{label:__('URL','digipublish-core'),value:a.url||'',onChange:function(v){set({url:v});}}),
+          el(SelectControl,{label:__('Target URL','digipublish-core'),value:a.target||'_self',options:[{label:__('Self','digipublish-core'),value:'_self'},{label:__('Blank','digipublish-core'),value:'_blank'}],onChange:function(v){set({target:v});}}),
+          el(SelectControl,{label:__('Style','digipublish-core'),value:a.styleVariant||'default',options:[{label:__('Default','digipublish-core'),value:'default'},{label:__('Styled','digipublish-core'),value:'styled'}],onChange:function(v){set({styleVariant:v,buttonStyle:v==='styled'});}}),
+          el(SelectControl,{label:__('Align','digipublish-core'),value:a.textAlign||'left',options:[{label:__('Left','digipublish-core'),value:'left'},{label:__('Center','digipublish-core'),value:'center'},{label:__('Right','digipublish-core'),value:'right'}],onChange:function(v){set({textAlign:v});}}),
+          el(ToggleControl,{label:__('Disable Label on Mobile','digipublish-core'),checked:!!a.disableLabelMobile,onChange:function(v){set({disableLabelMobile:v});}})
+        ),
+        el(PanelBody,{title:__('Color Settings','digipublish-core'),initialOpen:false},
+          colorControl(__('Color','digipublish-core'),a.textColor,function(v){set({textColor:v});}),
+          colorControl(__('Hover Color','digipublish-core'),a.textHoverColor,function(v){set({textHoverColor:v});}),
+          colorControl(__('Circle Background','digipublish-core'),a.circleBackground,function(v){set({circleBackground:v});}),
+          colorControl(__('Circle Color','digipublish-core'),a.circleColor,function(v){set({circleColor:v});}),
+          colorControl(__('Circle Hover Background Color','digipublish-core'),a.circleHoverBackground,function(v){set({circleHoverBackground:v});}),
+          colorControl(__('Circle Hover Color','digipublish-core'),a.circleHoverColor,function(v){set({circleHoverColor:v});})
+        ),
+        el(PanelBody,{title:__('Typography Settings','digipublish-core'),initialOpen:false},
+          lengthControl(__('Font Size — Desktop','digipublish-core'),a.fontSizeDesktop,function(v){set({fontSizeDesktop:v});},'0.875rem'),
+          lengthControl(__('Font Size — Tablet','digipublish-core'),a.fontSizeTablet,function(v){set({fontSizeTablet:v});},'0.875rem'),
+          lengthControl(__('Font Size — Mobile','digipublish-core'),a.fontSizeMobile,function(v){set({fontSizeMobile:v});},'0.875rem')
+        ),
+        el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
+      ),el(Preview,{name:'digipublish/custom-link',attributes:a}));},save:function(){return null;}
   });
 
   function socialCarouselEdit(props,type){
     const a=props.attributes,set=props.setAttributes,isInstagram=type==='instagram';
+    const layouts=isInstagram
+      ? [{label:__('Default','digipublish-core'),value:'default'},{label:__('Carousel','digipublish-core'),value:'carousel'},{label:__('Diagonal Carousel','digipublish-core'),value:'carousel-full'}]
+      : [{label:__('Default','digipublish-core'),value:'default'},{label:__('Carousel','digipublish-core'),value:'carousel'}];
     return el(Fragment,{},
       el(InspectorControls,{},
-        el(PanelBody,{title:isInstagram?__('Instagram Carousel','digipublish-core'):__('X / Twitter Carousel','digipublish-core'),initialOpen:true},
+        el(PanelBody,{title:isInstagram?__('Instagram Settings','digipublish-core'):__('Twitter Settings','digipublish-core'),initialOpen:true},
+          el(SelectControl,{label:__('Layout','digipublish-core'),value:a.layout||'default',options:layouts,onChange:function(v){set({layout:v});}}),
           el(TextControl,{label:__('Heading','digipublish-core'),value:a.heading||'',onChange:function(v){set({heading:v});}}),
           el(TextControl,{label:__('Profile URL','digipublish-core'),value:a.profileUrl||'',onChange:function(v){set({profileUrl:v});}}),
-          el(RangeControl,{label:__('Visible columns','digipublish-core'),value:a.columns||(isInstagram?5:3),min:1,max:isInstagram?8:5,onChange:function(v){set({columns:v});}}),
+          el(RangeControl,{label:__('Number','digipublish-core'),value:a.number||(isInstagram?6:5),min:1,max:30,onChange:function(v){set({number:v||1});}}),
+          a.layout==='default' ? el(RangeControl,{label:__('Visible columns','digipublish-core'),value:a.columns||(isInstagram?5:3),min:1,max:isInstagram?8:5,onChange:function(v){set({columns:v});}}) : null,
+          isInstagram ? el(SelectControl,{label:__('Images Size','digipublish-core'),value:a.imageSize||'medium',options:[{label:__('Thumbnail','digipublish-core'),value:'thumbnail'},{label:__('Medium','digipublish-core'),value:'medium'},{label:__('Large','digipublish-core'),value:'large'},{label:__('Full','digipublish-core'),value:'full'}],onChange:function(v){set({imageSize:v});}}) : null,
+          isInstagram ? el(SelectControl,{label:__('Target URL','digipublish-core'),value:a.target||'_blank',options:[{label:__('Self','digipublish-core'),value:'_self'},{label:__('Blank','digipublish-core'),value:'_blank'}],onChange:function(v){set({target:v});}}) : null,
+          isInstagram && a.layout==='carousel-full' ? lengthControl(__('Card Min Height','digipublish-core'),a.diagonalCardMinHeight,function(v){set({diagonalCardMinHeight:v});},'480px') : null,
           el(ToggleControl,{label:__('Show header','digipublish-core'),checked:a.showHeader!==false,onChange:function(v){set({showHeader:v});}}),
           el(ToggleControl,{label:__('Show follow button','digipublish-core'),checked:a.showFollowButton!==false,onChange:function(v){set({showFollowButton:v});}}),
           el(TextareaControl,{label:isInstagram?__('Items: image URL | post URL | alt text','digipublish-core'):__('Items: text | URL | author | @handle','digipublish-core'),value:a.items||'',rows:8,onChange:function(v){set({items:v});}})
-        )
+        ),
+        el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
       ),
       el(Preview,{name:isInstagram?'digipublish/instagram-carousel':'digipublish/twitter-carousel',attributes:a})
     );
   }
-  registerBlockType('digipublish/instagram-carousel',{apiVersion:3,title:__('Instagram Carousel','digipublish-core'),category:'digipublish-editorial',icon:'format-gallery',
-    attributes:{heading:{type:'string',default:'Instagram'},profileUrl:{type:'string',default:''},items:{type:'string',default:''},showHeader:{type:'boolean',default:true},showFollowButton:{type:'boolean',default:true},columns:{type:'integer',default:5},layout:{type:'string',default:'carousel'}},
+  registerBlockType('digipublish/instagram-carousel',{apiVersion:3,title:__('Instagram','digipublish-core'),category:'digipublish-editorial',icon:'format-gallery',
+    attributes:{heading:{type:'string',default:'Instagram'},profileUrl:{type:'string',default:''},items:{type:'string',default:''},showHeader:{type:'boolean',default:true},showFollowButton:{type:'boolean',default:true},columns:{type:'integer',default:5},layout:{type:'string',default:'default'},number:{type:'integer',default:6},imageSize:{type:'string',default:'medium'},target:{type:'string',default:'_blank'},diagonalCardMinHeight:{type:'string',default:'480px'},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
     edit:function(p){return socialCarouselEdit(p,'instagram');},save:function(){return null;}});
-  registerBlockType('digipublish/twitter-carousel',{apiVersion:3,title:__('X / Twitter Carousel','digipublish-core'),category:'digipublish-editorial',icon:'format-chat',
-    attributes:{heading:{type:'string',default:'Twitter Feed'},profileUrl:{type:'string',default:''},items:{type:'string',default:''},showHeader:{type:'boolean',default:true},showFollowButton:{type:'boolean',default:true},columns:{type:'integer',default:3}},
+  registerBlockType('digipublish/twitter-carousel',{apiVersion:3,title:__('Twitter / X','digipublish-core'),category:'digipublish-editorial',icon:'format-chat',
+    attributes:{heading:{type:'string',default:'Twitter Feed'},profileUrl:{type:'string',default:''},items:{type:'string',default:''},showHeader:{type:'boolean',default:true},showFollowButton:{type:'boolean',default:true},columns:{type:'integer',default:3},layout:{type:'string',default:'default'},number:{type:'integer',default:5},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
     edit:function(p){return socialCarouselEdit(p,'twitter');},save:function(){return null;}});
   registerBlockType('digipublish/team-grid',{apiVersion:3,title:__('Meet Team','digipublish-core'),category:'digipublish-editorial',icon:'groups',
     attributes:{heading:{type:'string',default:'Meet the Team'},limit:{type:'integer',default:12},columns:{type:'integer',default:3},showBio:{type:'boolean',default:true},showRole:{type:'boolean',default:true}},
