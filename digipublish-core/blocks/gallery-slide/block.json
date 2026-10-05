@@ -2,20 +2,40 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "digipublish/gallery-slide",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "title": "Gallery Slide",
   "category": "digipublish-editorial",
   "icon": "format-image",
   "description": "One image, caption and credit inside a DigiPublish photo gallery.",
   "textdomain": "digipublish-core",
-  "parent": ["digipublish/gallery"],
+  "parent": [
+    "digipublish/gallery"
+  ],
   "attributes": {
-    "imageId": { "type": "integer", "default": 0 },
-    "imageUrl": { "type": "string", "default": "" },
-    "alt": { "type": "string", "default": "" },
-    "heading": { "type": "string", "default": "" },
-    "caption": { "type": "string", "default": "" },
-    "credit": { "type": "string", "default": "" }
+    "imageId": {
+      "type": "integer",
+      "default": 0
+    },
+    "imageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "alt": {
+      "type": "string",
+      "default": ""
+    },
+    "heading": {
+      "type": "string",
+      "default": ""
+    },
+    "caption": {
+      "type": "string",
+      "default": ""
+    },
+    "credit": {
+      "type": "string",
+      "default": ""
+    }
   },
   "supports": {
     "html": false,
