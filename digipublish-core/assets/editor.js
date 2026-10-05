@@ -462,7 +462,7 @@
     if (/^standard-[1-4]$/.test(l)) {
       d.contentGapDesktop=d.contentGapLaptop=d.contentGapTablet=d.contentGapMobile='32px';
       d.hasContentGap=true; d.hasPostFormat=true; d.hasVideo=true;
-      if (l === 'standard-4') d.hasTopMeta=true;
+      if (l === 'standard-4') { d.hasTopMeta=true; d.topMetaType='author'; }
     } else if (l === 'masonry-1') {
       d.maxColumns=4; d.hasCardMinHeight=false; d.hasPostFormat=true; d.hasVideo=true;
     } else if (l === 'horizontal-1') {
@@ -485,18 +485,18 @@
       d.hasColorSettings=true; d.hasReadMoreColors=false; d.hasBorderColor=true;
       d.showCategory=false; d.showViews=false; d.showReadTime=false; d.showShares=false; d.showExcerpt=false; d.showReadMore=false;
     } else if (/^tile-[12]$/.test(l)) {
-      d.imageOrientation='stretch'; d.hasVideo=true; d.hasTopMeta=true; d.hasColorSettings=false;
+      d.imageOrientation='stretch'; d.hasVideo=true; d.hasTopMeta=true; d.topMetaType='author'; d.hasColorSettings=false;
     } else if (/^tile-[34]$/.test(l)) {
       d.cardHeadingFontSizeDesktop=d.cardHeadingFontSizeLaptop=d.cardHeadingFontSizeTablet=d.cardHeadingFontSizeMobile='1rem';
-      d.hasTopMeta=true; d.hasImageOrientation=false; d.hasColorSettings=false; d.showExcerpt=false;
+      d.hasTopMeta=true; d.topMetaType='author'; d.hasImageOrientation=false; d.hasColorSettings=false; d.showExcerpt=false;
     } else if (l === 'carousel-1') {
       d.columnsDesktop=4; d.columnsLaptop=4; d.columnsTablet=2; d.columnsMobile=1;
       d.cardHeadingFontSizeDesktop=d.cardHeadingFontSizeLaptop=d.cardHeadingFontSizeTablet=d.cardHeadingFontSizeMobile='1.25rem';
-      d.imageOrientation='stretch'; d.hasRowGap=false; d.hasBorderRadius=false; d.hasTopMeta=true; d.hasColorSettings=false;
+      d.imageOrientation='stretch'; d.hasRowGap=false; d.hasBorderRadius=false; d.hasTopMeta=true; d.topMetaType='author'; d.hasColorSettings=false;
     } else if (l === 'carousel-2') {
       d.columnsDesktop=4; d.columnsLaptop=4; d.columnsTablet=3; d.columnsMobile=1;
       d.cardHeadingFontSizeDesktop=d.cardHeadingFontSizeLaptop=d.cardHeadingFontSizeTablet=d.cardHeadingFontSizeMobile='1.25rem';
-      d.imageOrientation='stretch'; d.hasRowGap=false; d.hasBorderRadius=false; d.hasTopMeta=true; d.hasColorSettings=false;
+      d.imageOrientation='stretch'; d.hasRowGap=false; d.hasBorderRadius=false; d.hasTopMeta=true; d.topMetaType='author'; d.hasColorSettings=false;
     }
     return d;
   }
