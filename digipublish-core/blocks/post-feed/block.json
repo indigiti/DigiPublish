@@ -308,15 +308,15 @@
     },
     "contentAlign": {
       "type": "string",
-      "default": "center"
+      "default": "space-between"
     },
     "imageAlign": {
       "type": "string",
-      "default": "center"
+      "default": "flex-start"
     },
     "imageWidth": {
       "type": "string",
-      "default": ""
+      "default": "one-third"
     },
     "showPostFormat": {
       "type": "boolean",
