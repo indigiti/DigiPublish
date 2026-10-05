@@ -12,6 +12,7 @@
     "heading": { "type": "string", "default": "Recent Stories" },
     "layout": { "type": "string", "default": "meta-list" },
     "sourceMode": { "type": "string", "default": "current" },
+    "contentType": { "type": "string", "default": "post" },
     "categoryId": { "type": "integer", "default": 0 },
     "postsToShow": { "type": "integer", "default": 5 },
     "orderBy": { "type": "string", "default": "date" },
