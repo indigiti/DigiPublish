@@ -94,7 +94,7 @@ foreach ( $query->posts as $post ) {
 
 	echo '<article class="tp-gallery-card">';
 	echo '<a class="tp-gallery-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '">';
-	echo techpress_editorial_image_markup( $post_id, 'medium_large', false, '(max-width: 680px) 100vw, (max-width: 1120px) 50vw, 25vw' );
+	echo digipublish_core_gallery_cover_image_markup( $post_id, 'medium_large', '(max-width: 680px) 100vw, (max-width: 1120px) 50vw, 25vw' );
 	if ( $photo_count ) {
 		echo '<span class="tp-gallery-card__count">' . esc_html( sprintf( _n( '%d Photo', '%d Photos', $photo_count, 'digipublish-core' ), $photo_count ) ) . '</span>';
 	}
