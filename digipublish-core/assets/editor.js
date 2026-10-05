@@ -1457,9 +1457,11 @@
     );
   }
   registerBlockType('digipublish/instagram-carousel',{apiVersion:3,title:__('Instagram','digipublish-core'),category:'digipublish-editorial',icon:'format-gallery',
+    supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
     attributes:{heading:{type:'string',default:'Instagram'},profileUrl:{type:'string',default:''},items:{type:'string',default:''},showHeader:{type:'boolean',default:true},showFollowButton:{type:'boolean',default:true},columns:{type:'integer',default:5},layout:{type:'string',default:'default'},number:{type:'integer',default:6},imageSize:{type:'string',default:'medium'},target:{type:'string',default:'_blank'},diagonalCardMinHeight:{type:'string',default:'480px'},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
     edit:function(p){return socialCarouselEdit(p,'instagram');},save:function(){return null;}});
   registerBlockType('digipublish/twitter-carousel',{apiVersion:3,title:__('Twitter / X','digipublish-core'),category:'digipublish-editorial',icon:'format-chat',
+    supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
     attributes:{heading:{type:'string',default:'Twitter Feed'},profileUrl:{type:'string',default:''},items:{type:'string',default:''},showHeader:{type:'boolean',default:true},showFollowButton:{type:'boolean',default:true},columns:{type:'integer',default:3},layout:{type:'string',default:'default'},number:{type:'integer',default:5},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
     edit:function(p){return socialCarouselEdit(p,'twitter');},save:function(){return null;}});
   registerBlockType('digipublish/section-heading',{
@@ -1555,6 +1557,7 @@
 
   registerBlockType('digipublish/opt-in-form',{
     apiVersion:3,title:__('Opt-In Form','digipublish-core'),category:'digipublish-editorial',icon:'email',
+    supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
     attributes:{heading:{type:'string',default:'Stay in the loop'},description:{type:'string',default:'Get the latest stories in your inbox.'},buttonLabel:{type:'string',default:'Subscribe'},actionUrl:{type:'string',default:''},emailFieldName:{type:'string',default:'email'},inputBackground:{type:'string',default:''},inputColor:{type:'string',default:''},buttonBackground:{type:'string',default:''},buttonColor:{type:'string',default:''},buttonHoverBackground:{type:'string',default:''},buttonHoverColor:{type:'string',default:''},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
     edit:function(props){const a=props.attributes,set=props.setAttributes;return el(Fragment,{},
       el(InspectorControls,{},
@@ -1579,6 +1582,7 @@
 
   registerBlockType('digipublish/featured-categories',{
     apiVersion:3,title:__('Featured Categories','digipublish-core'),category:'digipublish-editorial',icon:'category',
+    supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
     attributes:{heading:{type:'string',default:'Featured Categories'},categoryIds:{type:'array',default:[]},limit:{type:'integer',default:6},layout:{type:'string',default:'vertical-list-alt'},showCount:{type:'boolean',default:true}},
     edit:function(props){const a=props.attributes,set=props.setAttributes,categoryOptions=useCategoryOptions().filter(function(o){return parseInt(o.value,10)>0;});return el(Fragment,{},
       el(InspectorControls,{},el(PanelBody,{title:__('Block Settings','digipublish-core'),initialOpen:true},
