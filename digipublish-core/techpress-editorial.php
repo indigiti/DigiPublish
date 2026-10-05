@@ -27,6 +27,8 @@ define( 'DIGIPUBLISH_CORE_VERSION', TECHPRESS_EDITORIAL_VERSION );
 define( 'DIGIPUBLISH_CORE_DIR', TECHPRESS_EDITORIAL_DIR );
 define( 'DIGIPUBLISH_CORE_URL', TECHPRESS_EDITORIAL_URL );
 
+require_once DIGIPUBLISH_CORE_DIR . 'includes/gallery.php';
+
 /**
  * Register editorial content types.
  */
@@ -74,33 +76,35 @@ add_action( 'init', 'techpress_editorial_register_content_types', 5 );
  * Per-post editorial attribution used by the article byline block.
  */
 function techpress_editorial_register_attribution_meta() {
-	register_post_meta(
-		'post',
-		'_techpress_attribution_type',
-		array(
-			'type'              => 'string',
-			'single'            => true,
-			'default'           => '',
-			'show_in_rest'      => true,
-			'sanitize_callback' => static function ( $value ) {
-				$allowed = array( '', 'fact_checked', 'verified', 'reported' );
-				return in_array( $value, $allowed, true ) ? $value : '';
-			},
-			'auth_callback'     => static function () { return current_user_can( 'edit_posts' ); },
-		)
-	);
-	register_post_meta(
-		'post',
-		'_techpress_attribution_user',
-		array(
-			'type'              => 'integer',
-			'single'            => true,
-			'default'           => 0,
-			'show_in_rest'      => true,
-			'sanitize_callback' => 'absint',
-			'auth_callback'     => static function () { return current_user_can( 'edit_posts' ); },
-		)
-	);
+	foreach ( array( 'post', 'digipublish_gallery' ) as $post_type ) {
+		register_post_meta(
+			$post_type,
+			'_techpress_attribution_type',
+			array(
+				'type'              => 'string',
+				'single'            => true,
+				'default'           => '',
+				'show_in_rest'      => true,
+				'sanitize_callback' => static function ( $value ) {
+					$allowed = array( '', 'fact_checked', 'verified', 'reported' );
+					return in_array( $value, $allowed, true ) ? $value : '';
+				},
+				'auth_callback'     => static function () { return current_user_can( 'edit_posts' ); },
+			)
+		);
+		register_post_meta(
+			$post_type,
+			'_techpress_attribution_user',
+			array(
+				'type'              => 'integer',
+				'single'            => true,
+				'default'           => 0,
+				'show_in_rest'      => true,
+				'sanitize_callback' => 'absint',
+				'auth_callback'     => static function () { return current_user_can( 'edit_posts' ); },
+			)
+		);
+	}
 }
 add_action( 'init', 'techpress_editorial_register_attribution_meta', 6 );
 
@@ -133,7 +137,7 @@ function techpress_editorial_register_blocks() {
 		true
 	);
 
-	$blocks = array( 'featured-posts', 'post-feed', 'editorial-feed', 'ad-slot', 'term-index', 'category-nav', 'archive-hero', 'archive-feed', 'author-profile', 'popular-categories', 'category-experts', 'related-posts', 'post-author-card', 'article-toc', 'article-byline', 'sidebar-feed' );
+	$blocks = array( 'featured-posts', 'post-feed', 'editorial-feed', 'ad-slot', 'term-index', 'category-nav', 'archive-hero', 'archive-feed', 'author-profile', 'popular-categories', 'category-experts', 'related-posts', 'post-author-card', 'article-toc', 'article-byline', 'sidebar-feed', 'gallery', 'gallery-slide', 'gallery-archive' );
 	foreach ( $blocks as $block ) {
 		register_block_type( TECHPRESS_EDITORIAL_DIR . 'blocks/' . $block );
 	}
@@ -396,7 +400,7 @@ function techpress_editorial_bump_post_cache_versions( $post_id = 0 ) {
 	if ( ! $post_id || wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
 		return;
 	}
-	if ( ! in_array( get_post_type( $post_id ), array( 'post', 'tech_term' ), true ) ) {
+	if ( ! in_array( get_post_type( $post_id ), array( 'post', 'tech_term', 'digipublish_gallery' ), true ) ) {
 		return;
 	}
 	techpress_editorial_bump_cache_version( 'content' );
@@ -1036,6 +1040,7 @@ function techpress_editorial_ad_provider_markup( $slot_name, $attributes ) {
  */
 function techpress_editorial_activate() {
 	techpress_editorial_register_content_types();
+	digipublish_core_register_gallery_post_type();
 	digipublish_core_migrate_block_namespace();
 	flush_rewrite_rules();
 }
