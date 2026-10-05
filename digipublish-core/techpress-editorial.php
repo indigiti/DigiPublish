@@ -947,7 +947,7 @@ function digipublish_core_post_feed_card_markup( $post_id, $attributes = array()
 	$semantic_layout = $legacy_map[ $layout ] ?? $layout;
 	$index = isset( $attributes['_cardIndex'] ) ? max( 1, absint( $attributes['_cardIndex'] ) ) : 1;
 	$heading_tag = digipublish_core_post_feed_heading_tag( $attributes );
-	$image_size = digipublish_core_image_size( $attributes, 'medium_large' );
+	$image_size = 'horizontal-5' === $semantic_layout ? 'thumbnail' : digipublish_core_image_size( $attributes, 'medium_large' );
 	$has_image = ! empty( $attributes['showImage'] ) && ! in_array( $semantic_layout, array( 'standard-4', 'horizontal-4' ), true );
 	$is_overlay = str_starts_with( $semantic_layout, 'tile-' ) || str_starts_with( $semantic_layout, 'carousel-' );
 	$all_inline_meta = in_array( $semantic_layout, array( 'horizontal-4', 'horizontal-5' ), true );
