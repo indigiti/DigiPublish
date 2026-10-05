@@ -137,10 +137,10 @@ function techpress_theme_register_typography_settings() {
 		'techpress_google_font_family',
 		array(
 			'type'              => 'string',
-			'default'           => 'Inter',
+			'default'           => 'Manrope',
 			'sanitize_callback' => static function ( $value ) {
 				$choices = techpress_theme_google_font_choices();
-				return isset( $choices[ $value ] ) ? $value : 'Inter';
+				return isset( $choices[ $value ] ) ? $value : 'Manrope';
 			},
 		)
 	);
@@ -163,7 +163,7 @@ function techpress_theme_render_typography_page() {
 		return;
 	}
 	$enabled = (bool) get_option( 'techpress_google_fonts_enabled', false );
-	$family  = (string) get_option( 'techpress_google_font_family', 'Inter' );
+	$family  = (string) get_option( 'techpress_google_font_family', 'Manrope' );
 	$choices = techpress_theme_google_font_choices();
 	?>
 	<div class="wrap">
@@ -196,9 +196,9 @@ function techpress_theme_google_font_enabled() {
 }
 
 function techpress_theme_google_font_family() {
-	$family  = (string) get_option( 'techpress_google_font_family', 'Inter' );
+	$family  = (string) get_option( 'techpress_google_font_family', 'Manrope' );
 	$choices = techpress_theme_google_font_choices();
-	return isset( $choices[ $family ] ) ? $family : 'Inter';
+	return isset( $choices[ $family ] ) ? $family : 'Manrope';
 }
 
 function techpress_theme_enqueue_google_font() {
@@ -246,3 +246,94 @@ function techpress_theme_google_font_resource_hints( $urls, $relation_type ) {
 	return $urls;
 }
 add_filter( 'wp_resource_hints', 'techpress_theme_google_font_resource_hints', 10, 2 );
+
+
+/**
+ * Caards-derived theme shell.
+ *
+ * Header/footer/template concepts are adapted from Caards 1.0.4 by Code Supply
+ * Co. (GPL-3.0) and implemented as native DigiPublish block-theme structures.
+ */
+function digipublish_caards_enqueue_shell_script() {
+	$path = get_theme_file_path( 'assets/js/caards-shell.js' );
+	if ( ! file_exists( $path ) ) {
+		return;
+	}
+	wp_enqueue_script(
+		'digipublish-caards-shell',
+		get_theme_file_uri( 'assets/js/caards-shell.js' ),
+		array(),
+		(string) filemtime( $path ),
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'digipublish_caards_enqueue_shell_script', 30 );
+
+/**
+ * Per-post/page layout settings equivalent to the Caards editor layout panel.
+ */
+function digipublish_caards_register_singular_meta() {
+	$schema = array(
+		'digipublish_singular_sidebar' => array( 'type' => 'string', 'default' => 'default' ),
+		'digipublish_page_header_type' => array( 'type' => 'string', 'default' => 'default' ),
+		'digipublish_load_nextpost'    => array( 'type' => 'string', 'default' => 'default' ),
+		'digipublish_post_video_url'   => array( 'type' => 'string', 'default' => '' ),
+		'digipublish_post_video_location' => array( 'type' => 'array', 'default' => array() ),
+	);
+	foreach ( array( 'post', 'page' ) as $post_type ) {
+		foreach ( $schema as $key => $config ) {
+			$args = array(
+				'show_in_rest'  => true,
+				'type'          => $config['type'],
+				'single'        => true,
+				'default'       => $config['default'],
+				'auth_callback' => static function () {
+					return current_user_can( 'edit_posts' );
+				},
+			);
+			if ( 'array' === $config['type'] ) {
+				$args['show_in_rest'] = array(
+					'schema' => array(
+						'type'  => 'array',
+						'items' => array( 'type' => 'string' ),
+					),
+				);
+			}
+			register_post_meta( $post_type, $key, $args );
+		}
+	}
+}
+add_action( 'init', 'digipublish_caards_register_singular_meta', 15 );
+
+/**
+ * Expose selected singular layout choices to the theme shell.
+ */
+function digipublish_caards_body_classes( $classes ) {
+	$classes[] = 'dp-caards-shell';
+	if ( is_singular( array( 'post', 'page' ) ) ) {
+		$post_id = get_queried_object_id();
+		$sidebar = sanitize_key( (string) get_post_meta( $post_id, 'digipublish_singular_sidebar', true ) );
+		if ( ! in_array( $sidebar, array( 'left', 'right', 'disabled' ), true ) ) {
+			$sidebar = 'right';
+		}
+		$header = sanitize_key( (string) get_post_meta( $post_id, 'digipublish_page_header_type', true ) );
+		if ( ! in_array( $header, array( 'standard', 'large', 'full', 'title', 'none' ), true ) ) {
+			$header = 'standard';
+		}
+		$classes[] = 'dp-sidebar-' . $sidebar;
+		$classes[] = 'dp-entry-header-' . $header;
+	}
+	return $classes;
+}
+add_filter( 'body_class', 'digipublish_caards_body_classes', 30 );
+
+/**
+ * Safe helper for theme/plugin renderers.
+ */
+function digipublish_caards_singular_setting( $post_id, $key, $fallback = '' ) {
+	$value = get_post_meta( absint( $post_id ), $key, true );
+	if ( '' === $value || null === $value || 'default' === $value ) {
+		return $fallback;
+	}
+	return $value;
+}
