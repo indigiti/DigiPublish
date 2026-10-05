@@ -1009,6 +1009,11 @@ function digipublish_core_rest_post_feed( WP_REST_Request $request ) {
 	// Already-rendered IDs are explicitly excluded, so query the first page of
 	// the remaining result set. Advancing paged at the same time would skip
 	// another full page after exclusions are applied.
+	$base_exclude = isset( $attributes['_excludePostIds'] ) && is_array( $attributes['_excludePostIds'] )
+		? array_values( array_unique( array_filter( array_map( 'absint', $attributes['_excludePostIds'] ) ) ) )
+		: array();
+	$exclude = array_values( array_unique( array_merge( $base_exclude, $exclude ) ) );
+
 	$attributes['_paged'] = $exclude ? 1 : $page;
 	$attributes['_excludePostIds'] = $exclude;
 	$attributes['paginationType'] = 'ajax';
