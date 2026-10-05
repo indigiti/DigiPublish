@@ -76,8 +76,7 @@ if ( empty( $post_items ) ) {
 $block_wrapper = get_block_wrapper_attributes(
 	digipublish_core_design_wrapper_args(
 		$attributes,
-		array( 'tp-archive-feed-block' ),
-		array( 'desktop' => $columns, 'tablet' => min( 3, $columns ), 'mobile' => 1 )
+		array( 'tp-archive-feed-block' )
 	)
 );
 echo '<div ' . $block_wrapper . '>';
