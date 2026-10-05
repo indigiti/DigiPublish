@@ -1,23 +1,48 @@
 {
-  "$schema":"https://schemas.wp.org/trunk/block.json",
-  "apiVersion":3,
-  "name":"digipublish/twitter-carousel",
-  "version":"0.10.2",
-  "title":"X / Twitter Carousel",
-  "category":"digipublish-editorial",
-  "icon":"twitter",
-  "description":"Caards-compatible X/Twitter carousel with manual or filter-provided feed items.",
-  "textdomain":"digipublish-core",
-  "attributes":{
-    "heading":{"type":"string","default":"Twitter Feed"},
-    "profileUrl":{"type":"string","default":""},
-    "items":{"type":"string","default":""},
-    "showHeader":{"type":"boolean","default":true},
-    "showFollowButton":{"type":"boolean","default":true},
-    "columns":{"type":"integer","default":3}
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "digipublish/twitter-carousel",
+  "version": "0.11.0",
+  "title": "X / Twitter Carousel",
+  "category": "digipublish-editorial",
+  "icon": "twitter",
+  "description": "Caards-compatible X/Twitter carousel with manual or filter-provided feed items.",
+  "textdomain": "digipublish-core",
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Twitter Feed"
+    },
+    "profileUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "items": {
+      "type": "string",
+      "default": ""
+    },
+    "showHeader": {
+      "type": "boolean",
+      "default": true
+    },
+    "showFollowButton": {
+      "type": "boolean",
+      "default": true
+    },
+    "columns": {
+      "type": "integer",
+      "default": 3
+    }
   },
-  "supports":{"align":["wide","full"],"html":false,"anchor":true},
-  "editorScript":"digipublish-core-editor",
-  "style":"file:./style.css",
-  "render":"file:./render.php"
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false,
+    "anchor": true
+  },
+  "editorScript": "digipublish-core-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
 }
