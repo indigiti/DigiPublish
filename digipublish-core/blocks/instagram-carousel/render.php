@@ -8,6 +8,13 @@ foreach(preg_split('/\r\n|\r|\n/',$raw) as $line){
  $items[]=array('image'=>$image,'url'=>esc_url_raw($parts[1]??''),'alt'=>sanitize_text_field($parts[2]??''));
 }
 $items=apply_filters('digipublish_instagram_carousel_items',$items,$attributes);
+$image_size=sanitize_key((string)($attributes['imageSize']??'medium'));
+foreach($items as &$item){
+ if(isset($item['sizes'])&&is_array($item['sizes'])&&!empty($item['sizes'][$image_size])){
+  $item['image']=esc_url_raw($item['sizes'][$image_size]);
+ }
+}
+unset($item);
 $number=max(1,min(30,absint($attributes['number']??6)));
 $items=array_slice($items,0,$number);
 $heading=(string)($attributes['heading']??'Instagram');
