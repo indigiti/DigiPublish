@@ -190,9 +190,17 @@ jobs:
           test -f digipublish/templates/single-digipublish_gallery.html
           test -f digipublish/templates/archive-digipublish_gallery.html
 
-          jq -e '.name == "digipublish/gallery" and .version == "0.10.1"' digipublish-core/blocks/gallery/block.json >/dev/null
-          jq -e '.name == "digipublish/gallery-slide" and .version == "0.10.1"' digipublish-core/blocks/gallery-slide/block.json >/dev/null
-          jq -e '.name == "digipublish/gallery-archive" and .version == "0.10.1"' digipublish-core/blocks/gallery-archive/block.json >/dev/null
+          expected_version="$(awk '/^Version:/{print $2; exit}' digipublish/style.css)"
+          core_version="$(awk '/^[[:space:]]*\* Version:/{print $3; exit}' digipublish-core/techpress-editorial.php)"
+          test -n "$expected_version"
+          test "$core_version" = "$expected_version" || {
+            echo "Theme/Core version mismatch: theme=$expected_version core=$core_version"
+            exit 1
+          }
+
+          jq -e --arg version "$expected_version" '.name == "digipublish/gallery" and .version == $version' digipublish-core/blocks/gallery/block.json >/dev/null
+          jq -e --arg version "$expected_version" '.name == "digipublish/gallery-slide" and .version == $version' digipublish-core/blocks/gallery-slide/block.json >/dev/null
+          jq -e --arg version "$expected_version" '.name == "digipublish/gallery-archive" and .version == $version' digipublish-core/blocks/gallery-archive/block.json >/dev/null
 
           grep -Fq "require_once DIGIPUBLISH_CORE_DIR . 'includes/gallery.php'" digipublish-core/techpress-editorial.php || exit 1
           grep -Fq "register_post_type(" digipublish-core/includes/gallery.php || exit 1
@@ -207,8 +215,8 @@ jobs:
           grep -Fq 'Photo Galleries' digipublish-core/blocks/category-nav/render.php || exit 1
 
           for block_json in digipublish-core/blocks/*/block.json; do
-            jq -e '.version == "0.10.1"' "$block_json" >/dev/null || {
-              echo "Block version mismatch: $block_json"
+            jq -e --arg version "$expected_version" '.version == $version' "$block_json" >/dev/null || {
+              echo "Block version mismatch: $block_json (expected $expected_version)"
               exit 1
             }
           done
@@ -218,7 +226,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          jq -e '.name == "digipublish/related-posts" and .version == "0.10.1" and .attributes.layout.default == "features" and .attributes.relationMode.default == "category-tags"' digipublish-core/blocks/related-posts/block.json >/dev/null
+          expected_version="$(awk '/^Version:/{print $2; exit}' digipublish/style.css)"
+          jq -e --arg version "$expected_version" '.name == "digipublish/related-posts" and .version == $version and .attributes.layout.default == "features" and .attributes.relationMode.default == "category-tags"' digipublish-core/blocks/related-posts/block.json >/dev/null
           grep -Fq '"heading":"Read next"' digipublish/templates/single.html || exit 1
           grep -Fq '"layout":"read-next"' digipublish/templates/single.html || exit 1
           grep -Fq '"relationMode":"category-tags"' digipublish/templates/single.html || exit 1
