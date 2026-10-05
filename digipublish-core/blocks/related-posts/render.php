@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-$post_id = get_queried_object_id();
+$post_id = get_the_ID() ?: get_queried_object_id();
 if ( ! $post_id || 'post' !== get_post_type( $post_id ) ) {
 	return;
 }
