@@ -439,6 +439,9 @@ function digipublish_caards_render_next_article( $post_id ) {
 
 	$sidebar_setting = sanitize_key( (string) get_post_meta( $post_id, 'digipublish_singular_sidebar', true ) );
 	if ( ! in_array( $sidebar_setting, array( 'left', 'right', 'disabled' ), true ) ) {
+		$sidebar_setting = sanitize_key( (string) get_option( 'digipublish_caards_default_sidebar', 'right' ) );
+	}
+	if ( ! in_array( $sidebar_setting, array( 'left', 'right', 'disabled' ), true ) ) {
 		$sidebar_setting = 'right';
 	}
 	$sidebar = '';
