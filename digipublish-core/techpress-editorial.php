@@ -138,12 +138,30 @@ function techpress_editorial_register_blocks() {
 		true
 	);
 
-	$blocks = array( 'featured-posts', 'post-feed', 'editorial-feed', 'ad-slot', 'term-index', 'category-nav', 'archive-hero', 'archive-feed', 'author-profile', 'popular-categories', 'category-experts', 'related-posts', 'post-author-card', 'article-toc', 'article-byline', 'sidebar-feed', 'gallery', 'gallery-slide', 'gallery-archive', 'entry-hero', 'current-date', 'custom-link', 'instagram-carousel', 'twitter-carousel', 'team-grid', 'mega-menu' );
+	$blocks = array( 'featured-posts', 'post-feed', 'editorial-feed', 'ad-slot', 'term-index', 'category-nav', 'archive-hero', 'archive-feed', 'author-profile', 'popular-categories', 'category-experts', 'related-posts', 'post-author-card', 'article-toc', 'article-byline', 'sidebar-feed', 'gallery', 'gallery-slide', 'gallery-archive', 'entry-hero', 'current-date', 'custom-link', 'instagram-carousel', 'twitter-carousel', 'team-grid', 'mega-menu', 'section-heading', 'section', 'section-content', 'section-sidebar', 'opt-in-form', 'featured-categories' );
 	foreach ( $blocks as $block ) {
 		register_block_type( TECHPRESS_EDITORIAL_DIR . 'blocks/' . $block );
 	}
 }
 add_action( 'init', 'techpress_editorial_register_blocks', 20 );
+
+/**
+ * Classic widget area retained for Caards Masonry widget insertion parity.
+ */
+function digipublish_core_register_caards_widget_areas() {
+	register_sidebar(
+		array(
+			'name'          => __( 'Posts / Archive Loop Widgets', 'digipublish-core' ),
+			'id'            => 'sidebar-archive',
+			'description'   => __( 'Widgets inserted between Masonry Posts cards when enabled in the Posts block.', 'digipublish-core' ),
+			'before_widget' => '<div class="tp-post-feed__widget %2$s">',
+			'after_widget'  => '</div>',
+			'before_title'  => '<h3 class="tp-post-feed__widget-title">',
+			'after_title'   => '</h3>',
+		)
+	);
+}
+add_action( 'widgets_init', 'digipublish_core_register_caards_widget_areas' );
 
 /**
  * Add a dedicated inserter category.
