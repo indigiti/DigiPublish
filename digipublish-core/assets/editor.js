@@ -503,7 +503,7 @@
       label: label,
       value: value || '',
       placeholder: '#2D5DE0',
-      help: __('Hex color or CSS color value.', 'digipublish-core'),
+      help: __('Hex color, e.g. #2D5DE0.', 'digipublish-core'),
       onChange: onChange
     });
   }
@@ -555,7 +555,7 @@
         /^carousel-/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl, { label:__('Enable wrap-around', 'digipublish-core'), checked:a.carouselWrap !== false, help:__('At the end of items, wrap around to the other end.', 'digipublish-core'), onChange:function(v){ set({carouselWrap:v}); } }) : null
       ),
       el(PanelBody, { title:__('Meta Settings', 'digipublish-core'), initialOpen:false },
-        el(SelectControl, {
+        /^(standard-4|tile-[1-4]|carousel-[12])$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl, {
           label:__('Top Meta Type', 'digipublish-core'),
           value:a.topMetaType || 'none',
           options:[
@@ -565,7 +565,7 @@
             { label:__('Count', 'digipublish-core'), value:'count' }
           ],
           onChange:function(v){ set({topMetaType:v}); }
-        }),
+        }) : null,
         el(ToggleControl, { label:__('Category', 'digipublish-core'), checked:!!a.showCategory, onChange:function(v){ set({showCategory:v}); } }),
         el(ToggleControl, { label:__('Author', 'digipublish-core'), checked:!!a.showAuthor, onChange:function(v){ set({showAuthor:v}); } }),
         el(ToggleControl, { label:__('Date', 'digipublish-core'), checked:!!a.showDate, onChange:function(v){ set({showDate:v}); } }),
