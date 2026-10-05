@@ -7,7 +7,7 @@ $align = isset( $attributes['textAlign'] ) && in_array( $attributes['textAlign']
 $styles[] = '--dp-current-date-align:' . $align;
 $color = sanitize_hex_color( $attributes['textColor'] ?? '' );
 if ( $color ) { $styles[] = '--dp-current-date-color:' . $color; }
-foreach ( array( 'fontSizeDesktop'=>'--dp-current-date-size-d','fontSizeTablet'=>'--dp-current-date-size-t','fontSizeMobile'=>'--dp-current-date-size-m' ) as $key=>$var ) {
+foreach ( array( 'fontSizeDesktop'=>'--dp-current-date-size-d','fontSizeLaptop'=>'--dp-current-date-size-l','fontSizeTablet'=>'--dp-current-date-size-t','fontSizeMobile'=>'--dp-current-date-size-m' ) as $key=>$var ) {
 	$value = digipublish_core_css_length( $attributes[$key] ?? '' );
 	if ( $value ) { $styles[] = $var . ':' . $value; }
 }
