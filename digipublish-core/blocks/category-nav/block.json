@@ -27,17 +27,59 @@
     },
     "orderBy": {
       "type": "string",
-      "default": "count"
+      "default": "name"
     },
     "order": {
       "type": "string",
-      "default": "DESC"
+      "default": "ASC"
+    },
+    "filterCategoryIds": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "integer"
+      }
+    },
+    "maximum": {
+      "type": "integer",
+      "default": 0
+    },
+    "alignment": {
+      "type": "string",
+      "default": "center"
+    },
+    "hideDesktop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLaptop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideMobile": {
+      "type": "boolean",
+      "default": false
     }
   },
   "supports": {
     "html": false,
     "anchor": true,
-    "className": true
+    "className": true,
+    "customClassName": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "border": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true
+    }
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
