@@ -1,0 +1,24 @@
+{
+  "$schema":"https://schemas.wp.org/trunk/block.json",
+  "apiVersion":3,
+  "name":"digipublish/instagram-carousel",
+  "version":"0.10.2",
+  "title":"Instagram Carousel",
+  "category":"digipublish-editorial",
+  "icon":"instagram",
+  "description":"Caards-compatible Instagram carousel. Can be populated manually or by an integration using a filter.",
+  "textdomain":"digipublish-core",
+  "attributes":{
+    "heading":{"type":"string","default":"Instagram"},
+    "profileUrl":{"type":"string","default":""},
+    "items":{"type":"string","default":""},
+    "showHeader":{"type":"boolean","default":true},
+    "showFollowButton":{"type":"boolean","default":true},
+    "columns":{"type":"integer","default":5},
+    "layout":{"type":"string","default":"carousel"}
+  },
+  "supports":{"align":["wide","full"],"html":false,"anchor":true},
+  "editorScript":"digipublish-core-editor",
+  "style":"file:./style.css",
+  "render":"file:./render.php"
+}

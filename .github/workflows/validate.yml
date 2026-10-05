@@ -174,6 +174,56 @@ jobs:
           grep -Fq 'Caards 1.0.4' THIRD_PARTY_NOTICES.md || exit 1
 
 
+      - name: Guard Caards full theme port
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for part in header-one header-two header-three header-four footer-one footer-two footer-three footer-four; do
+            test -f "digipublish/parts/$part.html" || {
+              echo "Missing Caards template part: $part"
+              exit 1
+            }
+          done
+
+          for template in single-standard single-large single-full single-title single-no-sidebar page-large page-full page-title page-no-title meet-team; do
+            test -f "digipublish/templates/$template.html" || {
+              echo "Missing Caards template: $template"
+              exit 1
+            }
+          done
+
+          for block in entry-hero current-date custom-link instagram-carousel twitter-carousel team-grid mega-menu; do
+            test -f "digipublish-core/blocks/$block/block.json"
+            test -f "digipublish-core/blocks/$block/render.php"
+            jq -e --arg expected "digipublish/$block" '.name == $expected' "digipublish-core/blocks/$block/block.json" >/dev/null
+            grep -Fq "'$block'" digipublish-core/techpress-editorial.php || {
+              echo "Caards-derived block not registered: $block"
+              exit 1
+            }
+          done
+
+          grep -Fq '"name": "header-four"' digipublish/theme.json || exit 1
+          grep -Fq '"name": "footer-four"' digipublish/theme.json || exit 1
+          grep -Fq '"name": "single-full"' digipublish/theme.json || exit 1
+          grep -Fq '"name": "meet-team"' digipublish/theme.json || exit 1
+
+          grep -Fq 'digipublish_caards_header_variant' digipublish/functions.php || exit 1
+          grep -Fq 'digipublish_caards_footer_variant' digipublish/functions.php || exit 1
+          grep -Fq 'digipublish_caards_default_header' digipublish/functions.php || exit 1
+          grep -Fq 'digipublish_caards_default_sidebar' digipublish/functions.php || exit 1
+          grep -Fq 'render_block_data' digipublish/functions.php || exit 1
+          grep -Fq 'digipublish/v1/load-next-post' digipublish/functions.php || exit 1
+
+          grep -Fq '.dp-caards-header' digipublish/assets/css/site.css || exit 1
+          grep -Fq '.dp-caards-footer' digipublish/assets/css/site.css || exit 1
+          grep -Fq '.dp-caards-entry-hero--full' digipublish/assets/css/site.css || exit 1
+          grep -Fq '.dp-caards-social-carousel' digipublish/assets/css/site.css || exit 1
+          grep -Fq 'data-dp-fullscreen-toggle' digipublish/assets/js/caards-shell.js || exit 1
+          grep -Fq 'IntersectionObserver' digipublish/assets/js/caards-shell.js || exit 1
+          grep -Fq 'Caards 1.0.4' THIRD_PARTY_NOTICES.md || exit 1
+
+
       - name: Guard mobile and carousel regressions
         shell: bash
         run: |

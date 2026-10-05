@@ -3,10 +3,10 @@
   "apiVersion": 3,
   "name": "digipublish/category-nav",
   "version": "0.10.2",
-  "title": "Editorial Category Navigation",
+  "title": "Category Navigation",
   "category": "digipublish-editorial",
   "icon": "menu-alt3",
-  "description": "Automatic publication navigation using top post categories, dictionary and search.",
+  "description": "Caards-style category navigation with filtering and ordering controls.",
   "textdomain": "digipublish-core",
   "attributes": {
     "limit": {
@@ -20,10 +20,24 @@
     "showSearch": {
       "type": "boolean",
       "default": true
+    },
+    "filterSlugs": {
+      "type": "string",
+      "default": ""
+    },
+    "orderBy": {
+      "type": "string",
+      "default": "count"
+    },
+    "order": {
+      "type": "string",
+      "default": "DESC"
     }
   },
   "supports": {
-    "html": false
+    "html": false,
+    "anchor": true,
+    "className": true
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
