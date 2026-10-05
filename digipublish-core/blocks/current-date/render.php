@@ -1,0 +1,1 @@
+<?php if ( ! defined( 'ABSPATH' ) ) { exit; } $format = ! empty( $attributes['format'] ) ? (string) $attributes['format'] : 'F j, Y'; echo '<span ' . get_block_wrapper_attributes( array( 'class' => 'dp-caards-current-date' ) ) . '>' . esc_html( wp_date( $format ) ) . '</span>';
