@@ -9,14 +9,14 @@
 @media(max-width:420px){.tp-archive-story-grid{grid-template-columns:1fr}.tp-archive-story h3{min-height:0;margin-bottom:9px}.tp-archive-story__image{aspect-ratio:16/9;height:auto}}
 
 .tp-archive-feed-block[style*="--dp-heading-size"] .tp-section-title{font-size:var(--dp-heading-size)}
-.tp-archive-feed-block .tp-archive-story-grid{grid-template-columns:repeat(var(--dp-columns-desktop),minmax(0,1fr))}
+.tp-archive-feed-block[style*="--dp-columns-desktop"] .tp-archive-story-grid{grid-template-columns:repeat(var(--dp-columns-desktop),minmax(0,1fr))}
 .tp-archive-feed-block[style*="--dp-column-gap"] .tp-archive-story-grid,.tp-archive-feed-block[style*="--dp-column-gap"] .tp-archive-top-picks__grid{column-gap:var(--dp-column-gap)}
 .tp-archive-feed-block[style*="--dp-row-gap"] .tp-archive-story-grid,.tp-archive-feed-block[style*="--dp-row-gap"] .tp-archive-top-picks__grid{row-gap:var(--dp-row-gap)}
 .tp-archive-feed-block[style*="--dp-card-radius"] .tp-archive-story__image,.tp-archive-feed-block[style*="--dp-card-radius"] .tp-top-pick{border-radius:var(--dp-card-radius)}
 .tp-archive-feed-block[style*="--dp-card-min-height"] .tp-archive-story{min-height:var(--dp-card-min-height)}
 .tp-archive-feed-block[style*="--dp-image-aspect"] .tp-archive-story__image,.tp-archive-feed-block[style*="--dp-image-aspect"] .tp-top-pick__image{height:auto;aspect-ratio:var(--dp-image-aspect)}
 @media(min-width:1121px){.dp-hide-desktop{display:none!important}}
-@media(min-width:721px) and (max-width:1120px){.dp-hide-laptop{display:none!important}.tp-archive-feed-block .tp-archive-story-grid{grid-template-columns:repeat(var(--dp-columns-tablet),minmax(0,1fr))}}
-@media(max-width:720px){.tp-archive-feed-block .tp-archive-story-grid{grid-template-columns:repeat(var(--dp-columns-mobile),minmax(0,1fr))}}
+@media(min-width:721px) and (max-width:1120px){.dp-hide-laptop{display:none!important}.tp-archive-feed-block[style*="--dp-columns-tablet"] .tp-archive-story-grid{grid-template-columns:repeat(var(--dp-columns-tablet),minmax(0,1fr))}}
+@media(max-width:720px){.tp-archive-feed-block[style*="--dp-columns-mobile"] .tp-archive-story-grid{grid-template-columns:repeat(var(--dp-columns-mobile),minmax(0,1fr))}}
 @media(min-width:481px) and (max-width:720px){.dp-hide-tablet{display:none!important}}
 @media(max-width:480px){.dp-hide-mobile{display:none!important}}
