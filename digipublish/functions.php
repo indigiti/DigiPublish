@@ -266,6 +266,21 @@ function digipublish_caards_enqueue_shell_script() {
 		(string) filemtime( $path ),
 		true
 	);
+
+	$config = array(
+		'loadNext' => array(
+			'enabled' => false,
+		),
+	);
+	if ( is_singular( 'post' ) ) {
+		$post_id = get_queried_object_id();
+		$config['loadNext'] = array(
+			'enabled' => digipublish_caards_load_next_enabled( $post_id ),
+			'postId'  => $post_id,
+			'restUrl' => esc_url_raw( rest_url( 'digipublish/v1/load-next-post' ) ),
+		);
+	}
+	wp_localize_script( 'digipublish-caards-shell', 'digiPublishCaards', $config );
 }
 add_action( 'wp_enqueue_scripts', 'digipublish_caards_enqueue_shell_script', 30 );
 
@@ -336,4 +351,206 @@ function digipublish_caards_singular_setting( $post_id, $key, $fallback = '' ) {
 		return $fallback;
 	}
 	return $value;
+}
+
+
+/**
+ * Resolve the Caards-style Auto Load Next Post state.
+ */
+function digipublish_caards_load_next_enabled( $post_id ) {
+	$value = sanitize_key( (string) get_post_meta( absint( $post_id ), 'digipublish_load_nextpost', true ) );
+	if ( 'enabled' === $value ) {
+		return true;
+	}
+	if ( 'disabled' === $value ) {
+		return false;
+	}
+	return (bool) get_option( 'digipublish_caards_load_nextpost_enabled', false );
+}
+
+/**
+ * Find the adjacent post using the Caards direction/category semantics.
+ */
+function digipublish_caards_adjacent_post_id( $post_id, $exclude = array() ) {
+	$post_id = absint( $post_id );
+	if ( ! $post_id ) {
+		return 0;
+	}
+
+	$exclude = array_values( array_unique( array_filter( array_map( 'absint', (array) $exclude ) ) ) );
+	$same_category = (bool) get_option( 'digipublish_caards_load_nextpost_same_category', false );
+	$reverse       = (bool) get_option( 'digipublish_caards_load_nextpost_reverse', false );
+
+	global $post;
+	$original_post = $post;
+	$cursor = get_post( $post_id );
+	$found  = 0;
+	$guard  = 0;
+
+	while ( $cursor && $guard < 50 ) {
+		$guard++;
+		$post = $cursor;
+		setup_postdata( $post );
+		$adjacent = $reverse ? get_previous_post( $same_category ) : get_next_post( $same_category );
+		if ( ! $adjacent || empty( $adjacent->ID ) ) {
+			break;
+		}
+		$cursor = get_post( $adjacent->ID );
+		if ( $cursor && ! in_array( (int) $cursor->ID, $exclude, true ) ) {
+			$found = (int) $cursor->ID;
+			break;
+		}
+	}
+
+	wp_reset_postdata();
+	$post = $original_post;
+	if ( $original_post instanceof WP_Post ) {
+		setup_postdata( $original_post );
+	}
+	return $found;
+}
+
+/**
+ * Render the article fragment used by Auto Load Next Post.
+ */
+function digipublish_caards_render_next_article( $post_id ) {
+	$post_id = absint( $post_id );
+	$loaded  = get_post( $post_id );
+	if ( ! $loaded || 'post' !== $loaded->post_type || 'publish' !== $loaded->post_status ) {
+		return '';
+	}
+
+	global $post;
+	$original_post = $post;
+	$post = $loaded;
+	setup_postdata( $post );
+
+	$header = do_blocks( '<!-- wp:digipublish/entry-hero {"layout":"auto","showBreadcrumbs":true,"showSubtitle":true} /-->' );
+	$content = apply_filters( 'the_content', get_post_field( 'post_content', $post_id ) );
+	$tags = get_the_tag_list( '<div class="dp-caards-tags">' . esc_html__( 'Tags:', 'digipublish' ) . ' ', ' ', '</div>', $post_id );
+	$author = do_blocks( '<!-- wp:digipublish/post-author-card /-->' );
+	$related = do_blocks( '<!-- wp:digipublish/related-posts {"heading":"Read next","postsToShow":4,"layout":"read-next","relationMode":"category-tags","showExcerpt":true} /-->' );
+
+	$sidebar_setting = sanitize_key( (string) get_post_meta( $post_id, 'digipublish_singular_sidebar', true ) );
+	if ( ! in_array( $sidebar_setting, array( 'left', 'right', 'disabled' ), true ) ) {
+		$sidebar_setting = 'right';
+	}
+	$sidebar = '';
+	if ( 'disabled' !== $sidebar_setting && function_exists( 'block_template_part' ) ) {
+		ob_start();
+		block_template_part( 'sidebar' );
+		$sidebar = ob_get_clean();
+	}
+
+	$classes = 'dp-caards-nextpost-section dp-sidebar-' . $sidebar_setting;
+	$html = '<section class="' . esc_attr( $classes ) . '" data-dp-nextpost-section data-title="' . esc_attr( get_the_title( $post_id ) ) . '" data-url="' . esc_url( get_permalink( $post_id ) ) . '" data-post-id="' . $post_id . '">';
+	$html .= $header;
+	$html .= '<div class="dp-caards-article-layout alignwide"><div class="dp-caards-article-main"><div class="wp-block-post-content">' . $content . '</div>' . ( $tags ?: '' ) . $author . '</div>' . $sidebar . '</div>';
+	$html .= $related;
+	$html .= '</section>';
+
+	wp_reset_postdata();
+	$post = $original_post;
+	if ( $original_post instanceof WP_Post ) {
+		setup_postdata( $original_post );
+	}
+
+	return $html;
+}
+
+/**
+ * Public REST endpoint for Auto Load Next Post.
+ */
+function digipublish_caards_register_load_next_route() {
+	register_rest_route(
+		'digipublish/v1',
+		'/load-next-post',
+		array(
+			'methods'             => WP_REST_Server::CREATABLE,
+			'permission_callback' => '__return_true',
+			'callback'            => static function ( WP_REST_Request $request ) {
+				$params  = $request->get_json_params();
+				$current = absint( $params['postId'] ?? 0 );
+				$exclude = isset( $params['exclude'] ) && is_array( $params['exclude'] ) ? $params['exclude'] : array();
+				$next_id = digipublish_caards_adjacent_post_id( $current, $exclude );
+				if ( ! $next_id ) {
+					return rest_ensure_response( array( 'end' => true, 'content' => '' ) );
+				}
+				$content = digipublish_caards_render_next_article( $next_id );
+				return rest_ensure_response(
+					array(
+						'end'     => '' === $content,
+						'postId'  => $next_id,
+						'url'     => get_permalink( $next_id ),
+						'title'   => get_the_title( $next_id ),
+						'content' => $content,
+					)
+				);
+			},
+		)
+	);
+}
+add_action( 'rest_api_init', 'digipublish_caards_register_load_next_route' );
+
+/**
+ * Appearance settings for Caards Auto Load Next Post behavior.
+ */
+function digipublish_caards_register_settings() {
+	foreach ( array(
+		'digipublish_caards_load_nextpost_enabled',
+		'digipublish_caards_load_nextpost_same_category',
+		'digipublish_caards_load_nextpost_reverse',
+	) as $option ) {
+		register_setting(
+			'digipublish_caards',
+			$option,
+			array(
+				'type'              => 'boolean',
+				'default'           => false,
+				'sanitize_callback' => static function ( $value ) { return (bool) $value; },
+			)
+		);
+	}
+}
+add_action( 'admin_init', 'digipublish_caards_register_settings' );
+
+function digipublish_caards_add_settings_page() {
+	add_theme_page(
+		__( 'DigiPublish Caards', 'digipublish' ),
+		__( 'DigiPublish Caards', 'digipublish' ),
+		'edit_theme_options',
+		'digipublish-caards',
+		'digipublish_caards_render_settings_page'
+	);
+}
+add_action( 'admin_menu', 'digipublish_caards_add_settings_page' );
+
+function digipublish_caards_render_settings_page() {
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+	?>
+	<div class="wrap">
+		<h1><?php esc_html_e( 'DigiPublish Caards', 'digipublish' ); ?></h1>
+		<p><?php esc_html_e( 'Header and footer variants are editable in Appearance → Editor → Design → Patterns. These settings control Caards-compatible article behavior.', 'digipublish' ); ?></p>
+		<form method="post" action="options.php">
+			<?php settings_fields( 'digipublish_caards' ); ?>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Auto Load Next Post', 'digipublish' ); ?></th>
+					<td><input type="hidden" name="digipublish_caards_load_nextpost_enabled" value="0"><label><input type="checkbox" name="digipublish_caards_load_nextpost_enabled" value="1" <?php checked( get_option( 'digipublish_caards_load_nextpost_enabled', false ) ); ?>> <?php esc_html_e( 'Enable globally (individual posts can override this)', 'digipublish' ); ?></label></td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Same category only', 'digipublish' ); ?></th>
+					<td><input type="hidden" name="digipublish_caards_load_nextpost_same_category" value="0"><label><input type="checkbox" name="digipublish_caards_load_nextpost_same_category" value="1" <?php checked( get_option( 'digipublish_caards_load_nextpost_same_category', false ) ); ?>> <?php esc_html_e( 'Only auto-load adjacent posts from the same category', 'digipublish' ); ?></label></td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Reverse direction', 'digipublish' ); ?></th>
+					<td><input type="hidden" name="digipublish_caards_load_nextpost_reverse" value="0"><label><input type="checkbox" name="digipublish_caards_load_nextpost_reverse" value="1" <?php checked( get_option( 'digipublish_caards_load_nextpost_reverse', false ) ); ?>> <?php esc_html_e( 'Load previous posts instead of next posts', 'digipublish' ); ?></label></td>
+				</tr>
+			</table>
+			<?php submit_button(); ?>
+		</form>
+	</div>
+	<?php
 }
