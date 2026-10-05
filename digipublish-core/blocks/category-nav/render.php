@@ -3,7 +3,8 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 $ids = array_values( array_unique( array_filter( array_map( 'absint', is_array( $attributes['filterCategoryIds'] ?? null ) ? $attributes['filterCategoryIds'] : array() ) ) ) );
 $legacy_slugs = array_values( array_filter( array_map( 'sanitize_title', preg_split( '/[\s,]+/', (string) ( $attributes['filterSlugs'] ?? '' ) ) ) ) );
 $maximum = isset( $attributes['maximum'] ) ? max( 0, min( 1000, absint( $attributes['maximum'] ) ) ) : 0;
-if ( ! $maximum && ! array_key_exists( 'maximum', $attributes ) && ! empty( $attributes['limit'] ) ) { $maximum = absint( $attributes['limit'] ); }
+$legacy_limit = isset( $attributes['limit'] ) ? max( 0, min( 1000, absint( $attributes['limit'] ) ) ) : 0;
+if ( ! $maximum && $legacy_limit ) { $maximum = $legacy_limit; }
 $order_by = isset( $attributes['orderBy'] ) ? sanitize_key( (string) $attributes['orderBy'] ) : 'name';
 $allowed_orderby = array( 'name','count','slug__in','id','term_id' );
 if ( ! in_array( $order_by, $allowed_orderby, true ) ) { $order_by = 'name'; }
