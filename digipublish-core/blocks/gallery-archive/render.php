@@ -67,15 +67,7 @@ if ( $heading ) {
 }
 
 if ( 'archive' === $source && ( $attributes['showFilters'] ?? true ) ) {
-	$terms = get_terms(
-		array(
-			'taxonomy'   => 'category',
-			'hide_empty' => true,
-			'number'     => 10,
-			'orderby'    => 'count',
-			'order'      => 'DESC',
-		)
-	);
+	$terms = digipublish_core_get_gallery_categories( 10 );
 	if ( ! is_wp_error( $terms ) && $terms ) {
 		$current = sanitize_title( (string) get_query_var( 'gallery_category' ) );
 		echo '<nav class="tp-gallery-archive__filters" aria-label="' . esc_attr__( 'Gallery categories', 'digipublish-core' ) . '">';
