@@ -1,0 +1,95 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "digipublish/opt-in-form",
+  "version": "0.11.0",
+  "title": "Opt-In Form",
+  "category": "digipublish-editorial",
+  "icon": "email",
+  "description": "Caards-compatible opt-in form with source color controls and integration hook.",
+  "textdomain": "digipublish-core",
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Stay in the loop"
+    },
+    "description": {
+      "type": "string",
+      "default": "Get the latest stories in your inbox."
+    },
+    "buttonLabel": {
+      "type": "string",
+      "default": "Subscribe"
+    },
+    "actionUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "emailFieldName": {
+      "type": "string",
+      "default": "email"
+    },
+    "inputBackground": {
+      "type": "string",
+      "default": ""
+    },
+    "inputColor": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonBackground": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonColor": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonHoverBackground": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonHoverColor": {
+      "type": "string",
+      "default": ""
+    },
+    "hideDesktop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLaptop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideMobile": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false,
+    "anchor": true,
+    "customClassName": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "border": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true
+    }
+  },
+  "editorScript": "digipublish-core-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}
