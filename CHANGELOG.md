@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.11.0
+
+- Ported the GPL-3.0 Caards 1.0.4 visual/theme system into DigiPublish while preserving the Gutenberg/FSE architecture.
+- Added four selectable Caards-style header layouts with desktop/mobile navigation, search panel, fullscreen menu and dark/light scheme control.
+- Added four selectable Caards-style footer layouts.
+- Added global Appearance controls for header variant, footer variant, default singular header style and default sidebar position.
+- Added Standard, Large Hero, Full Hero, Title Only and No Header post/page presentation modes with per-entry overrides.
+- Added Left, Right and Disabled sidebar modes with global defaults and per-entry overrides.
+- Added Caards-style page, archive, category, tag, date, search, author, 404 and front-page shells.
+- Added Caards Meet Team, Current Date, Custom Link, Instagram Carousel, X/Twitter Carousel and Mega Menu blocks.
+- Added a dynamic Entry Hero block with breadcrumbs, category, subtitle, author/date/comments/views/shares/read-time meta and optional video background.
+- Added Caards-inspired homepage pattern and visual foundation, including palette, typography, spacing, cards, shell, article and dark-mode styling.
+- Added Auto Load Next Post with same-category and reverse-direction options, REST rendering and browser-history updates.
+- Preserved DigiPublish Posts, Gallery, Read Next, Ads, Archive, Sidebar and existing editorial systems.
+- Added full-theme regression guards covering all Caards-derived template parts, templates, blocks, selectors and shell behavior.
+- Documented expanded Caards GPL attribution in THIRD_PARTY_NOTICES.md.
+- Bumped theme, Core and all custom blocks to 0.11.0.
+
+
 ## 0.10.2
 
 - Added a shared Gutenberg Inspector framework for configurable DigiPublish editorial blocks.
