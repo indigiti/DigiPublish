@@ -48,7 +48,7 @@ if ( ( 'swipe' === $mode && $total > 1 ) || $settings['allowFullscreen'] || $set
 	if ( 'swipe' === $mode && $total > 1 ) {
 		echo '<button type="button" class="tp-gallery__nav" data-gallery-prev aria-label="' . esc_attr__( 'Previous photo', 'digipublish-core' ) . '">←</button>';
 	}
-	if ( $settings['showCounter'] ) {
+	if ( 'swipe' === $mode && $settings['showCounter'] ) {
 		echo '<span class="tp-gallery__counter" data-gallery-counter aria-live="polite">1 / ' . esc_html( (string) $total ) . '</span>';
 	}
 	if ( 'swipe' === $mode && $total > 1 ) {
