@@ -12,6 +12,12 @@ if ( ! in_array( $source_mode, array( 'latest', 'current', 'category' ), true ) 
 	$source_mode = 'current';
 }
 
+$content_type = sanitize_key( $attributes['contentType'] ?? 'post' );
+if ( ! in_array( $content_type, array( 'post', 'gallery', 'mixed' ), true ) ) {
+	$content_type = 'post';
+}
+$post_types = 'gallery' === $content_type ? array( 'digipublish_gallery' ) : ( 'mixed' === $content_type ? array( 'post', 'digipublish_gallery' ) : array( 'post' ) );
+
 $order_by = sanitize_key( $attributes['orderBy'] ?? ( 'ranked-list' === $layout ? 'comment_count' : 'date' ) );
 if ( ! in_array( $order_by, array( 'date', 'modified', 'comment_count', 'title' ), true ) ) {
 	$order_by = 'date';
@@ -29,10 +35,77 @@ $feed_attributes = array(
 	'orderBy'         => $order_by,
 	'period'          => $period,
 	'avoidDuplicates' => false,
-	'fallbackRandom'   => true,
+	'fallbackRandom'  => true,
 );
 
-$posts = techpress_editorial_feed_get_posts( $feed_attributes );
+if ( 'post' === $content_type ) {
+	$posts = techpress_editorial_feed_get_posts( $feed_attributes );
+} else {
+	$query_args = array(
+		'post_type'              => $post_types,
+		'post_status'            => 'publish',
+		'posts_per_page'         => $feed_attributes['postsToShow'],
+		'orderby'                => $order_by,
+		'order'                  => 'DESC',
+		'ignore_sticky_posts'    => true,
+		'no_found_rows'          => true,
+		'update_post_meta_cache' => true,
+		'update_post_term_cache' => true,
+	);
+
+	$current_id = is_singular( array( 'post', 'digipublish_gallery' ) ) ? get_queried_object_id() : 0;
+	if ( $current_id ) {
+		$query_args['post__not_in'] = array( $current_id );
+	}
+
+	if ( 'category' === $source_mode && ! empty( $attributes['categoryId'] ) ) {
+		$query_args['cat'] = absint( $attributes['categoryId'] );
+	} elseif ( 'current' === $source_mode && $current_id ) {
+		$categories = wp_get_post_categories( $current_id );
+		if ( $categories ) {
+			$query_args['category__in'] = array( (int) $categories[0] );
+		}
+	}
+
+	if ( in_array( $period, array( 'day', 'week', 'month' ), true ) ) {
+		$days = 'day' === $period ? 1 : ( 'week' === $period ? 7 : 30 );
+		$query_args['date_query'] = array(
+			array(
+				'after'     => $days . ' days ago',
+				'inclusive' => true,
+			),
+		);
+	}
+
+	$query = new WP_Query( $query_args );
+	$posts = $query->posts;
+
+	if ( count( $posts ) < $count ) {
+		$fallback_args = $query_args;
+		unset( $fallback_args['category__in'], $fallback_args['cat'], $fallback_args['date_query'] );
+		$fallback_args['posts_per_page'] = max( 24, $count * 5 );
+		$fallback_args['orderby'] = 'date';
+		$fallback_args['post__not_in'] = array_values(
+			array_unique(
+				array_merge(
+					wp_list_pluck( $posts, 'ID' ),
+					$current_id ? array( $current_id ) : array()
+				)
+			)
+		);
+		$fallback = new WP_Query( $fallback_args );
+		$pool = $fallback->posts;
+		if ( $pool ) {
+			shuffle( $pool );
+			foreach ( $pool as $post ) {
+				if ( count( $posts ) >= $count ) {
+					break;
+				}
+				$posts[] = $post;
+			}
+		}
+	}
+}
 
 if ( 'image-grid' === $layout ) {
 	$posts = array_values(
@@ -46,6 +119,7 @@ if ( 'image-grid' === $layout ) {
 
 	if ( count( $posts ) < $count ) {
 		$args = techpress_editorial_feed_query_args( $feed_attributes );
+		$args['post_type'] = $post_types;
 		$args['posts_per_page'] = $count;
 		$args['meta_query'] = array(
 			array(
@@ -74,6 +148,7 @@ if ( 'image-grid' === $layout ) {
 			$latest_attributes['sourceMode'] = 'latest';
 			$latest_attributes['categoryId'] = 0;
 			$latest_args = techpress_editorial_feed_query_args( $latest_attributes );
+			$latest_args['post_type'] = $post_types;
 			$latest_args['posts_per_page'] = $count - count( $posts );
 			$latest_args['meta_query'] = array(
 				array(
@@ -129,6 +204,12 @@ if ( 'meta-list' === $layout ) {
 		echo '<article class="tp-sidebar-meta-item">';
 		echo '<div class="tp-sidebar-meta-item__meta"><span>' . esc_html( get_the_author_meta( 'display_name', $post->post_author ) ) . '</span><time datetime="' . esc_attr( get_the_date( DATE_W3C, $post_id ) ) . '">' . esc_html( get_the_date( '', $post_id ) ) . '</time></div>';
 		echo '<h3><a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html( get_the_title( $post_id ) ) . '</a></h3>';
+		if ( 'digipublish_gallery' === get_post_type( $post_id ) ) {
+			$photo_count = digipublish_core_get_gallery_slide_count( $post_id );
+			if ( $photo_count ) {
+				echo '<span class="tp-sidebar-gallery-count">' . esc_html( sprintf( _n( '%d Photo', '%d Photos', $photo_count, 'digipublish-core' ), $photo_count ) ) . '</span>';
+			}
+		}
 		echo '</article>';
 	}
 	echo '</div>';
@@ -137,7 +218,14 @@ if ( 'meta-list' === $layout ) {
 	$rank = 1;
 	foreach ( $posts as $post ) {
 		$post_id = $post->ID;
-		echo '<li><span class="tp-sidebar-ranked-list__rank" aria-hidden="true">' . esc_html( (string) $rank ) . '</span><h3><a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html( get_the_title( $post_id ) ) . '</a></h3></li>';
+		echo '<li><span class="tp-sidebar-ranked-list__rank" aria-hidden="true">' . esc_html( (string) $rank ) . '</span><div><h3><a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html( get_the_title( $post_id ) ) . '</a></h3>';
+		if ( 'digipublish_gallery' === get_post_type( $post_id ) ) {
+			$photo_count = digipublish_core_get_gallery_slide_count( $post_id );
+			if ( $photo_count ) {
+				echo '<span class="tp-sidebar-gallery-count">' . esc_html( sprintf( _n( '%d Photo', '%d Photos', $photo_count, 'digipublish-core' ), $photo_count ) ) . '</span>';
+			}
+		}
+		echo '</div></li>';
 		$rank++;
 	}
 	echo '</ol>';
@@ -148,6 +236,12 @@ if ( 'meta-list' === $layout ) {
 		$class = 'tp-sidebar-image-grid__item tp-sidebar-image-grid__item--' . ( ( $index % 7 ) + 1 );
 		echo '<a class="' . esc_attr( $class ) . '" href="' . esc_url( get_permalink( $post_id ) ) . '" aria-label="' . esc_attr( get_the_title( $post_id ) ) . '">';
 		echo techpress_editorial_image_markup( $post_id, 'medium', false, '(max-width: 1120px) 28vw, 92px' );
+		if ( 'digipublish_gallery' === get_post_type( $post_id ) ) {
+			$photo_count = digipublish_core_get_gallery_slide_count( $post_id );
+			if ( $photo_count ) {
+				echo '<span class="tp-sidebar-image-grid__count">' . esc_html( (string) $photo_count ) . '</span>';
+			}
+		}
 		echo '</a>';
 	}
 	echo '</div>';
