@@ -19,7 +19,10 @@ $settings = array(
 $slides = array();
 foreach ( (array) ( $block->parsed_block['innerBlocks'] ?? array() ) as $inner ) {
 	if ( 'digipublish/gallery-slide' === ( $inner['blockName'] ?? '' ) ) {
-		$slides[] = (array) ( $inner['attrs'] ?? array() );
+		$attrs = (array) ( $inner['attrs'] ?? array() );
+		if ( ! empty( $attrs['imageId'] ) || ! empty( $attrs['imageUrl'] ) ) {
+			$slides[] = $attrs;
+		}
 	}
 }
 
