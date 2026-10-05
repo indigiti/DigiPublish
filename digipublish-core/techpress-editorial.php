@@ -2,7 +2,7 @@
 /**
  * Plugin Name: DigiPublish Core
  * Description: Dynamic Gutenberg blocks and editorial content types for the DigiPublish publishing framework.
- * Version: 0.9.0
+ * Version: 0.10.0
  * Requires at least: 7.0
  * Requires PHP: 8.0
  * Author: indigiti
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TECHPRESS_EDITORIAL_VERSION', '0.9.0' );
+define( 'TECHPRESS_EDITORIAL_VERSION', '0.10.0' );
 define( 'TECHPRESS_EDITORIAL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TECHPRESS_EDITORIAL_URL', plugin_dir_url( __FILE__ ) );
 
