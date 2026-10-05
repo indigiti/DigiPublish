@@ -88,6 +88,10 @@
     "hideMobile": {
       "type": "boolean",
       "default": false
+    },
+    "fontSizeLaptop": {
+      "type": "string",
+      "default": ""
     }
   },
   "supports": {

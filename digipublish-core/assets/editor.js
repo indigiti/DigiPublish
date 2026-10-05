@@ -443,15 +443,78 @@
   }
 
   function postSourceDefaults(layout) {
-    const normalized = normalizedPostLayout(layout);
+    const l = normalizedPostLayout(layout);
+    const d = {
+      columnsDesktop:1, columnsLaptop:1, columnsTablet:1, columnsMobile:1, maxColumns:6,
+      columnGapDesktop:'40px', columnGapLaptop:'40px', columnGapTablet:'40px', columnGapMobile:'40px',
+      rowGapDesktop:'40px', rowGapLaptop:'40px', rowGapTablet:'40px', rowGapMobile:'40px',
+      contentGapDesktop:'', contentGapLaptop:'', contentGapTablet:'', contentGapMobile:'',
+      cardHeadingFontSizeDesktop:'1.5rem', cardHeadingFontSizeLaptop:'1.5rem', cardHeadingFontSizeTablet:'1.5rem', cardHeadingFontSizeMobile:'1.5rem',
+      excerptFontSizeDesktop:'0.875rem', excerptFontSizeLaptop:'0.875rem', excerptFontSizeTablet:'0.875rem', excerptFontSizeMobile:'0.875rem',
+      imageOrientation:'original', imageWidth:'one-third', topMetaType:'',
+      showCategory:true, showAuthor:true, showDate:true, showComments:false, showViews:true, showReadTime:true, showShares:true,
+      showExcerpt:true, showReadMore:true,
+      hasColumns:true, hasColumnGap:true, hasRowGap:true, hasBorderRadius:true, hasCardMinHeight:true,
+      hasContentGap:false, hasContentAlign:false, hasImageAlign:false, hasImageWidth:false, hasPostFormat:false, hasVideo:false,
+      hasTopMeta:false, hasImageOrientation:true, hasColorSettings:true, hasReadMoreColors:true, hasBorderColor:false
+    };
+
+    if (/^standard-[1-4]$/.test(l)) {
+      d.contentGapDesktop=d.contentGapLaptop=d.contentGapTablet=d.contentGapMobile='32px';
+      d.hasContentGap=true; d.hasPostFormat=true; d.hasVideo=true;
+      if (l === 'standard-4') { d.hasTopMeta=true; d.topMetaType='author'; }
+    } else if (l === 'masonry-1') {
+      d.maxColumns=4; d.hasCardMinHeight=false; d.hasPostFormat=true; d.hasVideo=true;
+    } else if (l === 'horizontal-1') {
+      d.cardHeadingFontSizeDesktop=d.cardHeadingFontSizeLaptop=d.cardHeadingFontSizeTablet=d.cardHeadingFontSizeMobile='1rem';
+      d.contentGapDesktop=d.contentGapLaptop=d.contentGapTablet=d.contentGapMobile='16px';
+      d.hasContentGap=true; d.hasContentAlign=true; d.hasImageAlign=true; d.hasImageWidth=true; d.hasPostFormat=true;
+      d.showExcerpt=false;
+    } else if (l === 'horizontal-2') {
+      d.cardHeadingFontSizeDesktop=d.cardHeadingFontSizeLaptop=d.cardHeadingFontSizeTablet=d.cardHeadingFontSizeMobile='1rem';
+      d.contentGapDesktop=d.contentGapLaptop=d.contentGapTablet=d.contentGapMobile='40px';
+      d.imageOrientation='square'; d.hasContentGap=true; d.hasContentAlign=true; d.hasImageWidth=true; d.hasPostFormat=true;
+      d.showExcerpt=false;
+    } else if (l === 'horizontal-3') {
+      d.cardHeadingFontSizeDesktop='2.625rem'; d.cardHeadingFontSizeLaptop='2.625rem'; d.cardHeadingFontSizeTablet='2rem'; d.cardHeadingFontSizeMobile='1.5rem';
+      d.contentGapDesktop='40px'; d.contentGapLaptop='40px'; d.contentGapTablet='40px'; d.contentGapMobile='20px';
+      d.imageOrientation='square'; d.imageWidth='half'; d.hasContentGap=true; d.hasContentAlign=true; d.hasImageWidth=true; d.hasPostFormat=true; d.hasVideo=true;
+    } else if (/^horizontal-[45]$/.test(l)) {
+      d.cardHeadingFontSizeDesktop=d.cardHeadingFontSizeLaptop=d.cardHeadingFontSizeTablet=d.cardHeadingFontSizeMobile='1rem';
+      d.hasColumns=false; d.hasColumnGap=false; d.hasBorderRadius=false; d.hasCardMinHeight=false; d.hasImageOrientation=false;
+      d.hasColorSettings=true; d.hasReadMoreColors=false; d.hasBorderColor=true;
+      d.showCategory=false; d.showViews=false; d.showReadTime=false; d.showShares=false; d.showExcerpt=false; d.showReadMore=false;
+    } else if (/^tile-[12]$/.test(l)) {
+      d.imageOrientation='stretch'; d.hasVideo=true; d.hasTopMeta=true; d.topMetaType='author'; d.hasColorSettings=false;
+    } else if (/^tile-[34]$/.test(l)) {
+      d.cardHeadingFontSizeDesktop=d.cardHeadingFontSizeLaptop=d.cardHeadingFontSizeTablet=d.cardHeadingFontSizeMobile='1rem';
+      d.hasTopMeta=true; d.topMetaType='author'; d.hasImageOrientation=false; d.hasColorSettings=false; d.showExcerpt=false;
+    } else if (l === 'carousel-1') {
+      d.columnsDesktop=4; d.columnsLaptop=4; d.columnsTablet=2; d.columnsMobile=1;
+      d.cardHeadingFontSizeDesktop=d.cardHeadingFontSizeLaptop=d.cardHeadingFontSizeTablet=d.cardHeadingFontSizeMobile='1.25rem';
+      d.imageOrientation='stretch'; d.hasRowGap=false; d.hasBorderRadius=false; d.hasTopMeta=true; d.topMetaType='author'; d.hasColorSettings=false;
+    } else if (l === 'carousel-2') {
+      d.columnsDesktop=4; d.columnsLaptop=4; d.columnsTablet=3; d.columnsMobile=1;
+      d.cardHeadingFontSizeDesktop=d.cardHeadingFontSizeLaptop=d.cardHeadingFontSizeTablet=d.cardHeadingFontSizeMobile='1.25rem';
+      d.imageOrientation='stretch'; d.hasRowGap=false; d.hasBorderRadius=false; d.hasTopMeta=true; d.topMetaType='author'; d.hasColorSettings=false;
+    }
+    return d;
+  }
+
+  function postLayoutDefaultsPatch(layout) {
+    const d = postSourceDefaults(layout);
     return {
-      columnsDesktop: /^carousel-/.test(normalized) ? 4 : 1,
-      columnsTablet: /^carousel-/.test(normalized) ? 2 : 1,
-      columnsMobile: 1,
-      maxColumns: normalized === 'masonry-1' ? 4 : 6,
-      topMetaType: /^(standard-4|tile-[1-4]|carousel-[12])$/.test(normalized) ? 'author' : '',
-      imageOrientation: /^(tile-[12]|carousel-[12])$/.test(normalized) ? 'stretch' : (/^horizontal-[23]$/.test(normalized) ? 'square' : 'original'),
-      imageWidth: normalized === 'horizontal-3' ? 'half' : 'one-third'
+      layout:layout,
+      postsToShow:/^carousel-/.test(layout)?6:1,
+      columnsDesktop:d.columnsDesktop, columnsLaptop:d.columnsLaptop, columnsTablet:d.columnsTablet, columnsMobile:d.columnsMobile,
+      columnGapDesktop:d.columnGapDesktop, columnGapLaptop:d.columnGapLaptop, columnGapTablet:d.columnGapTablet, columnGapMobile:d.columnGapMobile,
+      rowGapDesktop:d.rowGapDesktop, rowGapLaptop:d.rowGapLaptop, rowGapTablet:d.rowGapTablet, rowGapMobile:d.rowGapMobile,
+      contentGapDesktop:d.contentGapDesktop, contentGapLaptop:d.contentGapLaptop, contentGapTablet:d.contentGapTablet, contentGapMobile:d.contentGapMobile,
+      cardHeadingFontSizeDesktop:d.cardHeadingFontSizeDesktop, cardHeadingFontSizeLaptop:d.cardHeadingFontSizeLaptop, cardHeadingFontSizeTablet:d.cardHeadingFontSizeTablet, cardHeadingFontSizeMobile:d.cardHeadingFontSizeMobile,
+      excerptFontSizeDesktop:d.excerptFontSizeDesktop, excerptFontSizeLaptop:d.excerptFontSizeLaptop, excerptFontSizeTablet:d.excerptFontSizeTablet, excerptFontSizeMobile:d.excerptFontSizeMobile,
+      imageOrientation:d.imageOrientation, imageWidth:d.imageWidth, topMetaType:d.topMetaType,
+      showCategory:d.showCategory, showAuthor:d.showAuthor, showDate:d.showDate, showComments:d.showComments, showViews:d.showViews,
+      showReadTime:d.showReadTime, showShares:d.showShares, showExcerpt:d.showExcerpt, showReadMore:d.showReadMore
     };
   }
 
@@ -509,7 +572,7 @@
                 variant:active === item.value ? 'primary' : 'secondary',
                 isPressed:active === item.value,
                 style:{ justifyContent:'center', minHeight:'36px' },
-                onClick:function(){ props.setAttributes({ layout:item.value }); }
+                onClick:function(){ props.setAttributes(postLayoutDefaultsPatch(item.value)); }
               }, item.label);
             })
           )
@@ -526,6 +589,22 @@
       help:__('Use a CSS length such as 12px, 1rem, 5%.', 'digipublish-core'),
       onChange:onChange
     });
+  }
+
+  function responsiveLengthControls(label, a, set, keys, defaults) {
+    const names=[__('Desktop','digipublish-core'),__('Laptop','digipublish-core'),__('Tablet','digipublish-core'),__('Mobile','digipublish-core')];
+    return keys.map(function(key,index){
+      return lengthControl(label+' — '+names[index], a[key], function(v){ const patch={}; patch[key]=v; set(patch); }, defaults[index] || '');
+    });
+  }
+
+  function standardPaginationEligible(a) {
+    if (a.relatedPosts) return false;
+    const categories=Array.isArray(a.filterCategoryIds)?a.filterCategoryIds.filter(Boolean):[];
+    const tags=Array.isArray(a.filterTagIds)?a.filterTagIds.filter(Boolean):[];
+    return (a.orderBy||'date')==='date' && (a.order||'DESC')==='DESC' && (a.postType||'post')==='post' &&
+      !(a.postFormats||[]).length && !(a.filterPostIds||[]).length && !(a.offset||0) && !a.avoidDuplicates &&
+      categories.length<=1 && tags.length<=1;
   }
 
   function colorControl(label, value, onChange) {
@@ -549,97 +628,106 @@
 
   function postFeedInspectorControls(props) {
     const a = props.attributes, set = props.setAttributes;
-    const sourceDefaults = postSourceDefaults(a.layout);
-    const defaultColumns = /^grid-([2-5])$/.test(a.layout || '') ? parseInt((a.layout || '').replace('grid-',''),10) : sourceDefaults.columnsDesktop;
-    return el(InspectorControls, {},
-      el(PanelBody, { title:__('Layout', 'digipublish-core'), initialOpen:true }, postFeedLayoutPicker(props)),
-      el(PanelBody, { title:__('Block Settings', 'digipublish-core'), initialOpen:true },
-        el(TextControl, { label:__('Section Heading', 'digipublish-core'), value:a.heading || '', onChange:function(v){ set({heading:v}); } }),
-        el(SelectControl, {
-          label:__('Pagination Type', 'digipublish-core'),
-          value:a.paginationType || 'none',
-          options:[
-            { label:__('None', 'digipublish-core'), value:'none' },
-            { label:__('Standard', 'digipublish-core'), value:'numbers' },
-            { label:__('Load More', 'digipublish-core'), value:'ajax' },
-            { label:__('Infinite Load', 'digipublish-core'), value:'infinite' }
-          ],
-          onChange:function(v){ set({paginationType:v}); }
-        }),
-        el(RangeControl, { label:/^carousel-/.test(normalizedPostLayout(a.layout)) ? __('Slides','digipublish-core') : __('Posts Count', 'digipublish-core'), value:a.postsToShow || 6, min:1, max:/^carousel-/.test(normalizedPostLayout(a.layout)) ? 100 : 24, onChange:function(v){ set({postsToShow:v || 1}); } }),
-        el(RangeControl, { label:__('Number of Columns', 'digipublish-core'), value:a.columnsDesktop || defaultColumns, min:1, max:sourceDefaults.maxColumns, onChange:function(v){ set({columnsDesktop:v || 1}); } }),
-        el(RangeControl, { label:__('Columns — Tablet', 'digipublish-core'), value:a.columnsTablet || sourceDefaults.columnsTablet, min:1, max:sourceDefaults.maxColumns, onChange:function(v){ set({columnsTablet:v || 1}); } }),
-        el(RangeControl, { label:__('Columns — Mobile', 'digipublish-core'), value:a.columnsMobile || sourceDefaults.columnsMobile, min:1, max:3, onChange:function(v){ set({columnsMobile:v || 1}); } }),
-        lengthControl(__('Gap between Columns', 'digipublish-core'), a.columnGap, function(v){ set({columnGap:v}); }, '40px'),
-        lengthControl(__('Gap between Rows', 'digipublish-core'), a.rowGap, function(v){ set({rowGap:v}); }, '40px'),
-        lengthControl(__('Border Radius', 'digipublish-core'), a.cardRadius, function(v){ set({cardRadius:v}); }, '12px'),
-        lengthControl(__('Card Min Height', 'digipublish-core'), a.cardMinHeight, function(v){ set({cardMinHeight:v}); }, __('Auto', 'digipublish-core')),
-        /^(standard-[1-4]|horizontal-[1-3])$/.test(normalizedPostLayout(a.layout)) ? lengthControl(__('Margin Content', 'digipublish-core'), a.contentGap, function(v){ set({contentGap:v}); }, '16px') : null,
-        /^horizontal-[1-3]$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl,{label:__('Vertical Align Content','digipublish-core'),value:a.contentAlign||'space-between',options:[{label:__('Top','digipublish-core'),value:'flex-start'},{label:__('Center','digipublish-core'),value:'center'},{label:__('Bottom','digipublish-core'),value:'flex-end'},{label:__('Space Between','digipublish-core'),value:'space-between'}],onChange:function(v){set({contentAlign:v});}}) : null,
-        /^horizontal-1$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl,{label:__('Vertical Align Image','digipublish-core'),value:a.imageAlign||'flex-start',options:[{label:__('Top','digipublish-core'),value:'flex-start'},{label:__('Center','digipublish-core'),value:'center'},{label:__('Bottom','digipublish-core'),value:'flex-end'},{label:__('Stretch','digipublish-core'),value:'stretch'}],onChange:function(v){set({imageAlign:v});}}) : null,
-        /^horizontal-[1-3]$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl,{label:__('Image Width','digipublish-core'),value:a.imageWidth||sourceDefaults.imageWidth,options:[{label:__('One Fourth','digipublish-core'),value:'one-fourth'},{label:__('One Third','digipublish-core'),value:'one-third'},{label:__('Half','digipublish-core'),value:'half'}],onChange:function(v){set({imageWidth:v});}}) : null,
-        /^(standard-[1-4]|horizontal-[1-3]|masonry-1)$/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl,{label:__('Enable post format','digipublish-core'),checked:a.showPostFormat!==false,onChange:function(v){set({showPostFormat:v});}}) : null,
-        /^(standard-[1-4]|horizontal-3|masonry-1|tile-[12])$/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl,{label:__('Enable video backgrounds','digipublish-core'),checked:!!a.enableVideoBackgrounds,onChange:function(v){set({enableVideoBackgrounds:v});}}) : null,
-        a.enableVideoBackgrounds && /^(standard-[1-4]|horizontal-3|masonry-1|tile-[12])$/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl,{label:__('Enable video controls','digipublish-core'),checked:!!a.enableVideoControls,onChange:function(v){set({enableVideoControls:v});}}) : null,
-        /^carousel-/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl, { label:__('Enable autoplay', 'digipublish-core'), checked:a.carouselAutoplay !== false, onChange:function(v){ set({carouselAutoplay:v}); } }) : null,
-        /^carousel-/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl, { label:__('Enable bullets', 'digipublish-core'), checked:a.carouselDots !== false, onChange:function(v){ set({carouselDots:v}); } }) : null,
-        /^carousel-/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl, { label:__('Enable wrap-around', 'digipublish-core'), checked:a.carouselWrap !== false, help:__('At the end of items, wrap around to the other end.', 'digipublish-core'), onChange:function(v){ set({carouselWrap:v}); } }) : null
-      ),
-      el(PanelBody, { title:__('Meta Settings', 'digipublish-core'), initialOpen:false },
-        /^(standard-4|tile-[1-4]|carousel-[12])$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl, {
-          label:__('Top Meta Type', 'digipublish-core'),
-          value:a.topMetaType || sourceDefaults.topMetaType || 'author',
-          options:[
-            { label:__('None', 'digipublish-core'), value:'none' },
-            { label:__('Author', 'digipublish-core'), value:'author' },
-            { label:__('Category', 'digipublish-core'), value:'category' },
-            { label:__('Count', 'digipublish-core'), value:'count' }
-          ],
-          onChange:function(v){ set({topMetaType:v}); }
-        }) : null,
-        el(ToggleControl, { label:__('Category', 'digipublish-core'), checked:!!a.showCategory, onChange:function(v){ set({showCategory:v}); } }),
-        el(ToggleControl, { label:__('Author', 'digipublish-core'), checked:!!a.showAuthor, onChange:function(v){ set({showAuthor:v}); } }),
-        el(ToggleControl, { label:__('Date', 'digipublish-core'), checked:!!a.showDate, onChange:function(v){ set({showDate:v}); } }),
-        el(ToggleControl, { label:__('Comments', 'digipublish-core'), checked:!!a.showComments, onChange:function(v){ set({showComments:v}); } }),
-        el(ToggleControl, { label:__('Views', 'digipublish-core'), checked:!!a.showViews, onChange:function(v){ set({showViews:v}); } }),
-        el(ToggleControl, { label:__('Reading Time', 'digipublish-core'), checked:!!a.showReadTime, onChange:function(v){ set({showReadTime:v}); } }),
-        el(ToggleControl, { label:__('Shares', 'digipublish-core'), checked:!!a.showShares, onChange:function(v){ set({showShares:v}); } }),
-        el(ToggleControl, { label:__('Display compact post meta', 'digipublish-core'), checked:!!a.compactMeta, onChange:function(v){ set({compactMeta:v}); } }),
-        el(ToggleControl, { label:__('Display post excerpt', 'digipublish-core'), checked:!!a.showExcerpt, onChange:function(v){ set({showExcerpt:v}); } }),
-        a.showExcerpt ? el(RangeControl, { label:__('Excerpt length', 'digipublish-core'), value:a.excerptLength || 100, min:1, max:1000, onChange:function(v){ set({excerptLength:v || 100}); } }) : null,
-        el(ToggleControl, { label:__('Display read more button', 'digipublish-core'), checked:!!a.showReadMore, onChange:function(v){ set({showReadMore:v}); } }),
-        a.showReadMore ? el(TextControl, { label:__('More Button Label', 'digipublish-core'), value:a.readMoreLabel || __('Read more','digipublish-core'), onChange:function(v){ set({readMoreLabel:v}); } }) : null
-      ),
-      el(PanelBody, { title:__('Typography Settings', 'digipublish-core'), initialOpen:false },
-        lengthControl(__('Heading Font Size', 'digipublish-core'), a.cardHeadingFontSize, function(v){ set({cardHeadingFontSize:v}); }, '1rem'),
-        el(SelectControl, {
-          label:__('Heading Tag', 'digipublish-core'), value:a.cardHeadingTag || 'h2',
-          options:['h1','h2','h3','h4','h5','h6','p','div'].map(function(tag){ return {label:tag.toUpperCase(),value:tag}; }),
-          onChange:function(v){ set({cardHeadingTag:v}); }
-        }),
-        a.showExcerpt ? lengthControl(__('Excerpt Font Size', 'digipublish-core'), a.excerptFontSize, function(v){ set({excerptFontSize:v}); }, '0.875rem') : null
-      ),
-      el(PanelBody, { title:__('Thumbnail Settings', 'digipublish-core'), initialOpen:false },
-        el(ToggleControl, { label:__('Display thumbnail', 'digipublish-core'), checked:a.showImage !== false, onChange:function(v){ set({showImage:v}); } }),
-        el(SelectControl, {
-          label:__('Images Size', 'digipublish-core'), value:a.imageSize || 'medium_large',
-          options:[
-            {label:__('Thumbnail', 'digipublish-core'),value:'thumbnail'},
-            {label:__('Medium', 'digipublish-core'),value:'medium'},
-            {label:__('Medium Large', 'digipublish-core')+' [800px, ~]',value:'medium_large'},
-            {label:__('Large', 'digipublish-core'),value:'large'},
-            {label:__('Full', 'digipublish-core'),value:'full'}
-          ], onChange:function(v){ set({imageSize:v}); }
-        }),
-        !/^(tile-[34]|horizontal-[45])$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl, {
-          label:__('Image Orientation', 'digipublish-core'),
-          value:a.imageOrientation || sourceDefaults.imageOrientation,
-          options:postImageOrientationOptions(a.layout),
-          onChange:function(v){ set({imageOrientation:v}); }
-        }) : null,
-        lengthControl(__('Image Border Radius', 'digipublish-core'), a.imageBorderRadius, function(v){ set({imageBorderRadius:v}); }, '12px')
-      ),
-      el(PanelBody, { title:__('Color Settings', 'digipublish-core'), initialOpen:false },
+    const layout = normalizedPostLayout(a.layout);
+    const d = postSourceDefaults(layout);
+    const hasCarousel = /^carousel-/.test(layout);
+    const paginationOptions = [{label:__('None','digipublish-core'),value:'none'}];
+    if (standardPaginationEligible(a)) paginationOptions.push({label:__('Standard','digipublish-core'),value:'numbers'});
+    paginationOptions.push({label:__('Load More','digipublish-core'),value:'ajax'},{label:__('Infinite Load','digipublish-core'),value:'infinite'});
+
+    const blockSettings = [
+      el(TextControl,{label:__('Section Heading','digipublish-core'),value:a.heading||'',onChange:function(v){set({heading:v});}})
+    ];
+    if (!hasCarousel && !a.relatedPosts) {
+      blockSettings.push(el(SelectControl,{label:__('Pagination Type','digipublish-core'),value:a.paginationType||'none',options:paginationOptions,onChange:function(v){set({paginationType:v});}}));
+    }
+    if ((a.paginationType||'none') !== 'numbers' || hasCarousel || a.relatedPosts) {
+      blockSettings.push(el(RangeControl,{label:hasCarousel?__('Slides','digipublish-core'):__('Posts Count','digipublish-core'),value:a.postsToShow||(/^carousel-/.test(layout)?6:1),min:1,max:100,onChange:function(v){set({postsToShow:v||1});}}));
+    }
+    if (d.hasColumns) {
+      blockSettings.push(
+        el(RangeControl,{label:__('Number of Columns — Desktop','digipublish-core'),value:a.columnsDesktop||d.columnsDesktop,min:1,max:d.maxColumns,onChange:function(v){set({columnsDesktop:v||1});}}),
+        el(RangeControl,{label:__('Number of Columns — Laptop','digipublish-core'),value:a.columnsLaptop||d.columnsLaptop,min:1,max:d.maxColumns,onChange:function(v){set({columnsLaptop:v||1});}}),
+        el(RangeControl,{label:__('Number of Columns — Tablet','digipublish-core'),value:a.columnsTablet||d.columnsTablet,min:1,max:d.maxColumns,onChange:function(v){set({columnsTablet:v||1});}}),
+        el(RangeControl,{label:__('Number of Columns — Mobile','digipublish-core'),value:a.columnsMobile||d.columnsMobile,min:1,max:Math.min(3,d.maxColumns),onChange:function(v){set({columnsMobile:v||1});}})
+      );
+    }
+    if (d.hasColumnGap) {
+      blockSettings.push.apply(blockSettings,responsiveLengthControls(hasCarousel?__('Gap between Posts','digipublish-core'):__('Gap between Columns','digipublish-core'),a,set,
+        ['columnGapDesktop','columnGapLaptop','columnGapTablet','columnGapMobile'],
+        [d.columnGapDesktop,d.columnGapLaptop,d.columnGapTablet,d.columnGapMobile]));
+    }
+    if (d.hasRowGap) {
+      blockSettings.push.apply(blockSettings,responsiveLengthControls(__('Gap between Rows','digipublish-core'),a,set,
+        ['rowGapDesktop','rowGapLaptop','rowGapTablet','rowGapMobile'],
+        [d.rowGapDesktop,d.rowGapLaptop,d.rowGapTablet,d.rowGapMobile]));
+    }
+    if (d.hasBorderRadius) blockSettings.push(lengthControl(__('Border Radius','digipublish-core'),a.cardRadius,function(v){set({cardRadius:v});},'12px'));
+    if (d.hasCardMinHeight) {
+      blockSettings.push.apply(blockSettings,responsiveLengthControls(__('Card Min Height','digipublish-core'),a,set,
+        ['cardMinHeightDesktop','cardMinHeightLaptop','cardMinHeightTablet','cardMinHeightMobile'],['','','','']));
+    }
+    if (d.hasContentGap) {
+      blockSettings.push.apply(blockSettings,responsiveLengthControls(__('Margin Content','digipublish-core'),a,set,
+        ['contentGapDesktop','contentGapLaptop','contentGapTablet','contentGapMobile'],
+        [d.contentGapDesktop,d.contentGapLaptop,d.contentGapTablet,d.contentGapMobile]));
+    }
+    if (d.hasContentAlign) blockSettings.push(el(SelectControl,{label:__('Vertical Align Content','digipublish-core'),value:a.contentAlign||'space-between',options:[{label:__('Top','digipublish-core'),value:'flex-start'},{label:__('Center','digipublish-core'),value:'center'},{label:__('Bottom','digipublish-core'),value:'flex-end'},{label:__('Space Between','digipublish-core'),value:'space-between'}],onChange:function(v){set({contentAlign:v});}}));
+    if (d.hasImageAlign) blockSettings.push(el(SelectControl,{label:__('Vertical Align Image','digipublish-core'),value:a.imageAlign||'flex-start',options:[{label:__('Top','digipublish-core'),value:'flex-start'},{label:__('Center','digipublish-core'),value:'center'},{label:__('Bottom','digipublish-core'),value:'flex-end'},{label:__('Stretch','digipublish-core'),value:'stretch'}],onChange:function(v){set({imageAlign:v});}}));
+    if (d.hasImageWidth) blockSettings.push(el(SelectControl,{label:__('Image Width','digipublish-core'),value:a.imageWidth||d.imageWidth,options:[{label:__('One Fourth','digipublish-core'),value:'one-fourth'},{label:__('One Third','digipublish-core'),value:'one-third'},{label:__('Half','digipublish-core'),value:'half'}],onChange:function(v){set({imageWidth:v});}}));
+    if (d.hasPostFormat) blockSettings.push(el(ToggleControl,{label:__('Enable post format','digipublish-core'),checked:a.showPostFormat!==false,onChange:function(v){set({showPostFormat:v});}}));
+    if (d.hasVideo) {
+      blockSettings.push(el(ToggleControl,{label:__('Enable video backgrounds','digipublish-core'),checked:!!a.enableVideoBackgrounds,onChange:function(v){set({enableVideoBackgrounds:v});}}));
+      if (a.enableVideoBackgrounds) blockSettings.push(el(ToggleControl,{label:__('Enable video controls','digipublish-core'),checked:!!a.enableVideoControls,onChange:function(v){set({enableVideoControls:v});}}));
+    }
+    if (hasCarousel) {
+      blockSettings.push(
+        el(ToggleControl,{label:__('Enable autoplay','digipublish-core'),checked:a.carouselAutoplay!==false,onChange:function(v){set({carouselAutoplay:v});}}),
+        el(ToggleControl,{label:__('Enable bullets','digipublish-core'),checked:a.carouselDots!==false,onChange:function(v){set({carouselDots:v});}}),
+        el(ToggleControl,{label:__('Enable wrap-around','digipublish-core'),checked:a.carouselWrap!==false,onChange:function(v){set({carouselWrap:v});}})
+      );
+    }
+
+    const meta = [];
+    if (d.hasTopMeta) meta.push(el(SelectControl,{label:__('Top Meta Type','digipublish-core'),value:a.topMetaType||d.topMetaType||'author',options:[
+      {label:__('None','digipublish-core'),value:'none'},{label:__('Author','digipublish-core'),value:'author'},{label:__('Category','digipublish-core'),value:'category'},{label:__('Count','digipublish-core'),value:'count'}
+    ],onChange:function(v){set({topMetaType:v});}}));
+    meta.push(
+      el(ToggleControl,{label:__('Category','digipublish-core'),checked:a.showCategory!==false,onChange:function(v){set({showCategory:v});}}),
+      el(ToggleControl,{label:__('Author','digipublish-core'),checked:a.showAuthor!==false,onChange:function(v){set({showAuthor:v});}}),
+      el(ToggleControl,{label:__('Date','digipublish-core'),checked:a.showDate!==false,onChange:function(v){set({showDate:v});}}),
+      el(ToggleControl,{label:__('Comments','digipublish-core'),checked:!!a.showComments,onChange:function(v){set({showComments:v});}}),
+      el(ToggleControl,{label:__('Views','digipublish-core'),checked:!!a.showViews,onChange:function(v){set({showViews:v});}}),
+      el(ToggleControl,{label:__('Reading Time','digipublish-core'),checked:!!a.showReadTime,onChange:function(v){set({showReadTime:v});}}),
+      el(ToggleControl,{label:__('Shares','digipublish-core'),checked:!!a.showShares,onChange:function(v){set({showShares:v});}}),
+      el(ToggleControl,{label:__('Display compact post meta','digipublish-core'),checked:!!a.compactMeta,onChange:function(v){set({compactMeta:v});}}),
+      el(ToggleControl,{label:__('Display post excerpt','digipublish-core'),checked:!!a.showExcerpt,onChange:function(v){set({showExcerpt:v});}})
+    );
+    if (a.showExcerpt) meta.push(el(RangeControl,{label:__('Excerpt length','digipublish-core'),value:a.excerptLength||100,min:1,max:1000,onChange:function(v){set({excerptLength:v||100});}}));
+    if (!/^horizontal-[45]$/.test(layout)) {
+      meta.push(el(ToggleControl,{label:__('Display read more button','digipublish-core'),checked:!!a.showReadMore,onChange:function(v){set({showReadMore:v});}}));
+      if (a.showReadMore) meta.push(el(TextControl,{label:__('More Button Label','digipublish-core'),value:a.readMoreLabel||__('Read more','digipublish-core'),onChange:function(v){set({readMoreLabel:v});}}));
+    }
+
+    const typography = [];
+    typography.push.apply(typography,responsiveLengthControls(__('Heading Font Size','digipublish-core'),a,set,
+      ['cardHeadingFontSizeDesktop','cardHeadingFontSizeLaptop','cardHeadingFontSizeTablet','cardHeadingFontSizeMobile'],
+      [d.cardHeadingFontSizeDesktop,d.cardHeadingFontSizeLaptop,d.cardHeadingFontSizeTablet,d.cardHeadingFontSizeMobile]));
+    typography.push(el(SelectControl,{label:__('Heading Tag','digipublish-core'),value:a.cardHeadingTag||'h2',options:['h1','h2','h3','h4','h5','h6','p','div'].map(function(tag){return{label:tag.toUpperCase(),value:tag};}),onChange:function(v){set({cardHeadingTag:v});}}));
+    if (a.showExcerpt) typography.push.apply(typography,responsiveLengthControls(__('Excerpt Font Size','digipublish-core'),a,set,
+      ['excerptFontSizeDesktop','excerptFontSizeLaptop','excerptFontSizeTablet','excerptFontSizeMobile'],
+      [d.excerptFontSizeDesktop,d.excerptFontSizeLaptop,d.excerptFontSizeTablet,d.excerptFontSizeMobile]));
+
+    const thumbnail = [el(ToggleControl,{label:__('Display thumbnail','digipublish-core'),checked:a.showImage!==false,onChange:function(v){set({showImage:v});}})];
+    if (d.hasImageOrientation) thumbnail.push(el(SelectControl,{label:__('Image Orientation','digipublish-core'),value:a.imageOrientation||d.imageOrientation,options:postImageOrientationOptions(layout),onChange:function(v){set({imageOrientation:v});}}));
+    if (!/^horizontal-4$/.test(layout)) thumbnail.push(el(SelectControl,{label:__('Images Size','digipublish-core'),value:a.imageSize||'medium_large',options:[
+      {label:__('Thumbnail','digipublish-core'),value:'thumbnail'},{label:__('Medium','digipublish-core'),value:'medium'},{label:__('Medium Large','digipublish-core'),value:'medium_large'},{label:__('Large','digipublish-core'),value:'large'},{label:__('Full','digipublish-core'),value:'full'}
+    ],onChange:function(v){set({imageSize:v});}}));
+    if (hasCarousel) thumbnail.push(lengthControl(__('Image Border Radius','digipublish-core'),a.imageBorderRadius,function(v){set({imageBorderRadius:v});},'12px'));
+
+    const color = [];
+    if (d.hasColorSettings) {
+      color.push(
         colorControl(__('Heading Color','digipublish-core'),a.headingColor,function(v){set({headingColor:v});}),
         colorControl(__('Heading Color Hover','digipublish-core'),a.headingHoverColor,function(v){set({headingHoverColor:v});}),
         colorControl(__('Excerpt','digipublish-core'),a.excerptColor,function(v){set({excerptColor:v});}),
@@ -647,56 +735,52 @@
         colorControl(__('Post Meta Links','digipublish-core'),a.metaLinksColor,function(v){set({metaLinksColor:v});}),
         colorControl(__('Post Meta Links Hover','digipublish-core'),a.metaLinksHoverColor,function(v){set({metaLinksHoverColor:v});}),
         colorControl(__('Category Color','digipublish-core'),a.categoryColor,function(v){set({categoryColor:v});}),
-        colorControl(__('Category Hover Color','digipublish-core'),a.categoryHoverColor,function(v){set({categoryHoverColor:v});}),
+        colorControl(__('Category Hover Color','digipublish-core'),a.categoryHoverColor,function(v){set({categoryHoverColor:v});})
+      );
+      if (d.hasReadMoreColors) color.push(
         colorControl(__('Read More Text Color','digipublish-core'),a.readMoreColor,function(v){set({readMoreColor:v});}),
-        colorControl(__('Read More Text Color Hover','digipublish-core'),a.readMoreHoverColor,function(v){set({readMoreHoverColor:v});}),
-        /^horizontal-[45]$/.test(normalizedPostLayout(a.layout)) ? colorControl(__('Border Color','digipublish-core'),a.borderColor,function(v){set({borderColor:v});}) : null
-      ),
-      normalizedPostLayout(a.layout)==='masonry-1' ? el(PanelBody,{title:__('Masonry Widgets','digipublish-core'),initialOpen:false},
+        colorControl(__('Read More Text Color Hover','digipublish-core'),a.readMoreHoverColor,function(v){set({readMoreHoverColor:v});})
+      );
+      if (d.hasBorderColor) color.push(colorControl(__('Border Color','digipublish-core'),a.borderColor,function(v){set({borderColor:v});}));
+    }
+
+    return el(InspectorControls,{},
+      el(PanelBody,{title:__('Layout','digipublish-core'),initialOpen:true},postFeedLayoutPicker(props)),
+      el(PanelBody,{title:__('Block Settings','digipublish-core'),initialOpen:true},blockSettings),
+      el(PanelBody,{title:__('Meta Settings','digipublish-core'),initialOpen:false},meta),
+      el(PanelBody,{title:__('Typography Settings','digipublish-core'),initialOpen:false},typography),
+      el(PanelBody,{title:__('Thumbnail Settings','digipublish-core'),initialOpen:false},thumbnail),
+      d.hasColorSettings?el(PanelBody,{title:__('Color Settings','digipublish-core'),initialOpen:false},color):null,
+      layout==='masonry-1'?el(PanelBody,{title:__('Masonry Widgets','digipublish-core'),initialOpen:false},
         el(ToggleControl,{label:__('Display widgets in archive','digipublish-core'),checked:!!a.masonryWidgets,onChange:function(v){set({masonryWidgets:v});}}),
-        a.masonryWidgets ? el(TextControl,{label:__('Widget Area','digipublish-core'),value:a.masonryWidgetArea||'sidebar-archive',onChange:function(v){set({masonryWidgetArea:v});}}) : null,
-        a.masonryWidgets ? el(RangeControl,{label:__('Display widgets after N-th post','digipublish-core'),value:a.masonryWidgetsAfter||3,min:1,max:20,onChange:function(v){set({masonryWidgetsAfter:v||1});}}) : null,
-        a.masonryWidgets ? el(ToggleControl,{label:__('Repeat widgets','digipublish-core'),checked:!!a.masonryWidgetsRepeat,onChange:function(v){set({masonryWidgetsRepeat:v});}}) : null
-      ) : null,
-      el(PanelBody, { title:__('Query Settings', 'digipublish-core'), initialOpen:false }, postQueryPanelChildren(props)),
-      el(PanelBody, { title:__('Spacings', 'digipublish-core'), initialOpen:false },
-        el('strong', {}, __('Margins', 'digipublish-core')),
-        lengthControl(__('Top', 'digipublish-core'), a.marginTop, function(v){ set({marginTop:v}); }),
-        lengthControl(__('Bottom', 'digipublish-core'), a.marginBottom, function(v){ set({marginBottom:v}); }),
-        lengthControl(__('Left', 'digipublish-core'), a.marginLeft, function(v){ set({marginLeft:v}); }),
-        lengthControl(__('Right', 'digipublish-core'), a.marginRight, function(v){ set({marginRight:v}); }),
-        el('strong', {}, __('Paddings', 'digipublish-core')),
-        lengthControl(__('Top', 'digipublish-core'), a.paddingTop, function(v){ set({paddingTop:v}); }),
-        lengthControl(__('Bottom', 'digipublish-core'), a.paddingBottom, function(v){ set({paddingBottom:v}); }),
-        lengthControl(__('Left', 'digipublish-core'), a.paddingLeft, function(v){ set({paddingLeft:v}); }),
-        lengthControl(__('Right', 'digipublish-core'), a.paddingRight, function(v){ set({paddingRight:v}); })
+        a.masonryWidgets?el(TextControl,{label:__('Widget Area','digipublish-core'),value:a.masonryWidgetArea||'sidebar-archive',onChange:function(v){set({masonryWidgetArea:v});}}):null,
+        a.masonryWidgets?el(RangeControl,{label:__('Display widgets after N-th post','digipublish-core'),value:a.masonryWidgetsAfter||3,min:1,max:1000,onChange:function(v){set({masonryWidgetsAfter:v||1});}}):null,
+        a.masonryWidgets?el(ToggleControl,{label:__('Repeat widgets','digipublish-core'),checked:a.masonryWidgetsRepeat!==false,onChange:function(v){set({masonryWidgetsRepeat:v});}}):null
+      ):null,
+      el(PanelBody,{title:__('Query Settings','digipublish-core'),initialOpen:false},postQueryPanelChildren(props)),
+      el(PanelBody,{title:__('Spacings','digipublish-core'),initialOpen:false},
+        el('strong',{},__('Margins','digipublish-core')),
+        lengthControl(__('Top','digipublish-core'),a.marginTop,function(v){set({marginTop:v});}),
+        lengthControl(__('Bottom','digipublish-core'),a.marginBottom,function(v){set({marginBottom:v});}),
+        lengthControl(__('Left','digipublish-core'),a.marginLeft,function(v){set({marginLeft:v});}),
+        lengthControl(__('Right','digipublish-core'),a.marginRight,function(v){set({marginRight:v});}),
+        el('strong',{},__('Paddings','digipublish-core')),
+        lengthControl(__('Top','digipublish-core'),a.paddingTop,function(v){set({paddingTop:v});}),
+        lengthControl(__('Bottom','digipublish-core'),a.paddingBottom,function(v){set({paddingBottom:v});}),
+        lengthControl(__('Left','digipublish-core'),a.paddingLeft,function(v){set({paddingLeft:v});}),
+        lengthControl(__('Right','digipublish-core'),a.paddingRight,function(v){set({paddingRight:v});})
       ),
-      el(PanelBody, { title:__('Borders', 'digipublish-core'), initialOpen:false },
-        lengthControl(__('Radius', 'digipublish-core'), a.blockBorderRadius, function(v){ set({blockBorderRadius:v}); }, '0px'),
-        el(SelectControl, {
-          label:__('Border', 'digipublish-core'), value:a.blockBorderStyle || 'none',
-          options:[
-            {label:__('None', 'digipublish-core'),value:'none'},{label:__('Solid', 'digipublish-core'),value:'solid'},
-            {label:__('Dashed', 'digipublish-core'),value:'dashed'},{label:__('Dotted', 'digipublish-core'),value:'dotted'},
-            {label:__('Double', 'digipublish-core'),value:'double'}
-          ], onChange:function(v){ set({blockBorderStyle:v}); }
-        }),
-        a.blockBorderStyle && a.blockBorderStyle !== 'none' ? lengthControl(__('Border Width', 'digipublish-core'), a.blockBorderWidth, function(v){ set({blockBorderWidth:v}); }, '1px') : null
+      el(PanelBody,{title:__('Borders','digipublish-core'),initialOpen:false},
+        lengthControl(__('Radius','digipublish-core'),a.blockBorderRadius,function(v){set({blockBorderRadius:v});},'0px'),
+        el(SelectControl,{label:__('Border','digipublish-core'),value:a.blockBorderStyle||'none',options:[
+          {label:__('None','digipublish-core'),value:'none'},{label:__('Solid','digipublish-core'),value:'solid'},{label:__('Dashed','digipublish-core'),value:'dashed'},{label:__('Dotted','digipublish-core'),value:'dotted'},{label:__('Double','digipublish-core'),value:'double'}
+        ],onChange:function(v){set({blockBorderStyle:v});}}),
+        a.blockBorderStyle&&a.blockBorderStyle!=='none'?lengthControl(__('Border Width','digipublish-core'),a.blockBorderWidth,function(v){set({blockBorderWidth:v});},'1px'):null
       ),
-      el(PanelBody, { title:__('Responsive Settings', 'digipublish-core'), initialOpen:false },
-        el(ToggleControl, { label:__('Hide On Desktop', 'digipublish-core'), checked:!!a.hideDesktop, onChange:function(v){ set({hideDesktop:v}); } }),
-        el(ToggleControl, { label:__('Hide On Laptop', 'digipublish-core'), checked:!!a.hideLaptop, onChange:function(v){ set({hideLaptop:v}); } }),
-        el(ToggleControl, { label:__('Hide On Tablet', 'digipublish-core'), checked:!!a.hideTablet, onChange:function(v){ set({hideTablet:v}); } }),
-        el(ToggleControl, { label:__('Hide On Mobile', 'digipublish-core'), checked:!!a.hideMobile, onChange:function(v){ set({hideMobile:v}); } })
-      ),
-      el(PanelBody, { title:__('Advanced', 'digipublish-core'), initialOpen:false },
-        el(Notice, { status:'info', isDismissible:false }, __('HTML anchor and Additional CSS class(es) are available in WordPress block Advanced settings. The field below adds safe inline CSS declarations to this Posts block only.', 'digipublish-core')),
-        el(TextareaControl, {
-          label:__('Additional CSS', 'digipublish-core'),
-          help:__('Add declarations only, for example: color: red; background: #fff;', 'digipublish-core'),
-          value:a.customCss || '',
-          onChange:function(v){ set({customCss:v}); }
-        })
+      el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set)),
+      el(PanelBody,{title:__('Advanced','digipublish-core'),initialOpen:false},
+        el(Notice,{status:'info',isDismissible:false},__('HTML anchor and Additional CSS class(es) are available in WordPress block Advanced settings.','digipublish-core')),
+        el(TextareaControl,{label:__('Additional CSS','digipublish-core'),help:__('Add declarations only, for example: color: red; background: #fff;','digipublish-core'),value:a.customCss||'',onChange:function(v){set({customCss:v});}})
       )
     );
   }
@@ -768,8 +852,8 @@
     attributes: {
       heading: { type: 'string', default: 'Latest' },
       categoryId: { type: 'integer', default: 0 },
-      postsToShow: { type: 'integer', default: 6 },
-      layout: { type: 'string', default: 'grid-3' },
+      postsToShow: { type: 'integer', default: 1 },
+      layout: { type: 'string', default: 'standard-1' },
       paginationType: { type: 'string', default: 'none' },
       postType: { type:'string', default:'post' },
       orderBy: { type: 'string', default: 'date' },
@@ -787,18 +871,19 @@
       avoidDuplicates: { type: 'boolean', default: false },
       showImage: { type: 'boolean', default: true },
       showCategory: { type: 'boolean', default: true },
-      showExcerpt: { type: 'boolean', default: false },
+      showExcerpt: { type: 'boolean', default: true },
       showAuthor: { type: 'boolean', default: true },
       showDate: { type: 'boolean', default: true },
       showComments: { type: 'boolean', default: false },
-      showReadTime: { type: 'boolean', default: false },
-      showViews: { type: 'boolean', default: false },
-      showShares: { type: 'boolean', default: false },
-      showReadMore: { type: 'boolean', default: false },
+      showReadTime: { type: 'boolean', default: true },
+      showViews: { type: 'boolean', default: true },
+      showShares: { type: 'boolean', default: true },
+      showReadMore: { type: 'boolean', default: true },
       readMoreLabel: { type: 'string', default: 'Read more' },
       topMetaType: { type:'string', default:'' },
       compactMeta: { type:'boolean', default:false },
       columnsDesktop: { type: 'integer', default: 0 },
+      columnsLaptop: { type: 'integer', default: 0 },
       columnsTablet: { type: 'integer', default: 0 },
       columnsMobile: { type: 'integer', default: 0 },
       columnGap: { type: 'string', default: '' },
@@ -818,10 +903,16 @@
       carouselAutoplay: { type:'boolean', default:true },
       carouselDots: { type:'boolean', default:true },
       carouselWrap: { type:'boolean', default:true },
+      columnGapDesktop:{type:'string',default:''},columnGapLaptop:{type:'string',default:''},columnGapTablet:{type:'string',default:''},columnGapMobile:{type:'string',default:''},
+      rowGapDesktop:{type:'string',default:''},rowGapLaptop:{type:'string',default:''},rowGapTablet:{type:'string',default:''},rowGapMobile:{type:'string',default:''},
+      contentGapDesktop:{type:'string',default:''},contentGapLaptop:{type:'string',default:''},contentGapTablet:{type:'string',default:''},contentGapMobile:{type:'string',default:''},
+      cardMinHeightDesktop:{type:'string',default:''},cardMinHeightLaptop:{type:'string',default:''},cardMinHeightTablet:{type:'string',default:''},cardMinHeightMobile:{type:'string',default:''},
+      cardHeadingFontSizeDesktop:{type:'string',default:''},cardHeadingFontSizeLaptop:{type:'string',default:''},cardHeadingFontSizeTablet:{type:'string',default:''},cardHeadingFontSizeMobile:{type:'string',default:''},
+      excerptFontSizeDesktop:{type:'string',default:''},excerptFontSizeLaptop:{type:'string',default:''},excerptFontSizeTablet:{type:'string',default:''},excerptFontSizeMobile:{type:'string',default:''},
       contentGap:{type:'string',default:''},contentAlign:{type:'string',default:''},imageAlign:{type:'string',default:''},imageWidth:{type:'string',default:''},
       showPostFormat:{type:'boolean',default:true},enableVideoBackgrounds:{type:'boolean',default:false},enableVideoControls:{type:'boolean',default:false},
       headingColor:{type:'string',default:''},headingHoverColor:{type:'string',default:''},excerptColor:{type:'string',default:''},metaColor:{type:'string',default:''},metaLinksColor:{type:'string',default:''},metaLinksHoverColor:{type:'string',default:''},categoryColor:{type:'string',default:''},categoryHoverColor:{type:'string',default:''},readMoreColor:{type:'string',default:''},readMoreHoverColor:{type:'string',default:''},borderColor:{type:'string',default:''},
-      masonryWidgets:{type:'boolean',default:false},masonryWidgetArea:{type:'string',default:'sidebar-archive'},masonryWidgetsAfter:{type:'integer',default:3},masonryWidgetsRepeat:{type:'boolean',default:false},
+      masonryWidgets:{type:'boolean',default:false},masonryWidgetArea:{type:'string',default:'sidebar-archive'},masonryWidgetsAfter:{type:'integer',default:3},masonryWidgetsRepeat:{type:'boolean',default:true},
       marginTop:{type:'string',default:''}, marginBottom:{type:'string',default:''}, marginLeft:{type:'string',default:''}, marginRight:{type:'string',default:''},
       paddingTop:{type:'string',default:''}, paddingBottom:{type:'string',default:''}, paddingLeft:{type:'string',default:''}, paddingRight:{type:'string',default:''},
       blockBorderRadius:{type:'string',default:''}, blockBorderStyle:{type:'string',default:'none'}, blockBorderWidth:{type:'string',default:''},
@@ -984,7 +1075,7 @@
     apiVersion:3,title:__('Category Navigation','digipublish-core'),category:'digipublish-editorial',icon:'menu-alt3',
     supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
     attributes:{
-      limit:{type:'integer',default:5},showDictionary:{type:'boolean',default:true},showSearch:{type:'boolean',default:true},filterSlugs:{type:'string',default:''},
+      limit:{type:'integer',default:0},showDictionary:{type:'boolean',default:false},showGallery:{type:'boolean',default:false},showSearch:{type:'boolean',default:false},filterSlugs:{type:'string',default:''},
       filterCategoryIds:{type:'array',default:[]},orderBy:{type:'string',default:'name'},order:{type:'string',default:'ASC'},maximum:{type:'integer',default:0},alignment:{type:'string',default:'center'},
       hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}
     },
@@ -996,14 +1087,21 @@
           el(PanelBody,{title:__('Block Settings','digipublish-core'),initialOpen:true},
             tokenIdsControl(__('Filter by Categories','digipublish-core'),a.filterCategoryIds||[],categoryOptions,function(ids){set({filterCategoryIds:ids});}),
             el(SelectControl,{label:__('Order By','digipublish-core'),value:a.orderBy||'name',options:[
-              {label:__('Name','digipublish-core'),value:'name'},{label:__('Posts count','digipublish-core'),value:'count'},
-              {label:__('Filter include','digipublish-core'),value:'slug__in'},{label:__('ID','digipublish-core'),value:'id'}
+              {label:__('Name','digipublish-core'),value:'name'},
+              {label:__('Posts count','digipublish-core'),value:'count'},
+              {label:__('Filter include','digipublish-core'),value:'slug__in'},
+              {label:__('ID','digipublish-core'),value:'id'}
             ],onChange:function(v){set({orderBy:v});}}),
             el(SelectControl,{label:__('Order','digipublish-core'),value:a.order||'ASC',options:[{label:'ASC',value:'ASC'},{label:'DESC',value:'DESC'}],onChange:function(v){set({order:v});}}),
             el(RangeControl,{label:__('Maximum count','digipublish-core'),value:a.maximum||0,min:0,max:1000,onChange:function(v){set({maximum:v||0});}}),
-            el(SelectControl,{label:__('Alignment','digipublish-core'),value:a.alignment||'center',options:[{label:__('Left','digipublish-core'),value:'flex-start'},{label:__('Right','digipublish-core'),value:'flex-end'},{label:__('Center','digipublish-core'),value:'center'}],onChange:function(v){set({alignment:v});}}),
-            el(ToggleControl,{label:__('Show Dictionary','digipublish-core'),checked:!!a.showDictionary,onChange:function(v){set({showDictionary:v});}}),
-            el(ToggleControl,{label:__('Show search','digipublish-core'),checked:!!a.showSearch,onChange:function(v){set({showSearch:v});}})
+            el(SelectControl,{label:__('Alignment','digipublish-core'),value:a.alignment||'center',options:[
+              {label:__('Left','digipublish-core'),value:'flex-start'},
+              {label:__('Right','digipublish-core'),value:'flex-end'},
+              {label:__('Center','digipublish-core'),value:'center'}
+            ],onChange:function(v){set({alignment:v});}}),
+            el(ToggleControl,{label:__('Show Dictionary (DigiPublish extension)','digipublish-core'),checked:!!a.showDictionary,onChange:function(v){set({showDictionary:v});}}),
+            el(ToggleControl,{label:__('Show Photo Galleries (DigiPublish extension)','digipublish-core'),checked:!!a.showGallery,onChange:function(v){set({showGallery:v});}}),
+            el(ToggleControl,{label:__('Show Search (DigiPublish extension)','digipublish-core'),checked:!!a.showSearch,onChange:function(v){set({showSearch:v});}})
           ),
           el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
         ),
@@ -1399,7 +1497,7 @@
   registerBlockType('digipublish/current-date', {
     apiVersion:3,title:__('Current Date','digipublish-core'),category:'digipublish-editorial',icon:'calendar-alt',
     supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
-    attributes:{format:{type:'string',default:'F d, Y'},textAlign:{type:'string',default:'left'},textColor:{type:'string',default:''},fontSizeDesktop:{type:'string',default:'0.75rem'},fontSizeTablet:{type:'string',default:''},fontSizeMobile:{type:'string',default:''},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
+    attributes:{format:{type:'string',default:'F d, Y'},textAlign:{type:'string',default:'left'},textColor:{type:'string',default:''},fontSizeDesktop:{type:'string',default:'0.75rem'},fontSizeLaptop:{type:'string',default:''},fontSizeTablet:{type:'string',default:''},fontSizeMobile:{type:'string',default:''},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
     edit:function(props){const a=props.attributes,set=props.setAttributes;return el(Fragment,{},
       el(InspectorControls,{},
         el(PanelBody,{title:__('Block Settings','digipublish-core'),initialOpen:true},
@@ -1409,6 +1507,7 @@
         el(PanelBody,{title:__('Color Settings','digipublish-core'),initialOpen:false},colorControl(__('Color','digipublish-core'),a.textColor,function(v){set({textColor:v});})),
         el(PanelBody,{title:__('Typography Settings','digipublish-core'),initialOpen:false},
           lengthControl(__('Font Size — Desktop','digipublish-core'),a.fontSizeDesktop,function(v){set({fontSizeDesktop:v});},'0.75rem'),
+          lengthControl(__('Font Size — Laptop','digipublish-core'),a.fontSizeLaptop,function(v){set({fontSizeLaptop:v});},'0.75rem'),
           lengthControl(__('Font Size — Tablet','digipublish-core'),a.fontSizeTablet,function(v){set({fontSizeTablet:v});},'0.75rem'),
           lengthControl(__('Font Size — Mobile','digipublish-core'),a.fontSizeMobile,function(v){set({fontSizeMobile:v});},'0.75rem')
         ),
@@ -1424,7 +1523,7 @@
       label:{type:'string',default:'View All'},url:{type:'string',default:'/'},target:{type:'string',default:'_self'},buttonStyle:{type:'boolean',default:false},styleVariant:{type:'string',default:'default'},
       textAlign:{type:'string',default:'left'},disableLabelMobile:{type:'boolean',default:false},textColor:{type:'string',default:''},textHoverColor:{type:'string',default:''},
       circleBackground:{type:'string',default:''},circleColor:{type:'string',default:''},circleHoverBackground:{type:'string',default:''},circleHoverColor:{type:'string',default:''},
-      fontSizeDesktop:{type:'string',default:''},fontSizeTablet:{type:'string',default:''},fontSizeMobile:{type:'string',default:''},
+      fontSizeDesktop:{type:'string',default:''},fontSizeLaptop:{type:'string',default:''},fontSizeTablet:{type:'string',default:''},fontSizeMobile:{type:'string',default:''},
       hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}
     },
     edit:function(props){const a=props.attributes,set=props.setAttributes;return el(Fragment,{},
@@ -1447,6 +1546,7 @@
         ),
         el(PanelBody,{title:__('Typography Settings','digipublish-core'),initialOpen:false},
           lengthControl(__('Font Size — Desktop','digipublish-core'),a.fontSizeDesktop,function(v){set({fontSizeDesktop:v});},'0.875rem'),
+          lengthControl(__('Font Size — Laptop','digipublish-core'),a.fontSizeLaptop,function(v){set({fontSizeLaptop:v});},'0.875rem'),
           lengthControl(__('Font Size — Tablet','digipublish-core'),a.fontSizeTablet,function(v){set({fontSizeTablet:v});},'0.875rem'),
           lengthControl(__('Font Size — Mobile','digipublish-core'),a.fontSizeMobile,function(v){set({fontSizeMobile:v});},'0.875rem')
         ),
@@ -1490,7 +1590,7 @@
   registerBlockType('digipublish/section-heading',{
     apiVersion:3,title:__('Section Heading','digipublish-core'),category:'digipublish-editorial',icon:'heading',
     supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
-    attributes:{text:{type:'string',default:'Section Heading'},level:{type:'integer',default:2},borderColor:{type:'string',default:''},accentColor:{type:'string',default:''},accentContrastColor:{type:'string',default:''},textColor:{type:'string',default:''},styleVariant:{type:'string',default:'style-1'}},
+    attributes:{text:{type:'string',default:'Section Heading'},level:{type:'integer',default:2},borderColor:{type:'string',default:''},accentColor:{type:'string',default:''},accentContrastColor:{type:'string',default:''},textColor:{type:'string',default:''},styleVariant:{type:'string',default:'style-1'},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
     edit:function(props){
       const a=props.attributes,set=props.setAttributes;
       const styles={};
@@ -1498,7 +1598,7 @@
       if(a.accentColor)styles['--dp-section-heading-accent']=a.accentColor;
       if(a.accentContrastColor)styles['--dp-section-heading-accent-contrast']=a.accentContrastColor;
       if(a.textColor)styles['--dp-section-heading-color']=a.textColor;
-      const bp=useBlockProps({className:'is-style-'+(a.styleVariant||'style-1'),style:styles});
+      const responsiveClasses=[a.hideDesktop?'dp-hide-desktop':'',a.hideLaptop?'dp-hide-laptop':'',a.hideTablet?'dp-hide-tablet':'',a.hideMobile?'dp-hide-mobile':''].filter(Boolean).join(' '); const bp=useBlockProps({className:'is-style-'+(a.styleVariant||'style-1')+' '+responsiveClasses,style:styles});
       return el(Fragment,{},
         el(InspectorControls,{},
           el(PanelBody,{title:__('Block Settings','digipublish-core'),initialOpen:true},
@@ -1510,7 +1610,8 @@
             colorControl(__('Accent Color','digipublish-core'),a.accentColor,function(v){set({accentColor:v});}),
             colorControl(__('Accent Contrast Color','digipublish-core'),a.accentContrastColor,function(v){set({accentContrastColor:v});}),
             colorControl(__('Text Color','digipublish-core'),a.textColor,function(v){set({textColor:v});})
-          )
+          ),
+          el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
         ),
         el('div',bp,el(RichText,{tagName:'h'+(a.level||2),className:'wp-block-digipublish-section-heading__text',value:a.text,onChange:function(v){set({text:v});},placeholder:__('Section Heading','digipublish-core')}))
       );
@@ -1521,7 +1622,7 @@
       if(a.accentColor)styles['--dp-section-heading-accent']=a.accentColor;
       if(a.accentContrastColor)styles['--dp-section-heading-accent-contrast']=a.accentContrastColor;
       if(a.textColor)styles['--dp-section-heading-color']=a.textColor;
-      const bp=useBlockProps.save({className:'is-style-'+(a.styleVariant||'style-1'),style:styles});
+      const responsiveClasses=[a.hideDesktop?'dp-hide-desktop':'',a.hideLaptop?'dp-hide-laptop':'',a.hideTablet?'dp-hide-tablet':'',a.hideMobile?'dp-hide-mobile':''].filter(Boolean).join(' '); const bp=useBlockProps.save({className:'is-style-'+(a.styleVariant||'style-1')+' '+responsiveClasses,style:styles});
       return el('div',bp,el(RichText.Content,{tagName:'h'+(a.level||2),className:'wp-block-digipublish-section-heading__text',value:a.text}));
     }
   });
@@ -1564,15 +1665,15 @@
     registerBlockType(name,{
       apiVersion:3,title:title,category:'digipublish-editorial',icon:icon,parent:['digipublish/section'],
       supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
-      attributes:{textColor:{type:'string',default:''},backgroundColor:{type:'string',default:''}},
-      edit:function(props){const a=props.attributes,set=props.setAttributes,styles={};if(a.textColor)styles['--dp-section-'+className+'-color']=a.textColor;if(a.backgroundColor)styles['--dp-section-'+className+'-bg']=a.backgroundColor;const bp=useBlockProps({style:styles});return el(Fragment,{},
+      attributes:{textColor:{type:'string',default:''},backgroundColor:{type:'string',default:''},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
+      edit:function(props){const a=props.attributes,set=props.setAttributes,styles={};if(a.textColor)styles['--dp-section-'+className+'-color']=a.textColor;if(a.backgroundColor)styles['--dp-section-'+className+'-bg']=a.backgroundColor;const classes=[a.hideDesktop?'dp-hide-desktop':'',a.hideLaptop?'dp-hide-laptop':'',a.hideTablet?'dp-hide-tablet':'',a.hideMobile?'dp-hide-mobile':''].filter(Boolean).join(' ');const bp=useBlockProps({className:classes,style:styles});return el(Fragment,{},
         el(InspectorControls,{},el(PanelBody,{title:__('Color Settings','digipublish-core'),initialOpen:true},
           colorControl(__('Text Color','digipublish-core'),a.textColor,function(v){set({textColor:v});}),
           colorControl(__('Background Color','digipublish-core'),a.backgroundColor,function(v){set({backgroundColor:v});})
-        )),
+        ),el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))),
         el('div',bp,el(InnerBlocks,{}))
       );},
-      save:function(props){const a=props.attributes,styles={};if(a.textColor)styles['--dp-section-'+className+'-color']=a.textColor;if(a.backgroundColor)styles['--dp-section-'+className+'-bg']=a.backgroundColor;return el('div',useBlockProps.save({style:styles}),el(InnerBlocks.Content));}
+      save:function(props){const a=props.attributes,styles={};if(a.textColor)styles['--dp-section-'+className+'-color']=a.textColor;if(a.backgroundColor)styles['--dp-section-'+className+'-bg']=a.backgroundColor;const classes=[a.hideDesktop?'dp-hide-desktop':'',a.hideLaptop?'dp-hide-laptop':'',a.hideTablet?'dp-hide-tablet':'',a.hideMobile?'dp-hide-mobile':''].filter(Boolean).join(' ');return el('div',useBlockProps.save({className:classes,style:styles}),el(InnerBlocks.Content));}
     });
   }
   sectionColumnBlock('digipublish/section-content',__('Section Content','digipublish-core'),'align-wide','content');

@@ -16,7 +16,7 @@ $color_map=array(
  'circleHoverBackground'=>'--dp-custom-link-circle-hover-bg','circleHoverColor'=>'--dp-custom-link-circle-hover-color'
 );
 foreach($color_map as $key=>$var){$value=sanitize_hex_color($attributes[$key]??'');if($value){$styles[]=$var.':'.$value;}}
-foreach(array('fontSizeDesktop'=>'--dp-custom-link-size-d','fontSizeTablet'=>'--dp-custom-link-size-t','fontSizeMobile'=>'--dp-custom-link-size-m') as $key=>$var){$value=digipublish_core_css_length($attributes[$key]??'');if($value){$styles[]=$var.':'.$value;}}
+foreach(array('fontSizeDesktop'=>'--dp-custom-link-size-d','fontSizeLaptop'=>'--dp-custom-link-size-l','fontSizeTablet'=>'--dp-custom-link-size-t','fontSizeMobile'=>'--dp-custom-link-size-m') as $key=>$var){$value=digipublish_core_css_length($attributes[$key]??'');if($value){$styles[]=$var.':'.$value;}}
 $extra=array('class'=>implode(' ',$classes),'style'=>implode(';',$styles).';');
 echo '<div ' . get_block_wrapper_attributes($extra) . '>';
 echo '<a class="dp-caards-custom-link__anchor" href="'.$url.'" target="'.esc_attr($target).'"'.('_blank'===$target?' rel="noopener noreferrer"':'').'>';

@@ -343,6 +343,85 @@ jobs:
           done
 
 
+      - name: Guard Caards block settings parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          posts="digipublish-core/blocks/post-feed/block.json"
+          editor="digipublish-core/assets/editor.js"
+          render="digipublish-core/blocks/post-feed/render.php"
+          css="digipublish-core/blocks/post-feed/style.css"
+          core="digipublish-core/techpress-editorial.php"
+
+          jq -e '
+            .attributes.layout.default == "standard-1" and
+            .attributes.postsToShow.default == 1 and
+            .attributes.showExcerpt.default == true and
+            .attributes.showViews.default == true and
+            .attributes.showReadTime.default == true and
+            .attributes.showShares.default == true and
+            .attributes.showReadMore.default == true and
+            .attributes.columnsLaptop.type == "integer" and
+            .attributes.columnGapDesktop.type == "string" and
+            .attributes.columnGapLaptop.type == "string" and
+            .attributes.columnGapTablet.type == "string" and
+            .attributes.columnGapMobile.type == "string" and
+            .attributes.rowGapDesktop.type == "string" and
+            .attributes.rowGapLaptop.type == "string" and
+            .attributes.rowGapTablet.type == "string" and
+            .attributes.rowGapMobile.type == "string" and
+            .attributes.contentGapDesktop.type == "string" and
+            .attributes.contentGapMobile.type == "string" and
+            .attributes.cardMinHeightLaptop.type == "string" and
+            .attributes.cardHeadingFontSizeLaptop.type == "string" and
+            .attributes.excerptFontSizeLaptop.type == "string" and
+            .attributes.masonryWidgetsRepeat.default == true
+          ' "$posts" >/dev/null
+
+          for label in             "Number of Columns — Laptop"             "Gap between Posts"             "Margin Content"             "Vertical Align Content"             "Vertical Align Image"             "Image Width"             "Enable post format"             "Enable video backgrounds"             "Enable video controls"             "Heading Color Hover"             "Post Meta Links Hover"             "Masonry Widgets"             "Repeat widgets"; do
+            grep -Fq "$label" "$editor" || {
+              echo "Missing Caards Posts setting: $label"
+              exit 1
+            }
+          done
+
+          grep -Fq -- '--dp-columns-laptop' "$render" || exit 1
+          grep -Fq -- '--dp-column-gap-l' "$render" || exit 1
+          grep -Fq -- '--dp-content-gap-m' "$render" || exit 1
+          grep -Fq -- '--dp-card-heading-size-t' "$render" || exit 1
+          grep -Fq '@media(min-width:1020px) and (max-width:1199px)' "$css" || exit 1
+          grep -Fq '@media(min-width:600px) and (max-width:1019px)' "$css" || exit 1
+          grep -Fq "horizontal-5' === \$semantic_layout ? 'thumbnail'" "$core" || exit 1
+          grep -Fq 'digipublish_post_video_url' "$core" || exit 1
+          grep -Fq 'digipublish_core_post_feed_loop_widget' "$core" || exit 1
+
+          jq -e '
+            .attributes.showDictionary.default == false and
+            .attributes.showGallery.default == false and
+            .attributes.showSearch.default == false and
+            .attributes.maximum.default == 0 and
+            .attributes.alignment.default == "center"
+          ' digipublish-core/blocks/category-nav/block.json >/dev/null
+          grep -Fq "Show Photo Galleries (DigiPublish extension)" "$editor" || exit 1
+          grep -Fq "showGallery" digipublish-core/blocks/category-nav/render.php || exit 1
+
+          jq -e '.attributes.fontSizeLaptop.type == "string"' digipublish-core/blocks/current-date/block.json >/dev/null
+          jq -e '.attributes.fontSizeLaptop.type == "string"' digipublish-core/blocks/custom-link/block.json >/dev/null
+
+          for block in section-heading section-content section-sidebar; do
+            jq -e '
+              .attributes.hideDesktop.default == false and
+              .attributes.hideLaptop.default == false and
+              .attributes.hideTablet.default == false and
+              .attributes.hideMobile.default == false
+            ' "digipublish-core/blocks/$block/block.json" >/dev/null
+          done
+
+          jq -e '.attributes.layout.default == "default" and .attributes.diagonalCardMinHeight.default == "480px"' digipublish-core/blocks/instagram-carousel/block.json >/dev/null
+          jq -e '.attributes.layout.default == "default"' digipublish-core/blocks/twitter-carousel/block.json >/dev/null
+          grep -Fq "Diagonal Carousel" "$editor" || exit 1
+          grep -Fq "carousel-full" digipublish-core/blocks/instagram-carousel/render.php || exit 1
+
       - name: Guard mobile and carousel regressions
         shell: bash
         run: |

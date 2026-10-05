@@ -19,11 +19,11 @@
     },
     "postsToShow": {
       "type": "integer",
-      "default": 6
+      "default": 1
     },
     "layout": {
       "type": "string",
-      "default": "grid-3"
+      "default": "standard-1"
     },
     "orderBy": {
       "type": "string",
@@ -35,7 +35,7 @@
     },
     "showExcerpt": {
       "type": "boolean",
-      "default": false
+      "default": true
     },
     "showAuthor": {
       "type": "boolean",
@@ -106,19 +106,19 @@
     },
     "showReadTime": {
       "type": "boolean",
-      "default": false
+      "default": true
     },
     "showViews": {
       "type": "boolean",
-      "default": false
+      "default": true
     },
     "showShares": {
       "type": "boolean",
-      "default": false
+      "default": true
     },
     "showReadMore": {
       "type": "boolean",
-      "default": false
+      "default": true
     },
     "readMoreLabel": {
       "type": "string",
@@ -388,7 +388,107 @@
     },
     "masonryWidgetsRepeat": {
       "type": "boolean",
-      "default": false
+      "default": true
+    },
+    "columnsLaptop": {
+      "type": "integer",
+      "default": 0
+    },
+    "columnGapDesktop": {
+      "type": "string",
+      "default": ""
+    },
+    "columnGapLaptop": {
+      "type": "string",
+      "default": ""
+    },
+    "columnGapTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "columnGapMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "rowGapDesktop": {
+      "type": "string",
+      "default": ""
+    },
+    "rowGapLaptop": {
+      "type": "string",
+      "default": ""
+    },
+    "rowGapTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "rowGapMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "contentGapDesktop": {
+      "type": "string",
+      "default": ""
+    },
+    "contentGapLaptop": {
+      "type": "string",
+      "default": ""
+    },
+    "contentGapTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "contentGapMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "cardMinHeightDesktop": {
+      "type": "string",
+      "default": ""
+    },
+    "cardMinHeightLaptop": {
+      "type": "string",
+      "default": ""
+    },
+    "cardMinHeightTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "cardMinHeightMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "cardHeadingFontSizeDesktop": {
+      "type": "string",
+      "default": ""
+    },
+    "cardHeadingFontSizeLaptop": {
+      "type": "string",
+      "default": ""
+    },
+    "cardHeadingFontSizeTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "cardHeadingFontSizeMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "excerptFontSizeDesktop": {
+      "type": "string",
+      "default": ""
+    },
+    "excerptFontSizeLaptop": {
+      "type": "string",
+      "default": ""
+    },
+    "excerptFontSizeTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "excerptFontSizeMobile": {
+      "type": "string",
+      "default": ""
     }
   },
   "supports": {

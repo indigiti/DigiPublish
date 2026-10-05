@@ -1,1 +1,6 @@
 .wp-block-digipublish-section-sidebar{min-width:0;color:var(--dp-section-sidebar-color,inherit);background:var(--dp-section-sidebar-bg,transparent)}
+
+@media(min-width:1200px){.wp-block-digipublish-section-sidebar.dp-hide-desktop{display:none!important}}
+@media(min-width:1020px) and (max-width:1199px){.wp-block-digipublish-section-sidebar.dp-hide-laptop{display:none!important}}
+@media(min-width:600px) and (max-width:1019px){.wp-block-digipublish-section-sidebar.dp-hide-tablet{display:none!important}}
+@media(max-width:599px){.wp-block-digipublish-section-sidebar.dp-hide-mobile{display:none!important}}

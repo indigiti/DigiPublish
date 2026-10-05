@@ -36,6 +36,22 @@
     "styleVariant": {
       "type": "string",
       "default": "style-1"
+    },
+    "hideDesktop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLaptop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideMobile": {
+      "type": "boolean",
+      "default": false
     }
   },
   "supports": {
