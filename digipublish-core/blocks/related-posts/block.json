@@ -2,11 +2,11 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "digipublish/related-posts",
-  "version": "0.10.0",
-  "title": "Related Features",
+  "version": "0.10.1",
+  "title": "Related / Read Next",
   "category": "digipublish-editorial",
   "icon": "images-alt2",
-  "description": "Related stories based on the current post's primary category.",
+  "description": "Related stories ranked from the current post's categories and tags, with Related Features and Read Next layouts.",
   "textdomain": "digipublish-core",
   "attributes": {
     "heading": {
@@ -15,7 +15,19 @@
     },
     "postsToShow": {
       "type": "integer",
-      "default": 7
+      "default": 4
+    },
+    "layout": {
+      "type": "string",
+      "default": "features"
+    },
+    "relationMode": {
+      "type": "string",
+      "default": "category-tags"
+    },
+    "showExcerpt": {
+      "type": "boolean",
+      "default": true
     }
   },
   "supports": {
