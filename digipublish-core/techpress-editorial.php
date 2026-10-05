@@ -133,12 +133,12 @@ function techpress_editorial_register_blocks() {
 	wp_register_script(
 		'digipublish-core-editor',
 		TECHPRESS_EDITORIAL_URL . 'assets/editor.js',
-		array( 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-data', 'wp-core-data', 'wp-plugins', 'wp-editor' ),
+		array( 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-data', 'wp-core-data', 'wp-plugins', 'wp-editor', 'wp-edit-post' ),
 		file_exists( $editor_js ) ? (string) filemtime( $editor_js ) : TECHPRESS_EDITORIAL_VERSION,
 		true
 	);
 
-	$blocks = array( 'featured-posts', 'post-feed', 'editorial-feed', 'ad-slot', 'term-index', 'category-nav', 'archive-hero', 'archive-feed', 'author-profile', 'popular-categories', 'category-experts', 'related-posts', 'post-author-card', 'article-toc', 'article-byline', 'sidebar-feed', 'gallery', 'gallery-slide', 'gallery-archive' );
+	$blocks = array( 'featured-posts', 'post-feed', 'editorial-feed', 'ad-slot', 'term-index', 'category-nav', 'archive-hero', 'archive-feed', 'author-profile', 'popular-categories', 'category-experts', 'related-posts', 'post-author-card', 'article-toc', 'article-byline', 'sidebar-feed', 'gallery', 'gallery-slide', 'gallery-archive', 'entry-hero', 'current-date', 'custom-link', 'instagram-carousel', 'twitter-carousel', 'team-grid' );
 	foreach ( $blocks as $block ) {
 		register_block_type( TECHPRESS_EDITORIAL_DIR . 'blocks/' . $block );
 	}
