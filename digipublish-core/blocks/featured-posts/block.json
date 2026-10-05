@@ -159,6 +159,10 @@
     "showShares": {
       "type": "boolean",
       "default": false
+    },
+    "orderBy": {
+      "type": "string",
+      "default": "date"
     }
   },
   "supports": {
