@@ -743,6 +743,54 @@ function digipublish_core_heading_tag( $attributes ) {
 }
 
 /**
+ * Resolve a safe WordPress image size override.
+ */
+function digipublish_core_image_size( $attributes, $fallback = 'medium_large' ) {
+	$size = isset( $attributes['imageSize'] ) ? sanitize_key( (string) $attributes['imageSize'] ) : '';
+	return in_array( $size, array( 'thumbnail', 'medium', 'medium_large', 'large', 'full' ), true ) ? $size : $fallback;
+}
+
+/**
+ * Common wrapper classes and CSS variables for configurable editorial blocks.
+ */
+function digipublish_core_design_wrapper_args( $attributes, $classes, $column_defaults = array() ) {
+	$classes = array_merge( (array) $classes, digipublish_core_visibility_classes( $attributes ) );
+	$styles = array();
+	foreach ( array(
+		'columnGap'       => '--dp-column-gap',
+		'rowGap'          => '--dp-row-gap',
+		'cardRadius'      => '--dp-card-radius',
+		'cardMinHeight'   => '--dp-card-min-height',
+		'headingFontSize' => '--dp-heading-size',
+	) as $key => $var ) {
+		$value = digipublish_core_css_length( $attributes[ $key ] ?? '' );
+		if ( $value ) {
+			$styles[] = $var . ':' . $value;
+		}
+	}
+	$aspect = $attributes['imageAspect'] ?? '';
+	if ( in_array( $aspect, array( '16/9', '4/3', '3/2', '1/1' ), true ) ) {
+		$styles[] = '--dp-image-aspect:' . $aspect;
+	}
+	if ( $column_defaults ) {
+		foreach ( array( 'columnsDesktop' => 'desktop', 'columnsTablet' => 'tablet', 'columnsMobile' => 'mobile' ) as $key => $suffix ) {
+			$value = absint( $attributes[ $key ] ?? 0 );
+			if ( ! $value && isset( $column_defaults[ $suffix ] ) ) {
+				$value = absint( $column_defaults[ $suffix ] );
+			}
+			if ( $value ) {
+				$styles[] = '--dp-columns-' . $suffix . ':' . max( 1, min( 6, $value ) );
+			}
+		}
+	}
+	$args = array( 'class' => implode( ' ', array_filter( $classes ) ) );
+	if ( $styles ) {
+		$args['style'] = implode( ';', $styles ) . ';';
+	}
+	return $args;
+}
+
+/**
  * Query builder for the reusable Editorial Feed Engine.
  */
 function techpress_editorial_feed_query_args( $attributes ) {
