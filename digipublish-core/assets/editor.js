@@ -1354,6 +1354,30 @@
       el(ToggleControl,{label:__('Show role','digipublish-core'),checked:a.showRole!==false,onChange:function(v){set({showRole:v});}}),
       el(ToggleControl,{label:__('Show biography','digipublish-core'),checked:a.showBio!==false,onChange:function(v){set({showBio:v});}})
     )),el(Preview,{name:'digipublish/team-grid',attributes:a}));},save:function(){return null;}});
+
+  registerBlockType('digipublish/mega-menu',{
+    apiVersion:3,title:__('Mega Menu','digipublish-core'),category:'digipublish-editorial',icon:'menu-alt3',
+    attributes:{label:{type:'string',default:'Explore'},url:{type:'string',default:'#'},sourceMode:{type:'string',default:'latest'},categoryId:{type:'integer',default:0},postsToShow:{type:'integer',default:4},showImages:{type:'boolean',default:true},showCategory:{type:'boolean',default:true},showDate:{type:'boolean',default:true}},
+    edit:function(props){
+      const a=props.attributes,set=props.setAttributes,categoryOptions=useCategoryOptions();
+      return el(Fragment,{},
+        el(InspectorControls,{},
+          el(PanelBody,{title:__('Mega Menu Settings','digipublish-core'),initialOpen:true},
+            el(TextControl,{label:__('Label','digipublish-core'),value:a.label||'',onChange:function(v){set({label:v});}}),
+            el(TextControl,{label:__('View All URL','digipublish-core'),value:a.url||'',onChange:function(v){set({url:v});}}),
+            el(SelectControl,{label:__('Source','digipublish-core'),value:a.sourceMode||'latest',options:[{label:__('Latest posts','digipublish-core'),value:'latest'},{label:__('Category','digipublish-core'),value:'category'}],onChange:function(v){set({sourceMode:v});}}),
+            a.sourceMode==='category'?el(SelectControl,{label:__('Category','digipublish-core'),value:a.categoryId||0,options:categoryOptions,onChange:function(v){set({categoryId:parseInt(v,10)||0});}}):null,
+            el(RangeControl,{label:__('Posts','digipublish-core'),value:a.postsToShow||4,min:2,max:8,onChange:function(v){set({postsToShow:v});}}),
+            el(ToggleControl,{label:__('Show images','digipublish-core'),checked:a.showImages!==false,onChange:function(v){set({showImages:v});}}),
+            el(ToggleControl,{label:__('Show category','digipublish-core'),checked:a.showCategory!==false,onChange:function(v){set({showCategory:v});}}),
+            el(ToggleControl,{label:__('Show date','digipublish-core'),checked:a.showDate!==false,onChange:function(v){set({showDate:v});}})
+          )
+        ),
+        el(Preview,{name:'digipublish/mega-menu',attributes:a})
+      );
+    },save:function(){return null;}
+  });
+
 })(window.wp);
 
 (function (wp) {
