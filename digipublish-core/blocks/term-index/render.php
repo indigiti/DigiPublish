@@ -57,10 +57,22 @@ if ( $terms ) {
     }
 } else {
     $cats = techpress_editorial_get_top_categories( 12, false );
+    if ( ! $cats ) {
+        $cats = get_categories(
+            array(
+                'hide_empty' => false,
+                'number'     => 12,
+                'orderby'    => 'name',
+                'order'      => 'ASC',
+            )
+        );
+    }
     if ( $cats ) {
         echo '<div class="tp-term-trending-head"><h3>' . esc_html__( 'Explore Topics', 'digipublish-core' ) . '</h3><span aria-hidden="true">↗</span></div><div class="tp-term-links">';
         foreach ( $cats as $cat ) { echo '<a href="' . esc_url( get_category_link( $cat ) ) . '">' . esc_html( $cat->name ) . '</a>'; }
         echo '</div>';
+    } else {
+        echo '<p class="tp-term-index__empty">' . esc_html__( 'Dictionary terms will appear here as they are published.', 'digipublish-core' ) . '</p>';
     }
 }
 echo '</section>';

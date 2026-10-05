@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.8.4
+
+- Keeps Top Weekly visible when the genuine 7-day pool is sparse.
+- Fills missing Top Weekly slots from a cached all-time pool shuffled in PHP, avoiding SQL `ORDER BY RAND()`.
+- Prefers unused random posts first, then relaxes cross-section de-duplication only as a last resort while never duplicating a story inside Top Weekly.
+- Keeps Popular Categories visible on fresh sites by falling back to existing zero-count categories.
+- Keeps Tech Dictionary useful on fresh sites with Explore Topics or a styled empty state instead of silently collapsing.
+- Added CI guards for all homepage resilience fallbacks.
+- Bumped theme, plugin and all custom blocks to 0.8.4.
+
+
 ## 0.8.3
 
 - Fixed the remaining mobile left-edge clipping caused by the Featured block's `alignwide` behavior inside the homepage constrained group.

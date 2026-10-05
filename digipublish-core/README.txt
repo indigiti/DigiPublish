@@ -1,10 +1,11 @@
-DigiPublish Core 0.8.3
+DigiPublish Core 0.8.4
 
-Mobile visual-alignment release.
+Homepage resilience release.
 
-- Featured Stories keeps the same dynamic query/render architecture.
-- Mobile layout styling now follows a clean editorial-card hierarchy.
-- Existing sparse-feed, de-duplication, category fallback and responsive-image improvements remain unchanged.
-- All custom Gutenberg blocks are versioned 0.8.3.
+- Top Weekly uses genuine 7-day ranking first, then fills missing slots from a cached randomized all-time pool.
+- Random fallback is performed in PHP; no SQL ORDER BY RAND() is used.
+- Cross-section de-duplication is preserved whenever possible.
+- Popular Categories and Dictionary remain visible on sparse/fresh installations.
+- All custom Gutenberg blocks are versioned 0.8.4.
 
-Use with DigiPublish theme 0.8.3.
+Use with DigiPublish theme 0.8.4.

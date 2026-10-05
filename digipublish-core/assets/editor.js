@@ -97,7 +97,7 @@
   registerBlockType('digipublish/editorial-feed', {
     apiVersion: 3, title: __('Editorial Feed Engine', 'digipublish-core'), category: 'digipublish-editorial', icon: 'layout',
     attributes: {
-      heading: { type: 'string', default: 'Editorial Feed' }, description: { type: 'string', default: '' }, sourceMode: { type: 'string', default: 'latest' }, categoryId: { type: 'integer', default: 0 }, categorySlug: { type: 'string', default: '' }, fillFromLatest: { type: 'boolean', default: false }, manualPostIds: { type: 'string', default: '' }, postsToShow: { type: 'integer', default: 8 }, layout: { type: 'string', default: 'cards-4' }, orderBy: { type: 'string', default: 'date' }, period: { type: 'string', default: 'all' }, avoidDuplicates: { type: 'boolean', default: false }, showCategory: { type: 'boolean', default: true }, showExcerpt: { type: 'boolean', default: false }, showAuthor: { type: 'boolean', default: false }, showDate: { type: 'boolean', default: false }, showReadTime: { type: 'boolean', default: true }, showViews: { type: 'boolean', default: true }, showShares: { type: 'boolean', default: true }, showViewAll: { type: 'boolean', default: true }, viewAllLabel: { type: 'string', default: 'View All' }, viewAllUrl: { type: 'string', default: '' }
+      heading: { type: 'string', default: 'Editorial Feed' }, description: { type: 'string', default: '' }, sourceMode: { type: 'string', default: 'latest' }, categoryId: { type: 'integer', default: 0 }, categorySlug: { type: 'string', default: '' }, fillFromLatest: { type: 'boolean', default: false }, manualPostIds: { type: 'string', default: '' }, postsToShow: { type: 'integer', default: 8 }, layout: { type: 'string', default: 'cards-4' }, orderBy: { type: 'string', default: 'date' }, period: { type: 'string', default: 'all' }, avoidDuplicates: { type: 'boolean', default: false }, fallbackRandom: { type: 'boolean', default: false }, showCategory: { type: 'boolean', default: true }, showExcerpt: { type: 'boolean', default: false }, showAuthor: { type: 'boolean', default: false }, showDate: { type: 'boolean', default: false }, showReadTime: { type: 'boolean', default: true }, showViews: { type: 'boolean', default: true }, showShares: { type: 'boolean', default: true }, showViewAll: { type: 'boolean', default: true }, viewAllLabel: { type: 'string', default: 'View All' }, viewAllUrl: { type: 'string', default: '' }
     },
     edit: function (props) {
       const a = props.attributes, set = props.setAttributes, categoryOptions = useCategoryOptions();
@@ -138,7 +138,8 @@
               { label: __('Past 7 days', 'digipublish-core'), value:'week' },
               { label: __('Past 30 days', 'digipublish-core'), value:'month' }
             ], onChange: function(v){ set({ period:v }); } }),
-            el(ToggleControl, { label: __('Avoid stories already rendered earlier on this page', 'digipublish-core'), checked: !!a.avoidDuplicates, onChange: function(v){ set({ avoidDuplicates:v }); } })
+            el(ToggleControl, { label: __('Avoid stories already rendered earlier on this page', 'digipublish-core'), checked: !!a.avoidDuplicates, onChange: function(v){ set({ avoidDuplicates:v }); } }),
+            el(ToggleControl, { label: __('Use random posts if this feed is sparse', 'digipublish-core'), help: __('Fills remaining visual slots from a cached all-time pool without using SQL ORDER BY RAND().', 'digipublish-core'), checked: !!a.fallbackRandom, onChange: function(v){ set({ fallbackRandom:v }); } })
           ),
           el(PanelBody, { title: __('Story metadata', 'digipublish-core'), initialOpen: false },
             el(ToggleControl, { label: __('Show category', 'digipublish-core'), checked: !!a.showCategory, onChange: function(v){ set({ showCategory:v }); } }),
@@ -174,7 +175,7 @@
       title: __('Top Weekly', 'digipublish-core'),
       description: __('Seven-day most-discussed editorial mosaic.', 'digipublish-core'),
       icon: 'awards',
-      attributes: { heading:'Top Weekly', sourceMode:'latest', period:'week', avoidDuplicates:true, postsToShow:6, layout:'weekly-mosaic', orderBy:'comment_count', showCategory:true, showExcerpt:true, showAuthor:false, showDate:false, showReadTime:true, showViews:true, showShares:true, showViewAll:true, viewAllLabel:'View All' }
+      attributes: { heading:'Top Weekly', sourceMode:'latest', period:'week', avoidDuplicates:true, fallbackRandom:true, postsToShow:6, layout:'weekly-mosaic', orderBy:'comment_count', showCategory:true, showExcerpt:true, showAuthor:false, showDate:false, showReadTime:true, showViews:true, showShares:true, showViewAll:true, viewAllLabel:'View All' }
     },
     {
       name: 'science-space',

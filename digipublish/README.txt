@@ -1,14 +1,10 @@
-DigiPublish Theme 0.8.3
+DigiPublish Theme 0.8.4
 
-Mobile editorial-alignment release.
+Homepage resilience release.
 
-- Rebuilds Latest Features as a clean mobile editorial card.
-- Explicitly neutralizes WordPress alignwide offsets inside the mobile homepage lead section.
-- Keeps a consistent 16px mobile safe area.
-- Removes the mobile top-right More link from the Featured heading row.
-- Keeps category chips inside a hidden-scrollbar swipe rail.
-- Uses contained 16:9 hero media with a clean 4px radius.
-- Orders mobile story content as category, headline, excerpt, then author/date metadata.
-- Keeps secondary stories as a horizontal swipe rail.
+- Top Weekly remains visible even when the current seven-day pool is sparse.
+- Popular Categories no longer vanishes on a fresh site with zero-count categories.
+- Tech Dictionary retains a useful topic/empty-state shell while dictionary content is being built.
+- Existing v0.8.3 mobile Featured alignment remains unchanged.
 
-Requires DigiPublish Core 0.8.3.
+Requires DigiPublish Core 0.8.4.

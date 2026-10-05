@@ -2,7 +2,7 @@
 /**
  * Plugin Name: DigiPublish Core
  * Description: Dynamic Gutenberg blocks and editorial content types for the DigiPublish publishing framework.
- * Version: 0.8.3
+ * Version: 0.8.4
  * Requires at least: 7.0
  * Requires PHP: 8.0
  * Author: indigiti
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TECHPRESS_EDITORIAL_VERSION', '0.8.3' );
+define( 'TECHPRESS_EDITORIAL_VERSION', '0.8.4' );
 define( 'TECHPRESS_EDITORIAL_DIR', plugin_dir_path( __FILE__ ) );
 define( 'TECHPRESS_EDITORIAL_URL', plugin_dir_url( __FILE__ ) );
 
@@ -805,6 +805,49 @@ function techpress_editorial_feed_get_posts( $attributes ) {
 		$targeted_args['post__not_in'] = array_values( array_unique( array_map( 'intval', array_keys( $seen ) ) ) );
 		$targeted = new WP_Query( $targeted_args );
 		$append_unique( $targeted->posts );
+	}
+
+	/*
+	 * Optional resilient fallback for sections such as Top Weekly. The primary
+	 * query keeps its real period/ranking semantics. Only missing visual slots
+	 * are filled from an all-time cached latest pool, shuffled in PHP so the
+	 * database never pays for ORDER BY RAND().
+	 */
+	if ( count( $result ) < $count && ! $manual && ! empty( $attributes['fallbackRandom'] ) ) {
+		$random_attributes = $attributes;
+		$random_attributes['sourceMode'] = 'latest';
+		$random_attributes['categoryId'] = 0;
+		$random_attributes['categorySlug'] = '';
+		$random_attributes['period'] = 'all';
+		$random_attributes['orderBy'] = 'date';
+		$random_args = techpress_editorial_feed_query_args( $random_attributes );
+		$random_args['posts_per_page'] = max( 24, min( 60, $count * 8 ) );
+
+		$random_pool = $get_pool( $random_args );
+		if ( $random_pool ) {
+			shuffle( $random_pool );
+			$append_unique( $random_pool );
+		}
+
+		/*
+		 * If the page has already consumed nearly every available story, relax
+		 * cross-section de-duplication as a last resort. Never duplicate a story
+		 * within this section itself.
+		 */
+		if ( count( $result ) < $count && $random_pool ) {
+			$selected = array_flip( array_map( 'intval', wp_list_pluck( $result, 'ID' ) ) );
+			shuffle( $random_pool );
+			foreach ( $random_pool as $post ) {
+				if ( count( $result ) >= $count ) {
+					break;
+				}
+				if ( ! $post instanceof WP_Post || isset( $selected[ $post->ID ] ) ) {
+					continue;
+				}
+				$result[] = $post;
+				$selected[ $post->ID ] = true;
+			}
+		}
 	}
 
 	$result = array_slice( $result, 0, $count );
