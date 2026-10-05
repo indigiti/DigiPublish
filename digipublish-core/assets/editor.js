@@ -910,8 +910,15 @@
 
   registerBlockType('digipublish/category-nav', {
     apiVersion: 3, title: __('Editorial Category Navigation', 'digipublish-core'), category: 'digipublish-editorial', icon: 'menu-alt3',
-    attributes: { limit: { type: 'integer', default: 5 }, showDictionary: { type: 'boolean', default: true }, showSearch: { type: 'boolean', default: true } },
-    edit: function (props) { const a = props.attributes, set = props.setAttributes; return el(Fragment, {}, el(InspectorControls, {}, el(PanelBody, { title: __('Navigation settings', 'digipublish-core'), initialOpen: true }, el(RangeControl, { label: __('Category links', 'digipublish-core'), value: a.limit, min: 2, max: 8, onChange: function (v) { set({ limit: v }); } }), el(ToggleControl, { label: __('Show Dictionary', 'digipublish-core'), checked: !!a.showDictionary, onChange: function (v) { set({ showDictionary: v }); } }), el(ToggleControl, { label: __('Show search', 'digipublish-core'), checked: !!a.showSearch, onChange: function (v) { set({ showSearch: v }); } }))), el(Preview, { name: 'digipublish/category-nav', attributes: a })); }, save: function () { return null; }
+    attributes: { limit: { type: 'integer', default: 5 }, showDictionary: { type: 'boolean', default: true }, showSearch: { type: 'boolean', default: true }, filterSlugs:{type:'string',default:''}, orderBy:{type:'string',default:'count'}, order:{type:'string',default:'DESC'} },
+    edit: function (props) { const a = props.attributes, set = props.setAttributes; return el(Fragment, {}, el(InspectorControls, {}, el(PanelBody, { title: __('Navigation settings', 'digipublish-core'), initialOpen: true },
+      el(RangeControl, { label: __('Maximum categories', 'digipublish-core'), value: a.limit, min: 1, max: 20, onChange: function (v) { set({ limit: v }); } }),
+      el(TextControl,{label:__('Filter category slugs','digipublish-core'),help:__('Comma-separated. Leave blank for automatic categories.','digipublish-core'),value:a.filterSlugs||'',onChange:function(v){set({filterSlugs:v});}}),
+      el(SelectControl,{label:__('Order by','digipublish-core'),value:a.orderBy||'count',options:[{label:__('Post count','digipublish-core'),value:'count'},{label:__('Name','digipublish-core'),value:'name'},{label:__('Term ID','digipublish-core'),value:'term_id'}],onChange:function(v){set({orderBy:v});}}),
+      el(SelectControl,{label:__('Order','digipublish-core'),value:a.order||'DESC',options:[{label:__('Descending','digipublish-core'),value:'DESC'},{label:__('Ascending','digipublish-core'),value:'ASC'}],onChange:function(v){set({order:v});}}),
+      el(ToggleControl, { label: __('Show Dictionary', 'digipublish-core'), checked: !!a.showDictionary, onChange: function (v) { set({ showDictionary: v }); } }),
+      el(ToggleControl, { label: __('Show search', 'digipublish-core'), checked: !!a.showSearch, onChange: function (v) { set({ showSearch: v }); } })
+    )), el(Preview, { name: 'digipublish/category-nav', attributes: a })); }, save: function () { return null; }
   });
 
   registerBlockType('digipublish/term-index', {
