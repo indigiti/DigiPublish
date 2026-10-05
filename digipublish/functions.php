@@ -329,9 +329,15 @@ function digipublish_caards_body_classes( $classes ) {
 		$post_id = get_queried_object_id();
 		$sidebar = sanitize_key( (string) get_post_meta( $post_id, 'digipublish_singular_sidebar', true ) );
 		if ( ! in_array( $sidebar, array( 'left', 'right', 'disabled' ), true ) ) {
+			$sidebar = sanitize_key( (string) get_option( 'digipublish_caards_default_sidebar', 'right' ) );
+		}
+		if ( ! in_array( $sidebar, array( 'left', 'right', 'disabled' ), true ) ) {
 			$sidebar = 'right';
 		}
 		$header = sanitize_key( (string) get_post_meta( $post_id, 'digipublish_page_header_type', true ) );
+		if ( ! in_array( $header, array( 'standard', 'large', 'full', 'title', 'none' ), true ) ) {
+			$header = sanitize_key( (string) get_option( 'digipublish_caards_default_header', 'standard' ) );
+		}
 		if ( ! in_array( $header, array( 'standard', 'large', 'full', 'title', 'none' ), true ) ) {
 			$header = 'standard';
 		}
@@ -511,8 +517,55 @@ function digipublish_caards_register_settings() {
 			)
 		);
 	}
+
+	$string_settings = array(
+		'digipublish_caards_header_variant' => array( 'default' => 'one', 'allowed' => array( 'one', 'two', 'three', 'four' ) ),
+		'digipublish_caards_footer_variant' => array( 'default' => 'one', 'allowed' => array( 'one', 'two', 'three', 'four' ) ),
+		'digipublish_caards_default_header'  => array( 'default' => 'standard', 'allowed' => array( 'standard', 'large', 'full', 'title', 'none' ) ),
+		'digipublish_caards_default_sidebar' => array( 'default' => 'right', 'allowed' => array( 'right', 'left', 'disabled' ) ),
+	);
+	foreach ( $string_settings as $option => $config ) {
+		register_setting(
+			'digipublish_caards',
+			$option,
+			array(
+				'type'              => 'string',
+				'default'           => $config['default'],
+				'sanitize_callback' => static function ( $value ) use ( $config ) {
+					$value = sanitize_key( (string) $value );
+					return in_array( $value, $config['allowed'], true ) ? $value : $config['default'];
+				},
+			)
+		);
+	}
 }
 add_action( 'admin_init', 'digipublish_caards_register_settings' );
+
+/**
+ * Route the default FSE header/footer template-parts to the selected Caards
+ * variant while leaving explicitly selected variant parts untouched.
+ */
+function digipublish_caards_route_template_parts( $parsed_block ) {
+	if ( empty( $parsed_block['blockName'] ) || 'core/template-part' !== $parsed_block['blockName'] ) {
+		return $parsed_block;
+	}
+	$slug = isset( $parsed_block['attrs']['slug'] ) ? sanitize_key( (string) $parsed_block['attrs']['slug'] ) : '';
+	if ( 'header' === $slug ) {
+		$variant = sanitize_key( (string) get_option( 'digipublish_caards_header_variant', 'one' ) );
+		if ( ! in_array( $variant, array( 'one', 'two', 'three', 'four' ), true ) ) {
+			$variant = 'one';
+		}
+		$parsed_block['attrs']['slug'] = 'header-' . $variant;
+	} elseif ( 'footer' === $slug ) {
+		$variant = sanitize_key( (string) get_option( 'digipublish_caards_footer_variant', 'one' ) );
+		if ( ! in_array( $variant, array( 'one', 'two', 'three', 'four' ), true ) ) {
+			$variant = 'one';
+		}
+		$parsed_block['attrs']['slug'] = 'footer-' . $variant;
+	}
+	return $parsed_block;
+}
+add_filter( 'render_block_data', 'digipublish_caards_route_template_parts', 15 );
 
 function digipublish_caards_add_settings_page() {
 	add_theme_page(
@@ -536,6 +589,38 @@ function digipublish_caards_render_settings_page() {
 		<form method="post" action="options.php">
 			<?php settings_fields( 'digipublish_caards' ); ?>
 			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><label for="digipublish_caards_header_variant"><?php esc_html_e( 'Header layout', 'digipublish' ); ?></label></th>
+					<td><select id="digipublish_caards_header_variant" name="digipublish_caards_header_variant">
+						<?php foreach ( array( 'one' => 'Header 1', 'two' => 'Header 2', 'three' => 'Header 3', 'four' => 'Header 4' ) as $value => $label ) : ?>
+							<option value="<?php echo esc_attr( $value ); ?>" <?php selected( get_option( 'digipublish_caards_header_variant', 'one' ), $value ); ?>><?php echo esc_html( $label ); ?></option>
+						<?php endforeach; ?>
+					</select><p class="description"><?php esc_html_e( 'Maps the default header template-part to one of the four Caards layouts.', 'digipublish' ); ?></p></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="digipublish_caards_footer_variant"><?php esc_html_e( 'Footer layout', 'digipublish' ); ?></label></th>
+					<td><select id="digipublish_caards_footer_variant" name="digipublish_caards_footer_variant">
+						<?php foreach ( array( 'one' => 'Footer 1', 'two' => 'Footer 2', 'three' => 'Footer 3', 'four' => 'Footer 4' ) as $value => $label ) : ?>
+							<option value="<?php echo esc_attr( $value ); ?>" <?php selected( get_option( 'digipublish_caards_footer_variant', 'one' ), $value ); ?>><?php echo esc_html( $label ); ?></option>
+						<?php endforeach; ?>
+					</select></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="digipublish_caards_default_header"><?php esc_html_e( 'Default post/page header', 'digipublish' ); ?></label></th>
+					<td><select id="digipublish_caards_default_header" name="digipublish_caards_default_header">
+						<?php foreach ( array( 'standard' => 'Standard', 'large' => 'Large Hero', 'full' => 'Full Hero', 'title' => 'Title Only', 'none' => 'No Header' ) as $value => $label ) : ?>
+							<option value="<?php echo esc_attr( $value ); ?>" <?php selected( get_option( 'digipublish_caards_default_header', 'standard' ), $value ); ?>><?php echo esc_html( $label ); ?></option>
+						<?php endforeach; ?>
+					</select></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="digipublish_caards_default_sidebar"><?php esc_html_e( 'Default sidebar', 'digipublish' ); ?></label></th>
+					<td><select id="digipublish_caards_default_sidebar" name="digipublish_caards_default_sidebar">
+						<?php foreach ( array( 'right' => 'Right Sidebar', 'left' => 'Left Sidebar', 'disabled' => 'No Sidebar' ) as $value => $label ) : ?>
+							<option value="<?php echo esc_attr( $value ); ?>" <?php selected( get_option( 'digipublish_caards_default_sidebar', 'right' ), $value ); ?>><?php echo esc_html( $label ); ?></option>
+						<?php endforeach; ?>
+					</select></td>
+				</tr>
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Auto Load Next Post', 'digipublish' ); ?></th>
 					<td><input type="hidden" name="digipublish_caards_load_nextpost_enabled" value="0"><label><input type="checkbox" name="digipublish_caards_load_nextpost_enabled" value="1" <?php checked( get_option( 'digipublish_caards_load_nextpost_enabled', false ) ); ?>> <?php esc_html_e( 'Enable globally (individual posts can override this)', 'digipublish' ); ?></label></td>
