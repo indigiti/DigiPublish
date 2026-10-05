@@ -32,6 +32,30 @@
     "columns": {
       "type": "integer",
       "default": 3
+    },
+    "layout": {
+      "type": "string",
+      "default": "default"
+    },
+    "number": {
+      "type": "integer",
+      "default": 5
+    },
+    "hideDesktop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLaptop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideMobile": {
+      "type": "boolean",
+      "default": false
     }
   },
   "supports": {
@@ -40,7 +64,18 @@
       "full"
     ],
     "html": false,
-    "anchor": true
+    "anchor": true,
+    "customClassName": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "border": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true
+    }
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
