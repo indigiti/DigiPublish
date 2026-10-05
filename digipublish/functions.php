@@ -75,10 +75,8 @@ add_filter( 'should_load_block_assets_on_demand', 'techpress_theme_load_block_as
  * Page-type classes used by the lean theme stylesheet.
  */
 function techpress_theme_body_classes( $classes ) {
-	$classes[] = 'techpress-site';
 	$classes[] = 'digipublish-site';
 	if ( is_singular( 'post' ) ) {
-		$classes[] = 'techpress-article';
 		$classes[] = 'digipublish-article';
 	}
 	if ( is_singular( 'digipublish_gallery' ) ) {
@@ -86,19 +84,15 @@ function techpress_theme_body_classes( $classes ) {
 		$classes[] = 'digipublish-article';
 	}
 	if ( is_category() ) {
-		$classes[] = 'techpress-category';
 		$classes[] = 'digipublish-category';
 	}
 	if ( is_tag() ) {
-		$classes[] = 'techpress-tag';
 		$classes[] = 'digipublish-tag';
 	}
 	if ( is_author() ) {
-		$classes[] = 'techpress-author';
 		$classes[] = 'digipublish-author';
 	}
 	if ( is_archive() ) {
-		$classes[] = 'techpress-archive';
 		$classes[] = 'digipublish-archive';
 	}
 	return $classes;
@@ -218,7 +212,7 @@ function techpress_theme_google_font_css() {
 	}
 	$family = techpress_theme_google_font_family();
 	$stack  = "'" . esc_attr( $family ) . "', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
-	return ':root{--tp-google-font:' . $stack . ';--wp--preset--font-family--sans:var(--tp-google-font);--wp--preset--font-family--reading:var(--tp-google-font)}body.techpress-site,body.techpress-site .wp-site-blocks,body.techpress-site .wp-site-blocks p,body.techpress-site .wp-site-blocks li,body.techpress-site .wp-site-blocks input,body.techpress-site .wp-site-blocks textarea,body.techpress-site .wp-site-blocks select,body.techpress-site .wp-site-blocks button{font-family:var(--tp-google-font)!important}';
+	return ':root{--tp-google-font:' . $stack . ';--wp--preset--font-family--sans:var(--tp-google-font);--wp--preset--font-family--reading:var(--tp-google-font)}body.dp-caards-shell,body.dp-caards-shell .wp-site-blocks,body.dp-caards-shell .wp-site-blocks p,body.dp-caards-shell .wp-site-blocks li,body.dp-caards-shell .wp-site-blocks input,body.dp-caards-shell .wp-site-blocks textarea,body.dp-caards-shell .wp-site-blocks select,body.dp-caards-shell .wp-site-blocks button{font-family:var(--tp-google-font)!important}';
 }
 
 function techpress_theme_frontend_google_font_override() {
