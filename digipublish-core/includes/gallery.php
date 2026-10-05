@@ -46,6 +46,7 @@ function digipublish_core_register_gallery_post_type() {
 				array(
 					'digipublish/gallery',
 					array(
+						'align'          => 'wide',
 						'displayMode'    => 'story',
 						'showCounter'    => true,
 						'showCaptions'   => true,
