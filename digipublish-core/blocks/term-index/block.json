@@ -2,11 +2,11 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "digipublish/term-index",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "title": "Dictionary Index",
   "category": "digipublish-editorial",
   "icon": "book-alt",
-  "description": "Searchable A\u2013Z index of dictionary terms stored as Gutenberg-native content.",
+  "description": "Searchable A–Z index of dictionary terms stored as Gutenberg-native content.",
   "textdomain": "digipublish-core",
   "attributes": {
     "heading": {
