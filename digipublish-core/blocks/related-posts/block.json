@@ -28,6 +28,90 @@
     "showExcerpt": {
       "type": "boolean",
       "default": true
+    },
+    "columnGap": {
+      "type": "string",
+      "default": ""
+    },
+    "rowGap": {
+      "type": "string",
+      "default": ""
+    },
+    "cardRadius": {
+      "type": "string",
+      "default": ""
+    },
+    "cardMinHeight": {
+      "type": "string",
+      "default": ""
+    },
+    "headingFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "headingTag": {
+      "type": "string",
+      "default": "h2"
+    },
+    "imageSize": {
+      "type": "string",
+      "default": ""
+    },
+    "imageAspect": {
+      "type": "string",
+      "default": ""
+    },
+    "hideDesktop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLaptop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideMobile": {
+      "type": "boolean",
+      "default": false
+    },
+    "columnsDesktop": {
+      "type": "integer",
+      "default": 0
+    },
+    "columnsTablet": {
+      "type": "integer",
+      "default": 0
+    },
+    "columnsMobile": {
+      "type": "integer",
+      "default": 0
+    },
+    "showCategory": {
+      "type": "boolean",
+      "default": true
+    },
+    "showAuthor": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDate": {
+      "type": "boolean",
+      "default": true
+    },
+    "showReadTime": {
+      "type": "boolean",
+      "default": true
+    },
+    "showViews": {
+      "type": "boolean",
+      "default": true
+    },
+    "showShares": {
+      "type": "boolean",
+      "default": true
     }
   },
   "supports": {
@@ -35,7 +119,18 @@
       "wide",
       "full"
     ],
-    "html": false
+    "html": false,
+    "anchor": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "border": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true
+    }
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
