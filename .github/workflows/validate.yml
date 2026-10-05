@@ -131,7 +131,7 @@ jobs:
             .attributes.filterTaxonomy.type == "string" and
             .attributes.filterTermIds.type == "array" and
             .attributes.relatedPosts.default == false and
-            .attributes.topMetaType.default == "none" and
+            .attributes.topMetaType.default == "" and
             .attributes.compactMeta.default == false and
             .attributes.cardHeadingTag.default == "h2" and
             .attributes.excerptLength.default == 100 and
@@ -261,6 +261,86 @@ jobs:
             echo "Header 1 still contains the non-Caards date control."
             exit 1
           }
+
+
+      - name: Guard Caards block parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          editor="digipublish-core/assets/editor.js"
+          core="digipublish-core/techpress-editorial.php"
+
+          for block in section-heading section section-content section-sidebar opt-in-form featured-categories current-date category-nav custom-link instagram-carousel twitter-carousel post-feed; do
+            test -f "digipublish-core/blocks/$block/block.json" || {
+              echo "Missing Caards parity block: $block"
+              exit 1
+            }
+            jq -e --arg expected "digipublish/$block" '.name == $expected' "digipublish-core/blocks/$block/block.json" >/dev/null
+            grep -Fq "'$block'" "$core" || {
+              echo "Caards parity block not registered: $block"
+              exit 1
+            }
+          done
+
+          # Current Date source fields.
+          jq -e '
+            .attributes.format.default == "F d, Y" and
+            .attributes.textAlign.default == "left" and
+            .attributes.fontSizeDesktop.default == "0.75rem"
+          ' digipublish-core/blocks/current-date/block.json >/dev/null
+
+          # Category Navigation source fields.
+          jq -e '
+            .attributes.filterCategoryIds.type == "array" and
+            .attributes.orderBy.default == "name" and
+            .attributes.order.default == "ASC" and
+            .attributes.maximum.default == 0 and
+            .attributes.alignment.default == "center"
+          ' digipublish-core/blocks/category-nav/block.json >/dev/null
+
+          # Custom Link source fields and Styled variation.
+          jq -e '
+            .attributes.label.default == "View All" and
+            .attributes.url.default == "/" and
+            .attributes.styleVariant.default == "default" and
+            .attributes.textAlign.default == "left" and
+            .attributes.disableLabelMobile.default == false
+          ' digipublish-core/blocks/custom-link/block.json >/dev/null
+
+          # Social layouts.
+          grep -Fq "Diagonal Carousel" "$editor" || exit 1
+          grep -Fq "value:'carousel-full'" "$editor" || exit 1
+          grep -Fq "Twitter / X" "$editor" || exit 1
+          test -f digipublish-core/blocks/instagram-carousel/view.js
+          test -f digipublish-core/blocks/twitter-carousel/view.js
+
+          # Section/heading extensions from Caards' Canvas filters.
+          for label in "Border Color" "Accent Color" "Accent Contrast Color" "Text Color" "Sidebar Width — Desktop" "Background Color"; do
+            grep -Fq "$label" "$editor" || {
+              echo "Missing Caards Section control: $label"
+              exit 1
+            }
+          done
+
+          # Remaining Posts layout fields from the source layouts.
+          for label in "Margin Content" "Vertical Align Content" "Vertical Align Image" "Image Width" "Enable post format" "Enable video backgrounds" "Enable video controls" "Heading Color" "Post Meta Links Hover" "Read More Text Color Hover" "Display widgets in archive" "Widget Area" "Display widgets after N-th post" "Repeat widgets"; do
+            grep -Fq "$label" "$editor" || {
+              echo "Missing Caards Posts source field: $label"
+              exit 1
+            }
+          done
+
+          grep -Fq "digipublish_post_video_url" "$core" || exit 1
+          grep -Fq "digipublish_core_post_feed_loop_widget" "$core" || exit 1
+          grep -Fq "sidebar-archive" "$core" || exit 1
+
+          # Caards Powerkit block extensions.
+          for label in "Input Background" "Button Background Hover" "Vertical List Alt"; do
+            grep -Fq "$label" "$editor" || {
+              echo "Missing Caards Powerkit extension: $label"
+              exit 1
+            }
+          done
 
 
       - name: Guard mobile and carousel regressions

@@ -649,6 +649,12 @@ body.dp-caards-shell :where(h1,h2,h3,h4,h5,h6,.wp-block-post-title){letter-spaci
 }
 
 /* Responsive. */
+/* Shared Caards responsive visibility controls for every custom block. */
+@media(min-width:1200px){.dp-hide-desktop{display:none!important}}
+@media(min-width:1020px) and (max-width:1199px){.dp-hide-laptop{display:none!important}}
+@media(min-width:600px) and (max-width:1019px){.dp-hide-tablet{display:none!important}}
+@media(max-width:599px){.dp-hide-mobile{display:none!important}}
+
 @media(max-width:1180px){
 	.dp-caards-primary-nav .wp-block-navigation__container{gap:12px}
 	.dp-caards-header .wp-block-site-tagline{display:none}

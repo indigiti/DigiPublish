@@ -1,75 +1,55 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "digipublish/custom-link",
+  "name": "digipublish/opt-in-form",
   "version": "0.11.0",
-  "title": "Custom Link",
+  "title": "Opt-In Form",
   "category": "digipublish-editorial",
-  "icon": "admin-links",
-  "description": "Caards-style custom link or header button.",
+  "icon": "email",
+  "description": "Caards-compatible opt-in form with source color controls and integration hook.",
   "textdomain": "digipublish-core",
   "attributes": {
-    "label": {
+    "heading": {
       "type": "string",
-      "default": "View All"
+      "default": "Stay in the loop"
     },
-    "url": {
+    "description": {
       "type": "string",
-      "default": "/"
+      "default": "Get the latest stories in your inbox."
     },
-    "target": {
+    "buttonLabel": {
       "type": "string",
-      "default": "_self"
+      "default": "Subscribe"
     },
-    "buttonStyle": {
-      "type": "boolean",
-      "default": false
-    },
-    "styleVariant": {
-      "type": "string",
-      "default": "default"
-    },
-    "textAlign": {
-      "type": "string",
-      "default": "left"
-    },
-    "disableLabelMobile": {
-      "type": "boolean",
-      "default": false
-    },
-    "textColor": {
+    "actionUrl": {
       "type": "string",
       "default": ""
     },
-    "textHoverColor": {
+    "emailFieldName": {
+      "type": "string",
+      "default": "email"
+    },
+    "inputBackground": {
       "type": "string",
       "default": ""
     },
-    "circleBackground": {
+    "inputColor": {
       "type": "string",
       "default": ""
     },
-    "circleColor": {
+    "buttonBackground": {
       "type": "string",
       "default": ""
     },
-    "circleHoverBackground": {
+    "buttonColor": {
       "type": "string",
       "default": ""
     },
-    "circleHoverColor": {
+    "buttonHoverBackground": {
       "type": "string",
       "default": ""
     },
-    "fontSizeDesktop": {
-      "type": "string",
-      "default": ""
-    },
-    "fontSizeTablet": {
-      "type": "string",
-      "default": ""
-    },
-    "fontSizeMobile": {
+    "buttonHoverColor": {
       "type": "string",
       "default": ""
     },
@@ -91,9 +71,12 @@
     }
   },
   "supports": {
+    "align": [
+      "wide",
+      "full"
+    ],
     "html": false,
     "anchor": true,
-    "className": true,
     "customClassName": true,
     "spacing": {
       "margin": true,

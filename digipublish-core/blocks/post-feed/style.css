@@ -151,3 +151,69 @@
 }
 @media(min-width:481px) and (max-width:720px){.dp-hide-tablet{display:none!important}}
 @media(max-width:480px){.dp-hide-mobile{display:none!important}}
+
+
+/* Caards source-parity settings. */
+.tp-post-feed{
+  --dp-content-gap:16px;
+  --dp-image-width:34%;
+  --dp-content-align:center;
+  --dp-image-align:center;
+  --dp-post-heading-color:inherit;
+  --dp-post-heading-hover:var(--dp-caards-accent,#2d5de0);
+  --dp-post-excerpt-color:var(--tp-muted,#667085);
+  --dp-post-meta-color:var(--tp-muted,#667085);
+  --dp-post-meta-link-color:inherit;
+  --dp-post-meta-link-hover:var(--dp-caards-accent,#2d5de0);
+  --dp-post-category-color:inherit;
+  --dp-post-category-hover:var(--dp-caards-accent,#2d5de0);
+  --dp-post-more-color:inherit;
+  --dp-post-more-hover:var(--dp-caards-accent,#2d5de0);
+  --dp-post-border-color:var(--tp-border,#e5e7eb);
+}
+.tp-post-feed .tp-card__content{padding:var(--dp-content-gap)}
+.tp-post-feed .tp-card__title{color:var(--dp-post-heading-color)}
+.tp-post-feed .tp-card__title a:hover{color:var(--dp-post-heading-hover)}
+.tp-post-feed .tp-card__excerpt{color:var(--dp-post-excerpt-color)}
+.tp-post-feed .tp-card__meta,.tp-post-feed .tp-card__footer-meta{color:var(--dp-post-meta-color)}
+.tp-post-feed .tp-card__meta a{color:var(--dp-post-meta-link-color)}
+.tp-post-feed .tp-card__meta a:hover{color:var(--dp-post-meta-link-hover)}
+.tp-post-feed .tp-category{color:var(--dp-post-category-color)}
+.tp-post-feed .tp-category:hover{color:var(--dp-post-category-hover)}
+.tp-post-feed .tp-card__read-more{color:var(--dp-post-more-color)}
+.tp-post-feed .tp-card__read-more:hover{color:var(--dp-post-more-hover)}
+.tp-post-feed .tp-card__media{position:relative;z-index:2;min-width:0}
+.tp-post-feed .tp-card__media>.tp-card__image{height:100%}
+.tp-post-feed .tp-card__image--video video{display:block;width:100%;height:100%;object-fit:cover}
+.tp-post-feed .tp-card__format-icon{position:absolute;z-index:5;top:12px;right:12px;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:rgba(17,17,17,.78);color:#fff;font-size:13px;font-weight:800;pointer-events:none}
+.tp-feed--horizontal-1 .tp-card__outer,.tp-feed--horizontal-3 .tp-card__outer,.tp-feed--horizontal-5 .tp-card__outer,.tp-feed--list .tp-card__outer{grid-template-columns:minmax(120px,var(--dp-image-width)) minmax(0,1fr)}
+.tp-feed--horizontal-2 .tp-card__outer{grid-template-columns:minmax(0,1fr) minmax(120px,var(--dp-image-width))}
+.tp-feed--horizontal-1 .tp-card__horizontal-content,.tp-feed--horizontal-2 .tp-card__horizontal-content,.tp-feed--horizontal-3 .tp-card__horizontal-content{justify-content:var(--dp-content-align)}
+.tp-feed--horizontal-1 .tp-card__media,.tp-feed--horizontal-1>.tp-card__image{align-self:var(--dp-image-align)}
+.tp-feed--horizontal-4 .tp-card__outer,.tp-feed--horizontal-5 .tp-card__outer{border-color:var(--dp-post-border-color)}
+.tp-feed--standard-2 .tp-card__outer,.tp-feed--standard-4 .tp-card__outer{border-color:var(--dp-post-border-color)}
+.tp-feed--masonry-1 .tp-post-feed__widget-card{break-inside:avoid;margin:0 0 var(--dp-row-gap);padding:18px;background:#fff;border-radius:var(--dp-card-radius)}
+.tp-post-feed__widget-title{margin:0 0 12px;font-size:1rem}
+.tp-post-feed__widget ul{margin:0;padding-left:18px}
+
+
+/* Preserve Caards layout order when the media is wrapped for post-format icons. */
+.tp-feed--standard-3 .tp-card__media{order:2}
+.tp-feed--horizontal-2 .tp-card__media{order:2}
+.tp-feed--horizontal-1 .tp-card__outer>.tp-card__image,
+.tp-feed--horizontal-1 .tp-card__media{align-self:var(--dp-image-align)}
+.tp-feed--tile-1 .tp-card__media,
+.tp-feed--tile-2 .tp-card__media,
+.tp-feed--tile-3 .tp-card__media,
+.tp-feed--tile-4 .tp-card__media,
+.tp-feed--carousel-1 .tp-card__media,
+.tp-feed--carousel-2 .tp-card__media{position:absolute;inset:0;z-index:0;width:100%;height:100%}
+.tp-feed--tile-1 .tp-card__media>.tp-card__image,
+.tp-feed--tile-2 .tp-card__media>.tp-card__image,
+.tp-feed--tile-3 .tp-card__media>.tp-card__image,
+.tp-feed--tile-4 .tp-card__media>.tp-card__image,
+.tp-feed--carousel-1 .tp-card__media>.tp-card__image,
+.tp-feed--carousel-2 .tp-card__media>.tp-card__image{position:absolute;inset:0;width:100%;height:100%}
+@media(max-width:720px){
+  .tp-feed--horizontal-2 .tp-card__media{order:0}
+}

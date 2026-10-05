@@ -212,7 +212,7 @@
     },
     "topMetaType": {
       "type": "string",
-      "default": "none"
+      "default": ""
     },
     "compactMeta": {
       "type": "boolean",
@@ -284,7 +284,7 @@
     },
     "imageOrientation": {
       "type": "string",
-      "default": "original"
+      "default": ""
     },
     "imageBorderRadius": {
       "type": "string",
@@ -301,6 +301,94 @@
     "carouselWrap": {
       "type": "boolean",
       "default": true
+    },
+    "contentGap": {
+      "type": "string",
+      "default": ""
+    },
+    "contentAlign": {
+      "type": "string",
+      "default": ""
+    },
+    "imageAlign": {
+      "type": "string",
+      "default": ""
+    },
+    "imageWidth": {
+      "type": "string",
+      "default": ""
+    },
+    "showPostFormat": {
+      "type": "boolean",
+      "default": true
+    },
+    "enableVideoBackgrounds": {
+      "type": "boolean",
+      "default": false
+    },
+    "enableVideoControls": {
+      "type": "boolean",
+      "default": false
+    },
+    "headingColor": {
+      "type": "string",
+      "default": ""
+    },
+    "headingHoverColor": {
+      "type": "string",
+      "default": ""
+    },
+    "excerptColor": {
+      "type": "string",
+      "default": ""
+    },
+    "metaColor": {
+      "type": "string",
+      "default": ""
+    },
+    "metaLinksColor": {
+      "type": "string",
+      "default": ""
+    },
+    "metaLinksHoverColor": {
+      "type": "string",
+      "default": ""
+    },
+    "categoryColor": {
+      "type": "string",
+      "default": ""
+    },
+    "categoryHoverColor": {
+      "type": "string",
+      "default": ""
+    },
+    "readMoreColor": {
+      "type": "string",
+      "default": ""
+    },
+    "readMoreHoverColor": {
+      "type": "string",
+      "default": ""
+    },
+    "borderColor": {
+      "type": "string",
+      "default": ""
+    },
+    "masonryWidgets": {
+      "type": "boolean",
+      "default": false
+    },
+    "masonryWidgetArea": {
+      "type": "string",
+      "default": "sidebar-archive"
+    },
+    "masonryWidgetsAfter": {
+      "type": "integer",
+      "default": 3
+    },
+    "masonryWidgetsRepeat": {
+      "type": "boolean",
+      "default": false
     }
   },
   "supports": {

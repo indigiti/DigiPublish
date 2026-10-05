@@ -1,0 +1,41 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "digipublish/section-sidebar",
+  "version": "0.11.0",
+  "title": "Section Sidebar",
+  "category": "digipublish-editorial",
+  "icon": "align-pull-right",
+  "description": "Caards-compatible section sidebar column.",
+  "textdomain": "digipublish-core",
+  "attributes": {
+    "textColor": {
+      "type": "string",
+      "default": ""
+    },
+    "backgroundColor": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "supports": {
+    "html": false,
+    "anchor": true,
+    "customClassName": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "border": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true
+    }
+  },
+  "editorScript": "digipublish-core-editor",
+  "style": "file:./style.css",
+  "parent": [
+    "digipublish/section"
+  ]
+}

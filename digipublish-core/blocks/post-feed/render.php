@@ -55,7 +55,7 @@ if ( $is_carousel ) {
 
 $styles = array();
 $legacy_columns = str_starts_with( $layout, 'grid-' ) ? max( 1, min( 5, absint( substr( $layout, 5 ) ) ) ) : 1;
-$default_columns = $is_horizontal ? 1 : ( $is_modern ? 4 : $legacy_columns );
+$default_columns = $is_carousel ? 4 : ( $is_modern ? 1 : $legacy_columns );
 $desktop = absint( $attributes['columnsDesktop'] ?? 0 ) ?: $default_columns;
 $tablet  = absint( $attributes['columnsTablet'] ?? 0 ) ?: ( $is_horizontal ? 1 : min( 2, $desktop ) );
 $mobile  = absint( $attributes['columnsMobile'] ?? 0 ) ?: 1;
@@ -77,6 +77,44 @@ foreach ( array(
 	'imageBorderRadius'   => '--dp-image-radius',
 ) as $key => $var ) {
 	$value = digipublish_core_css_length( $attributes[ $key ] ?? '' );
+	if ( $value ) {
+		$styles[] = $var . ':' . $value;
+	}
+}
+
+$content_gap_defaults = array(
+	'standard-1'=>'32px','standard-2'=>'32px','standard-3'=>'32px','standard-4'=>'32px',
+	'horizontal-1'=>'16px','horizontal-2'=>'40px','horizontal-3'=>'40px',
+);
+$content_gap = digipublish_core_css_length( $attributes['contentGap'] ?? '', $content_gap_defaults[ $layout ] ?? '16px' );
+$styles[] = '--dp-content-gap:' . $content_gap;
+
+$image_width_map = array( 'one-fourth'=>'25%', 'one-third'=>'33.333%', 'half'=>'50%' );
+$image_width_key = sanitize_key( (string) ( $attributes['imageWidth'] ?? '' ) );
+if ( ! $image_width_key ) {
+	$image_width_key = 'horizontal-3' === $layout ? 'half' : 'one-third';
+}
+$styles[] = '--dp-image-width:' . ( $image_width_map[ $image_width_key ] ?? '33.333%' );
+
+$content_align = isset( $attributes['contentAlign'] ) && in_array( $attributes['contentAlign'], array( 'flex-start','center','flex-end','space-between' ), true ) ? $attributes['contentAlign'] : 'space-between';
+$image_align = isset( $attributes['imageAlign'] ) && in_array( $attributes['imageAlign'], array( 'flex-start','center','flex-end','stretch' ), true ) ? $attributes['imageAlign'] : 'flex-start';
+$styles[] = '--dp-content-align:' . $content_align;
+$styles[] = '--dp-image-align:' . $image_align;
+
+foreach ( array(
+	'headingColor'        => '--dp-post-heading-color',
+	'headingHoverColor'   => '--dp-post-heading-hover',
+	'excerptColor'        => '--dp-post-excerpt-color',
+	'metaColor'           => '--dp-post-meta-color',
+	'metaLinksColor'      => '--dp-post-meta-link-color',
+	'metaLinksHoverColor' => '--dp-post-meta-link-hover',
+	'categoryColor'       => '--dp-post-category-color',
+	'categoryHoverColor'  => '--dp-post-category-hover',
+	'readMoreColor'       => '--dp-post-more-color',
+	'readMoreHoverColor'  => '--dp-post-more-hover',
+	'borderColor'         => '--dp-post-border-color',
+) as $key => $var ) {
+	$value = sanitize_hex_color( $attributes[ $key ] ?? '' );
 	if ( $value ) {
 		$styles[] = $var . ':' . $value;
 	}
@@ -108,7 +146,16 @@ $orientation_map = array(
 	'portrait-2-3'    => '2/3',
 	'square'          => '1/1',
 );
-$orientation = isset( $attributes['imageOrientation'] ) ? sanitize_key( (string) $attributes['imageOrientation'] ) : 'original';
+$orientation = isset( $attributes['imageOrientation'] ) ? sanitize_key( (string) $attributes['imageOrientation'] ) : '';
+if ( ! $orientation ) {
+	if ( in_array( $layout, array( 'tile-1','tile-2','carousel-1','carousel-2' ), true ) ) {
+		$orientation = 'stretch';
+	} elseif ( in_array( $layout, array( 'horizontal-2','horizontal-3' ), true ) ) {
+		$orientation = 'square';
+	} elseif ( ! in_array( $layout, array( 'tile-3','tile-4','horizontal-4','horizontal-5' ), true ) ) {
+		$orientation = 'original';
+	}
+}
 if ( isset( $orientation_map[ $orientation ] ) ) {
 	$styles[] = '--dp-image-aspect:' . $orientation_map[ $orientation ];
 } else {
@@ -190,6 +237,15 @@ foreach ( $query->posts as $index => $post ) {
 	$card_attributes = $attributes;
 	$card_attributes['_cardIndex'] = $base_index + $index + 1;
 	echo digipublish_core_post_feed_card_markup( $post->ID, $card_attributes );
+
+	if ( 'masonry-1' === $layout && ! empty( $attributes['masonryWidgets'] ) ) {
+		$current = $base_index + $index + 1;
+		$after = max( 1, absint( $attributes['masonryWidgetsAfter'] ?? 3 ) );
+		if ( 0 === $current % $after ) {
+			$sidebar = sanitize_key( (string) ( $attributes['masonryWidgetArea'] ?? 'sidebar-archive' ) );
+			echo digipublish_core_post_feed_loop_widget( $sidebar, $current, $after, ! empty( $attributes['masonryWidgetsRepeat'] ) );
+		}
+	}
 }
 echo '</div>';
 

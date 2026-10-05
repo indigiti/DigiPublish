@@ -11,13 +11,60 @@
   "attributes": {
     "format": {
       "type": "string",
-      "default": "F j, Y"
+      "default": "F d, Y"
+    },
+    "textAlign": {
+      "type": "string",
+      "default": "left"
+    },
+    "textColor": {
+      "type": "string",
+      "default": ""
+    },
+    "fontSizeDesktop": {
+      "type": "string",
+      "default": "0.75rem"
+    },
+    "fontSizeTablet": {
+      "type": "string",
+      "default": ""
+    },
+    "fontSizeMobile": {
+      "type": "string",
+      "default": ""
+    },
+    "hideDesktop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLaptop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideMobile": {
+      "type": "boolean",
+      "default": false
     }
   },
   "supports": {
     "html": false,
     "anchor": true,
-    "className": true
+    "className": true,
+    "customClassName": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "border": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true
+    }
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
