@@ -498,6 +498,25 @@
     });
   }
 
+  function colorControl(label, value, onChange) {
+    return el(TextControl, {
+      label: label,
+      value: value || '',
+      placeholder: '#2D5DE0',
+      help: __('Hex color or CSS color value.', 'digipublish-core'),
+      onChange: onChange
+    });
+  }
+
+  function responsiveVisibilityControls(a, set) {
+    return [
+      el(ToggleControl,{label:__('Hide On Desktop','digipublish-core'),checked:!!a.hideDesktop,onChange:function(v){set({hideDesktop:v});}}),
+      el(ToggleControl,{label:__('Hide On Laptop','digipublish-core'),checked:!!a.hideLaptop,onChange:function(v){set({hideLaptop:v});}}),
+      el(ToggleControl,{label:__('Hide On Tablet','digipublish-core'),checked:!!a.hideTablet,onChange:function(v){set({hideTablet:v});}}),
+      el(ToggleControl,{label:__('Hide On Mobile','digipublish-core'),checked:!!a.hideMobile,onChange:function(v){set({hideMobile:v});}})
+    ];
+  }
+
   function postFeedInspectorControls(props) {
     const a = props.attributes, set = props.setAttributes;
     const defaultColumns = /^grid-([2-5])$/.test(a.layout || '') ? parseInt((a.layout || '').replace('grid-',''),10) : 4;
@@ -524,6 +543,13 @@
         lengthControl(__('Gap between Rows', 'digipublish-core'), a.rowGap, function(v){ set({rowGap:v}); }, '40px'),
         lengthControl(__('Border Radius', 'digipublish-core'), a.cardRadius, function(v){ set({cardRadius:v}); }, '12px'),
         lengthControl(__('Card Min Height', 'digipublish-core'), a.cardMinHeight, function(v){ set({cardMinHeight:v}); }, __('Auto', 'digipublish-core')),
+        /^(standard-[1-4]|horizontal-[1-3])$/.test(normalizedPostLayout(a.layout)) ? lengthControl(__('Margin Content', 'digipublish-core'), a.contentGap, function(v){ set({contentGap:v}); }, '16px') : null,
+        /^horizontal-[1-3]$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl,{label:__('Vertical Align Content','digipublish-core'),value:a.contentAlign||'center',options:[{label:__('Top','digipublish-core'),value:'start'},{label:__('Center','digipublish-core'),value:'center'},{label:__('Bottom','digipublish-core'),value:'end'}],onChange:function(v){set({contentAlign:v});}}) : null,
+        /^horizontal-1$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl,{label:__('Vertical Align Image','digipublish-core'),value:a.imageAlign||'center',options:[{label:__('Top','digipublish-core'),value:'start'},{label:__('Center','digipublish-core'),value:'center'},{label:__('Bottom','digipublish-core'),value:'end'},{label:__('Stretch','digipublish-core'),value:'stretch'}],onChange:function(v){set({imageAlign:v});}}) : null,
+        /^horizontal-[1-3]$/.test(normalizedPostLayout(a.layout)) ? el(SelectControl,{label:__('Image Width','digipublish-core'),value:a.imageWidth||'',options:[{label:__('Automatic','digipublish-core'),value:''},{label:'1/4',value:'25%'},{label:'1/3',value:'33.333%'},{label:'2/5',value:'40%'},{label:'1/2',value:'50%'}],onChange:function(v){set({imageWidth:v});}}) : null,
+        /^(standard-[1-4]|horizontal-[1-3]|masonry-1)$/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl,{label:__('Enable post format','digipublish-core'),checked:a.showPostFormat!==false,onChange:function(v){set({showPostFormat:v});}}) : null,
+        /^(standard-[1-4]|horizontal-[23]|masonry-1|tile-[12])$/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl,{label:__('Enable video backgrounds','digipublish-core'),checked:!!a.enableVideoBackgrounds,onChange:function(v){set({enableVideoBackgrounds:v});}}) : null,
+        a.enableVideoBackgrounds && /^(standard-[1-4]|horizontal-[23]|masonry-1|tile-[12])$/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl,{label:__('Enable video controls','digipublish-core'),checked:!!a.enableVideoControls,onChange:function(v){set({enableVideoControls:v});}}) : null,
         /^carousel-/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl, { label:__('Enable autoplay', 'digipublish-core'), checked:a.carouselAutoplay !== false, onChange:function(v){ set({carouselAutoplay:v}); } }) : null,
         /^carousel-/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl, { label:__('Enable bullets', 'digipublish-core'), checked:a.carouselDots !== false, onChange:function(v){ set({carouselDots:v}); } }) : null,
         /^carousel-/.test(normalizedPostLayout(a.layout)) ? el(ToggleControl, { label:__('Enable wrap-around', 'digipublish-core'), checked:a.carouselWrap !== false, help:__('At the end of items, wrap around to the other end.', 'digipublish-core'), onChange:function(v){ set({carouselWrap:v}); } }) : null
@@ -590,6 +616,25 @@
         }),
         lengthControl(__('Image Border Radius', 'digipublish-core'), a.imageBorderRadius, function(v){ set({imageBorderRadius:v}); }, '12px')
       ),
+      el(PanelBody, { title:__('Color Settings', 'digipublish-core'), initialOpen:false },
+        colorControl(__('Heading Color','digipublish-core'),a.headingColor,function(v){set({headingColor:v});}),
+        colorControl(__('Heading Color Hover','digipublish-core'),a.headingHoverColor,function(v){set({headingHoverColor:v});}),
+        colorControl(__('Excerpt','digipublish-core'),a.excerptColor,function(v){set({excerptColor:v});}),
+        colorControl(__('Post Meta','digipublish-core'),a.metaColor,function(v){set({metaColor:v});}),
+        colorControl(__('Post Meta Links','digipublish-core'),a.metaLinksColor,function(v){set({metaLinksColor:v});}),
+        colorControl(__('Post Meta Links Hover','digipublish-core'),a.metaLinksHoverColor,function(v){set({metaLinksHoverColor:v});}),
+        colorControl(__('Category Color','digipublish-core'),a.categoryColor,function(v){set({categoryColor:v});}),
+        colorControl(__('Category Hover Color','digipublish-core'),a.categoryHoverColor,function(v){set({categoryHoverColor:v});}),
+        colorControl(__('Read More Text Color','digipublish-core'),a.readMoreColor,function(v){set({readMoreColor:v});}),
+        colorControl(__('Read More Text Color Hover','digipublish-core'),a.readMoreHoverColor,function(v){set({readMoreHoverColor:v});}),
+        /^horizontal-[45]$/.test(normalizedPostLayout(a.layout)) ? colorControl(__('Border Color','digipublish-core'),a.borderColor,function(v){set({borderColor:v});}) : null
+      ),
+      normalizedPostLayout(a.layout)==='masonry-1' ? el(PanelBody,{title:__('Masonry Widgets','digipublish-core'),initialOpen:false},
+        el(ToggleControl,{label:__('Display widgets in archive','digipublish-core'),checked:!!a.masonryWidgets,onChange:function(v){set({masonryWidgets:v});}}),
+        a.masonryWidgets ? el(TextControl,{label:__('Widget Area','digipublish-core'),value:a.masonryWidgetArea||'sidebar-archive',onChange:function(v){set({masonryWidgetArea:v});}}) : null,
+        a.masonryWidgets ? el(RangeControl,{label:__('Display widgets after N-th post','digipublish-core'),value:a.masonryWidgetsAfter||3,min:1,max:20,onChange:function(v){set({masonryWidgetsAfter:v||1});}}) : null,
+        a.masonryWidgets ? el(ToggleControl,{label:__('Repeat widgets','digipublish-core'),checked:!!a.masonryWidgetsRepeat,onChange:function(v){set({masonryWidgetsRepeat:v});}}) : null
+      ) : null,
       el(PanelBody, { title:__('Query Settings', 'digipublish-core'), initialOpen:false }, postQueryPanelChildren(props)),
       el(PanelBody, { title:__('Spacings', 'digipublish-core'), initialOpen:false },
         el('strong', {}, __('Margins', 'digipublish-core')),
@@ -750,6 +795,10 @@
       carouselAutoplay: { type:'boolean', default:true },
       carouselDots: { type:'boolean', default:true },
       carouselWrap: { type:'boolean', default:true },
+      contentGap:{type:'string',default:''},contentAlign:{type:'string',default:'center'},imageAlign:{type:'string',default:'center'},imageWidth:{type:'string',default:''},
+      showPostFormat:{type:'boolean',default:true},enableVideoBackgrounds:{type:'boolean',default:false},enableVideoControls:{type:'boolean',default:false},
+      headingColor:{type:'string',default:''},headingHoverColor:{type:'string',default:''},excerptColor:{type:'string',default:''},metaColor:{type:'string',default:''},metaLinksColor:{type:'string',default:''},metaLinksHoverColor:{type:'string',default:''},categoryColor:{type:'string',default:''},categoryHoverColor:{type:'string',default:''},readMoreColor:{type:'string',default:''},readMoreHoverColor:{type:'string',default:''},borderColor:{type:'string',default:''},
+      masonryWidgets:{type:'boolean',default:false},masonryWidgetArea:{type:'string',default:'sidebar-archive'},masonryWidgetsAfter:{type:'integer',default:3},masonryWidgetsRepeat:{type:'boolean',default:false},
       marginTop:{type:'string',default:''}, marginBottom:{type:'string',default:''}, marginLeft:{type:'string',default:''}, marginRight:{type:'string',default:''},
       paddingTop:{type:'string',default:''}, paddingBottom:{type:'string',default:''}, paddingLeft:{type:'string',default:''}, paddingRight:{type:'string',default:''},
       blockBorderRadius:{type:'string',default:''}, blockBorderStyle:{type:'string',default:'none'}, blockBorderWidth:{type:'string',default:''},
