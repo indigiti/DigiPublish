@@ -83,6 +83,39 @@ foreach ( array(
 }
 
 foreach ( array(
+	'contentGap' => '--dp-content-gap',
+	'imageWidth' => '--dp-image-width',
+) as $key => $var ) {
+	$value = digipublish_core_css_length( $attributes[ $key ] ?? '' );
+	if ( $value ) {
+		$styles[] = $var . ':' . $value;
+	}
+}
+$content_align = isset( $attributes['contentAlign'] ) && in_array( $attributes['contentAlign'], array( 'start','center','end' ), true ) ? $attributes['contentAlign'] : 'center';
+$image_align = isset( $attributes['imageAlign'] ) && in_array( $attributes['imageAlign'], array( 'start','center','end','stretch' ), true ) ? $attributes['imageAlign'] : 'center';
+$styles[] = '--dp-content-align:' . $content_align;
+$styles[] = '--dp-image-align:' . $image_align;
+
+foreach ( array(
+	'headingColor'        => '--dp-post-heading-color',
+	'headingHoverColor'   => '--dp-post-heading-hover',
+	'excerptColor'        => '--dp-post-excerpt-color',
+	'metaColor'           => '--dp-post-meta-color',
+	'metaLinksColor'      => '--dp-post-meta-link-color',
+	'metaLinksHoverColor' => '--dp-post-meta-link-hover',
+	'categoryColor'       => '--dp-post-category-color',
+	'categoryHoverColor'  => '--dp-post-category-hover',
+	'readMoreColor'       => '--dp-post-more-color',
+	'readMoreHoverColor'  => '--dp-post-more-hover',
+	'borderColor'         => '--dp-post-border-color',
+) as $key => $var ) {
+	$value = sanitize_hex_color( $attributes[ $key ] ?? '' );
+	if ( $value ) {
+		$styles[] = $var . ':' . $value;
+	}
+}
+
+foreach ( array(
 	'marginTop'     => 'margin-top',
 	'marginBottom'  => 'margin-bottom',
 	'marginLeft'    => 'margin-left',
@@ -190,6 +223,15 @@ foreach ( $query->posts as $index => $post ) {
 	$card_attributes = $attributes;
 	$card_attributes['_cardIndex'] = $base_index + $index + 1;
 	echo digipublish_core_post_feed_card_markup( $post->ID, $card_attributes );
+
+	if ( 'masonry-1' === $layout && ! empty( $attributes['masonryWidgets'] ) ) {
+		$current = $index + 1;
+		$after = max( 1, absint( $attributes['masonryWidgetsAfter'] ?? 3 ) );
+		if ( 0 === $current % $after ) {
+			$sidebar = sanitize_key( (string) ( $attributes['masonryWidgetArea'] ?? 'sidebar-archive' ) );
+			echo digipublish_core_post_feed_loop_widget( $sidebar, $current, $after, ! empty( $attributes['masonryWidgetsRepeat'] ) );
+		}
+	}
 }
 echo '</div>';
 
