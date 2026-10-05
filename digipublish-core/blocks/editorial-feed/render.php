@@ -24,13 +24,29 @@ $view_all = techpress_editorial_feed_view_all_url( $attributes );
 $show_view_all = ! empty( $attributes['showViewAll'] ) && $view_all;
 $view_all_label = ! empty( $attributes['viewAllLabel'] ) ? (string) $attributes['viewAllLabel'] : __( 'View All', 'digipublish-core' );
 
-$wrapper = get_block_wrapper_attributes( array( 'class' => 'tp-editorial-feed tp-editorial-feed--' . $layout . ' tp-editorial-feed--items-' . $item_count ) );
+$classes = array_merge(
+	array( 'tp-editorial-feed', 'tp-editorial-feed--' . $layout, 'tp-editorial-feed--items-' . $item_count ),
+	digipublish_core_visibility_classes( $attributes )
+);
+$styles = array();
+foreach ( array( 'columnGap' => '--dp-column-gap', 'rowGap' => '--dp-row-gap', 'cardRadius' => '--dp-card-radius', 'cardMinHeight' => '--dp-card-min-height', 'headingFontSize' => '--dp-heading-size' ) as $key => $var ) {
+	$value = digipublish_core_css_length( $attributes[ $key ] ?? '' );
+	if ( $value ) { $styles[] = $var . ':' . $value; }
+}
+$aspect = $attributes['imageAspect'] ?? '';
+if ( in_array( $aspect, array( '16/9', '4/3', '3/2', '1/1' ), true ) ) {
+	$styles[] = '--dp-image-aspect:' . $aspect;
+}
+$extra = array( 'class' => implode( ' ', $classes ) );
+if ( $styles ) { $extra['style'] = implode( ';', $styles ) . ';'; }
+$wrapper = get_block_wrapper_attributes( $extra );
 
 echo '<section ' . $wrapper . '>';
 echo '<header class="tp-editorial-feed__header">';
 echo '<div class="tp-editorial-feed__heading-wrap">';
 if ( $heading ) {
-	echo '<h2 class="tp-editorial-feed__title">' . esc_html( $heading ) . '</h2>';
+	$heading_tag = digipublish_core_heading_tag( $attributes );
+	echo '<' . $heading_tag . ' class="tp-editorial-feed__title">' . esc_html( $heading ) . '</' . $heading_tag . '>';
 }
 if ( $description ) {
 	echo '<p class="tp-editorial-feed__description">' . esc_html( $description ) . '</p>';
