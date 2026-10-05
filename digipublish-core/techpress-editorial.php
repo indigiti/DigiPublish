@@ -990,9 +990,14 @@ function digipublish_core_post_feed_card_markup( $post_id, $attributes = array()
 		}
 	}
 
-	$top_meta = in_array( $semantic_layout, array( 'standard-4', 'tile-1', 'tile-2', 'tile-3', 'tile-4', 'carousel-1', 'carousel-2' ), true )
-		? digipublish_core_post_feed_top_meta( $post_id, $attributes, $index )
-		: ( 'count' === ( $attributes['topMetaType'] ?? 'none' ) ? digipublish_core_post_feed_top_meta( $post_id, $attributes, $index ) : '' );
+	$top_meta_layout = in_array( $semantic_layout, array( 'standard-4', 'tile-1', 'tile-2', 'tile-3', 'tile-4', 'carousel-1', 'carousel-2' ), true );
+	$top_meta_attributes = $attributes;
+	if ( $top_meta_layout && empty( $top_meta_attributes['topMetaType'] ) ) {
+		$top_meta_attributes['topMetaType'] = 'author';
+	}
+	$top_meta = $top_meta_layout
+		? digipublish_core_post_feed_top_meta( $post_id, $top_meta_attributes, $index )
+		: ( 'count' === ( $attributes['topMetaType'] ?? '' ) ? digipublish_core_post_feed_top_meta( $post_id, $attributes, $index ) : '' );
 
 	$category_only = '';
 	if ( ! $all_inline_meta && ! empty( $attributes['showCategory'] ) ) {
@@ -1118,8 +1123,17 @@ function digipublish_core_rest_post_feed( WP_REST_Request $request ) {
 	$content = '';
 	foreach ( $query->posts as $index => $post ) {
 		$card_attributes = $attributes;
-		$card_attributes['_cardIndex'] = $base_index + $index + 1;
+		$current_index = $base_index + $index + 1;
+		$card_attributes['_cardIndex'] = $current_index;
 		$content .= digipublish_core_post_feed_card_markup( $post->ID, $card_attributes );
+
+		if ( 'masonry-1' === ( $attributes['layout'] ?? '' ) && ! empty( $attributes['masonryWidgets'] ) ) {
+			$after = max( 1, absint( $attributes['masonryWidgetsAfter'] ?? 3 ) );
+			if ( 0 === $current_index % $after ) {
+				$sidebar = sanitize_key( (string) ( $attributes['masonryWidgetArea'] ?? 'sidebar-archive' ) );
+				$content .= digipublish_core_post_feed_loop_widget( $sidebar, $current_index, $after, ! empty( $attributes['masonryWidgetsRepeat'] ) );
+			}
+		}
 	}
 
 	return rest_ensure_response(
