@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "digipublish/gallery-archive",
+  "version": "0.10.0",
+  "title": "Gallery Archive",
+  "category": "digipublish-editorial",
+  "icon": "images-alt2",
+  "description": "Photo-gallery archive or related-gallery grid with photo counts.",
+  "textdomain": "digipublish-core",
+  "attributes": {
+    "heading": { "type": "string", "default": "Photo Galleries" },
+    "sourceMode": { "type": "string", "default": "archive" },
+    "postsPerPage": { "type": "integer", "default": 12 },
+    "columns": { "type": "integer", "default": 4 },
+    "showFilters": { "type": "boolean", "default": true },
+    "showExcerpt": { "type": "boolean", "default": false },
+    "showPagination": { "type": "boolean", "default": true }
+  },
+  "supports": {
+    "align": ["wide", "full"],
+    "html": false,
+    "anchor": true
+  },
+  "editorScript": "digipublish-core-editor",
+  "style": "file:./style.css",
+  "render": "file:./render.php"
+}

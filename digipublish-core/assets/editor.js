@@ -4,9 +4,9 @@
 
   const el = wp.element.createElement;
   const Fragment = wp.element.Fragment;
-  const { registerBlockType, registerBlockVariation, getBlockType } = wp.blocks;
-  const { InspectorControls, useBlockProps } = wp.blockEditor;
-  const { PanelBody, TextControl, RangeControl, SelectControl, ToggleControl, Notice } = wp.components;
+  const { registerBlockType, registerBlockVariation, getBlockType, createBlock } = wp.blocks;
+  const { InspectorControls, useBlockProps, InnerBlocks, MediaUpload, MediaUploadCheck, RichText } = wp.blockEditor;
+  const { PanelBody, TextControl, RangeControl, SelectControl, ToggleControl, Notice, Button } = wp.components;
   const { __ } = wp.i18n;
   const useSelect = wp.data.useSelect;
   const SSRPackage = wp.serverSideRender;
@@ -245,6 +245,200 @@
     });
   }
 
+  registerBlockType('digipublish/gallery', {
+    apiVersion: 3,
+    title: __('Photo Gallery', 'digipublish-core'),
+    category: 'digipublish-editorial',
+    icon: 'format-gallery',
+    attributes: {
+      displayMode: { type:'string', default:'story' },
+      showCounter: { type:'boolean', default:true },
+      showCaptions: { type:'boolean', default:true },
+      showCredits: { type:'boolean', default:true },
+      showThumbnails: { type:'boolean', default:false },
+      allowFullscreen: { type:'boolean', default:true },
+      showSharing: { type:'boolean', default:true },
+      adInterval: { type:'integer', default:0 }
+    },
+    edit: function(props){
+      const a=props.attributes, set=props.setAttributes;
+      const blockProps=useBlockProps({ className:'tp-gallery-editor' });
+
+      function addImages(selection){
+        const images=Array.isArray(selection)?selection:[selection];
+        const blocks=images.filter(Boolean).map(function(image){
+          return createBlock('digipublish/gallery-slide',{
+            imageId: parseInt(image.id||0,10)||0,
+            imageUrl: image.url||'',
+            alt: image.alt||'',
+            caption: image.caption||'',
+            credit: image.caption && image.caption.indexOf('Photo:')===0 ? image.caption.replace(/^Photo:\s*/,'') : ''
+          });
+        });
+        if(blocks.length){
+          wp.data.dispatch('core/block-editor').insertBlocks(blocks,undefined,props.clientId);
+        }
+      }
+
+      return el(Fragment,{},
+        el(InspectorControls,{},
+          el(PanelBody,{title:__('Gallery settings','digipublish-core'),initialOpen:true},
+            el(SelectControl,{label:__('Display mode','digipublish-core'),value:a.displayMode||'story',options:[
+              {label:__('Story — image + caption stack','digipublish-core'),value:'story'},
+              {label:__('Swipe — one photo at a time','digipublish-core'),value:'swipe'},
+              {label:__('Grid — visual overview','digipublish-core'),value:'grid'}
+            ],onChange:function(v){set({displayMode:v});}}),
+            el(ToggleControl,{label:__('Show photo counter','digipublish-core'),checked:a.showCounter!==false,onChange:function(v){set({showCounter:v});}}),
+            el(ToggleControl,{label:__('Show captions','digipublish-core'),checked:a.showCaptions!==false,onChange:function(v){set({showCaptions:v});}}),
+            el(ToggleControl,{label:__('Show photo credits','digipublish-core'),checked:a.showCredits!==false,onChange:function(v){set({showCredits:v});}}),
+            el(ToggleControl,{label:__('Show thumbnail strip','digipublish-core'),checked:!!a.showThumbnails,onChange:function(v){set({showThumbnails:v});}}),
+            el(ToggleControl,{label:__('Allow fullscreen','digipublish-core'),checked:a.allowFullscreen!==false,onChange:function(v){set({allowFullscreen:v});}}),
+            el(ToggleControl,{label:__('Show share control','digipublish-core'),checked:a.showSharing!==false,onChange:function(v){set({showSharing:v});}}),
+            el(RangeControl,{label:__('Insert advertisement every N photos','digipublish-core'),help:__('Story mode only. Set to 0 to disable inline gallery ads.','digipublish-core'),value:a.adInterval||0,min:0,max:10,onChange:function(v){set({adInterval:v||0});}})
+          )
+        ),
+        el('div',blockProps,
+          el('div',{className:'tp-gallery-editor__toolbar'},
+            el(MediaUploadCheck,{},
+              el(MediaUpload,{
+                onSelect:addImages,
+                allowedTypes:['image'],
+                multiple:true,
+                gallery:true,
+                render:function(mediaProps){
+                  return el(Button,{variant:'primary',onClick:mediaProps.open},__('Add gallery images','digipublish-core'));
+                }
+              })
+            )
+          ),
+          el(InnerBlocks,{
+            allowedBlocks:['digipublish/gallery-slide'],
+            templateLock:false,
+            renderAppender:InnerBlocks.ButtonBlockAppender
+          })
+        )
+      );
+    },
+    save:function(){return el(InnerBlocks.Content);}
+  });
+
+  registerBlockType('digipublish/gallery-slide', {
+    apiVersion:3,
+    title:__('Gallery Slide','digipublish-core'),
+    category:'digipublish-editorial',
+    icon:'format-image',
+    parent:['digipublish/gallery'],
+    attributes:{
+      imageId:{type:'integer',default:0},
+      imageUrl:{type:'string',default:''},
+      alt:{type:'string',default:''},
+      heading:{type:'string',default:''},
+      caption:{type:'string',default:''},
+      credit:{type:'string',default:''}
+    },
+    edit:function(props){
+      const a=props.attributes,set=props.setAttributes;
+      const blockProps=useBlockProps({className:'tp-gallery-slide-editor'});
+      function setImage(image){
+        set({
+          imageId:parseInt(image.id||0,10)||0,
+          imageUrl:image.url||'',
+          alt:image.alt||a.alt||''
+        });
+      }
+      return el(Fragment,{},
+        el(InspectorControls,{},
+          el(PanelBody,{title:__('Photo details','digipublish-core'),initialOpen:true},
+            el(TextControl,{label:__('Alt text','digipublish-core'),value:a.alt||'',onChange:function(v){set({alt:v});}}),
+            el(TextControl,{label:__('Photo credit','digipublish-core'),value:a.credit||'',onChange:function(v){set({credit:v});}})
+          )
+        ),
+        el('article',blockProps,
+          el(MediaUploadCheck,{},
+            el(MediaUpload,{
+              onSelect:setImage,
+              allowedTypes:['image'],
+              value:a.imageId||0,
+              render:function(mediaProps){
+                return a.imageUrl
+                  ? el('button',{type:'button',className:'tp-gallery-slide-editor__image',onClick:mediaProps.open},
+                      el('img',{src:a.imageUrl,alt:a.alt||''}))
+                  : el(Button,{variant:'secondary',onClick:mediaProps.open},__('Choose image','digipublish-core'));
+              }
+            })
+          ),
+          el(RichText,{tagName:'h3',placeholder:__('Optional slide heading…','digipublish-core'),value:a.heading||'',onChange:function(v){set({heading:v});}}),
+          el(RichText,{tagName:'p',placeholder:__('Write the caption or explanation for this photo…','digipublish-core'),value:a.caption||'',onChange:function(v){set({caption:v});}}),
+          el(TextControl,{label:__('Credit','digipublish-core'),value:a.credit||'',onChange:function(v){set({credit:v});}})
+        )
+      );
+    },
+    save:function(){return null;}
+  });
+
+  registerBlockType('digipublish/gallery-archive', {
+    apiVersion:3,
+    title:__('Gallery Archive','digipublish-core'),
+    category:'digipublish-editorial',
+    icon:'images-alt2',
+    attributes:{
+      heading:{type:'string',default:'Photo Galleries'},
+      sourceMode:{type:'string',default:'archive'},
+      postsPerPage:{type:'integer',default:12},
+      columns:{type:'integer',default:4},
+      showFilters:{type:'boolean',default:true},
+      showExcerpt:{type:'boolean',default:false},
+      showPagination:{type:'boolean',default:true}
+    },
+    edit:function(props){
+      const a=props.attributes,set=props.setAttributes;
+      return el(Fragment,{},
+        el(InspectorControls,{},
+          el(PanelBody,{title:__('Gallery archive','digipublish-core'),initialOpen:true},
+            el(TextControl,{label:__('Heading','digipublish-core'),value:a.heading||'',onChange:function(v){set({heading:v});}}),
+            el(SelectControl,{label:__('Source','digipublish-core'),value:a.sourceMode||'archive',options:[
+              {label:__('Current gallery archive','digipublish-core'),value:'archive'},
+              {label:__('Related to current gallery','digipublish-core'),value:'related'},
+              {label:__('Latest galleries','digipublish-core'),value:'latest'}
+            ],onChange:function(v){set({sourceMode:v});}}),
+            el(RangeControl,{label:__('Galleries','digipublish-core'),value:a.postsPerPage||12,min:3,max:24,onChange:function(v){set({postsPerPage:v});}}),
+            el(RangeControl,{label:__('Columns','digipublish-core'),value:a.columns||4,min:2,max:5,onChange:function(v){set({columns:v});}}),
+            el(ToggleControl,{label:__('Show category filters','digipublish-core'),checked:a.showFilters!==false,onChange:function(v){set({showFilters:v});}}),
+            el(ToggleControl,{label:__('Show excerpts','digipublish-core'),checked:!!a.showExcerpt,onChange:function(v){set({showExcerpt:v});}}),
+            el(ToggleControl,{label:__('Show pagination','digipublish-core'),checked:a.showPagination!==false,onChange:function(v){set({showPagination:v});}})
+          )
+        ),
+        el(Preview,{name:'digipublish/gallery-archive',attributes:a})
+      );
+    },
+    save:function(){return null;}
+  });
+
+  registerBlockVariation('digipublish/gallery',{
+    name:'gallery-story',
+    title:__('Gallery: Story','digipublish-core'),
+    description:__('Server-rendered image + caption sequence.','digipublish-core'),
+    icon:'format-gallery',
+    scope:['inserter'],
+    attributes:{displayMode:'story',showCounter:true,showCaptions:true,showCredits:true,showThumbnails:false,allowFullscreen:true,showSharing:true,adInterval:0}
+  });
+  registerBlockVariation('digipublish/gallery',{
+    name:'gallery-swipe',
+    title:__('Gallery: Swipe','digipublish-core'),
+    description:__('One-photo-at-a-time swipe gallery with controls.','digipublish-core'),
+    icon:'slides',
+    scope:['inserter'],
+    attributes:{displayMode:'swipe',showCounter:true,showCaptions:true,showCredits:true,showThumbnails:true,allowFullscreen:true,showSharing:true,adInterval:0}
+  });
+  registerBlockVariation('digipublish/gallery-archive',{
+    name:'related-galleries',
+    title:__('Related Galleries','digipublish-core'),
+    description:__('Gallery cards related to the current photo gallery.','digipublish-core'),
+    icon:'images-alt2',
+    scope:['inserter'],
+    attributes:{heading:'Related Galleries',sourceMode:'related',postsPerPage:4,columns:4,showFilters:false,showExcerpt:false,showPagination:false}
+  });
+
   registerBlockType('digipublish/sidebar-feed', {
     apiVersion: 3,
     title: __('Post Sidebar Feed', 'digipublish-core'),
@@ -254,6 +448,7 @@
       heading: { type: 'string', default: 'Recent Stories' },
       layout: { type: 'string', default: 'meta-list' },
       sourceMode: { type: 'string', default: 'current' },
+      contentType: { type: 'string', default: 'post' },
       categoryId: { type: 'integer', default: 0 },
       postsToShow: { type: 'integer', default: 5 },
       orderBy: { type: 'string', default: 'date' },
@@ -276,6 +471,11 @@
               { label: __('Latest posts', 'digipublish-core'), value:'latest' },
               { label: __('Selected category', 'digipublish-core'), value:'category' }
             ], onChange: function(v){ set({ sourceMode:v }); } }),
+            el(SelectControl, { label: __('Content type', 'digipublish-core'), value: a.contentType || 'post', options: [
+              { label: __('Articles', 'digipublish-core'), value:'post' },
+              { label: __('Photo galleries', 'digipublish-core'), value:'gallery' },
+              { label: __('Articles + galleries', 'digipublish-core'), value:'mixed' }
+            ], onChange: function(v){ set({ contentType:v }); } }),
             a.sourceMode === 'category' ? el(SelectControl, { label: __('Category', 'digipublish-core'), value: a.categoryId || 0, options: categoryOptions, onChange: function(v){ set({ categoryId:parseInt(v,10)||0 }); } }) : null,
             el(RangeControl, { label: __('Stories', 'digipublish-core'), value: a.postsToShow || 5, min:3, max:12, onChange: function(v){ set({ postsToShow:v }); } }),
             el(SelectControl, { label: __('Order by', 'digipublish-core'), value: a.orderBy || 'date', options: [
@@ -319,7 +519,14 @@
       title:__('Sidebar: Visual Stories', 'digipublish-core'),
       description:__('Featured-image mosaic for the post sidebar.', 'digipublish-core'),
       icon:'format-gallery',
-      attributes:{ heading:'Visual Stories', layout:'image-grid', sourceMode:'latest', postsToShow:12, orderBy:'date', period:'all', showHeading:true }
+      attributes:{ heading:'Visual Stories', layout:'image-grid', sourceMode:'latest', contentType:'mixed', postsToShow:12, orderBy:'date', period:'all', showHeading:true }
+    },
+    {
+      name:'sidebar-latest-galleries',
+      title:__('Sidebar: Latest Galleries', 'digipublish-core'),
+      description:__('Recent photo galleries with photo-count metadata.', 'digipublish-core'),
+      icon:'images-alt2',
+      attributes:{ heading:'Latest Galleries', layout:'meta-list', sourceMode:'latest', contentType:'gallery', postsToShow:5, orderBy:'date', period:'all', showHeading:true }
     }
   ].forEach(function(variation){
     registerBlockVariation('digipublish/sidebar-feed', Object.assign({ scope:['inserter'] }, variation));
@@ -349,7 +556,7 @@
     const users = useSelect(function (select) {
       return select('core').getEntityRecords('root', 'user', { per_page: 100, context: 'view', orderby: 'name', order: 'asc' });
     }, []);
-    if (state.postType !== 'post') return null;
+    if (state.postType !== 'post' && state.postType !== 'digipublish_gallery') return null;
 
     const type = state.meta._techpress_attribution_type || '';
     const userId = parseInt(state.meta._techpress_attribution_user || 0, 10);

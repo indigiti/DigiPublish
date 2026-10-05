@@ -81,6 +81,10 @@ function techpress_theme_body_classes( $classes ) {
 		$classes[] = 'techpress-article';
 		$classes[] = 'digipublish-article';
 	}
+	if ( is_singular( 'digipublish_gallery' ) ) {
+		$classes[] = 'digipublish-gallery';
+		$classes[] = 'digipublish-article';
+	}
 	if ( is_category() ) {
 		$classes[] = 'techpress-category';
 		$classes[] = 'digipublish-category';

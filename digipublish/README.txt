@@ -1,10 +1,11 @@
-DigiPublish Theme 0.9.0
+DigiPublish Theme 0.10.0
 
-Article sidebar editorial-modules release.
+Photo-gallery publishing release.
 
-- Adds Recent Stories, Top Stories and Visual Stories to the default single-post sidebar.
-- Uses a reusable Post Sidebar Widgets pattern so editors can reorder/remove modules in the Site Editor.
-- Keeps desktop sidebar behavior sticky while tablet/mobile modules move below article content.
-- Retains the v0.8.3 mobile Featured alignment and v0.8.4 homepage resilience work.
+- Adds dedicated single and archive block templates for Photo Galleries.
+- Adds gallery archive/category presentation and Related Galleries.
+- Adds gallery template shell styling for desktop and mobile.
+- Adds Photo Galleries to publication navigation through DigiPublish Core.
+- Retains all homepage, mobile and article-sidebar work from 0.9.0.
 
-Requires DigiPublish Core 0.9.0.
+Requires DigiPublish Core 0.10.0.

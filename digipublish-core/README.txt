@@ -1,13 +1,16 @@
-DigiPublish Core 0.9.0
+DigiPublish Core 0.10.0
 
-Article sidebar editorial-modules release.
+First-class photo-gallery publishing release.
 
-- Adds the dynamic digipublish/sidebar-feed block.
-- Layouts: metadata list, numbered ranking list and image mosaic.
-- Content sources: current article category, latest posts or selected category.
-- Supports newest/updated/most-discussed/alphabetical ordering and all-time/24h/7d/30d windows.
-- Sparse-content fallback keeps modules populated without SQL ORDER BY RAND().
-- Visual Stories prefers featured-image posts and fills from latest thumbnail posts when needed.
-- Gutenberg variations expose Recent Stories, Top Stories and Visual Stories directly in the inserter.
+- Adds the public digipublish_gallery post type with categories, tags, authors, revisions and editorial attribution.
+- Adds Gallery, Gallery Slide and Gallery Archive dynamic Gutenberg blocks.
+- Bulk image selection creates reorderable slides with caption, credit and alt-text controls.
+- Modes: Story, Swipe and Grid.
+- Server-rendered slides plus lightweight progressive enhancement for swipe, counters, fullscreen, sharing and analytics events.
+- One canonical gallery URL with slide anchors; no thin per-slide pages.
+- Responsive/lazy image strategy and ImageGallery structured data.
+- Optional Story-mode ad insertion through the existing ad-slot block.
+- Photo counts, category filters, related galleries and dynamic first-slide cover fallback.
+- Sidebar feeds support Articles, Galleries or Mixed content.
 
-Use with DigiPublish theme 0.9.0.
+Use with DigiPublish theme 0.10.0.
