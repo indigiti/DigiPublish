@@ -462,9 +462,14 @@ function techpress_editorial_post_query_args( $attributes ) {
 	$count           = max( 1, min( 24, $count ) );
 	$pagination      = isset( $attributes['paginationType'] ) ? sanitize_key( $attributes['paginationType'] ) : 'none';
 	$paged           = max( 1, absint( get_query_var( 'paged' ) ?: get_query_var( 'page' ) ) );
+	$post_type       = isset( $attributes['postType'] ) ? sanitize_key( (string) $attributes['postType'] ) : 'post';
+	$post_type_obj   = post_type_exists( $post_type ) ? get_post_type_object( $post_type ) : null;
+	if ( ! $post_type_obj || 'attachment' === $post_type || ( ! $post_type_obj->public && ! $post_type_obj->publicly_queryable ) ) {
+		$post_type = 'post';
+	}
 
 	$args = array(
-		'post_type'           => 'post',
+		'post_type'           => $post_type,
 		'post_status'         => 'publish',
 		'posts_per_page'      => $count,
 		'orderby'             => $order_by,
@@ -495,16 +500,16 @@ function techpress_editorial_post_query_args( $attributes ) {
 	$exclude_tags       = $normalize_ids( $attributes['excludeTagIds'] ?? array() );
 	$include_posts      = $normalize_ids( $attributes['filterPostIds'] ?? array() );
 
-	if ( $include_categories ) {
+	if ( $include_categories && is_object_in_taxonomy( $post_type, 'category' ) ) {
 		$args['category__in'] = $include_categories;
 	}
-	if ( $include_tags ) {
+	if ( $include_tags && is_object_in_taxonomy( $post_type, 'post_tag' ) ) {
 		$args['tag__in'] = $include_tags;
 	}
-	if ( $exclude_categories ) {
+	if ( $exclude_categories && is_object_in_taxonomy( $post_type, 'category' ) ) {
 		$args['category__not_in'] = $exclude_categories;
 	}
-	if ( $exclude_tags ) {
+	if ( $exclude_tags && is_object_in_taxonomy( $post_type, 'post_tag' ) ) {
 		$args['tag__not_in'] = $exclude_tags;
 	}
 	if ( $include_posts ) {
@@ -514,10 +519,81 @@ function techpress_editorial_post_query_args( $attributes ) {
 		}
 	}
 
+	$tax_query = array();
+
+	$formats = array_values( array_unique( array_filter( array_map( 'sanitize_key', is_array( $attributes['postFormats'] ?? null ) ? $attributes['postFormats'] : array() ) ) ) );
+	if ( 'post' === $post_type && $formats && taxonomy_exists( 'post_format' ) ) {
+		$include_standard = in_array( 'standard', $formats, true );
+		$format_terms = array();
+		foreach ( $formats as $format ) {
+			if ( 'standard' !== $format ) {
+				$format_terms[] = 'post-format-' . $format;
+			}
+		}
+		$format_query = array( 'relation' => 'OR' );
+		if ( $format_terms ) {
+			$format_query[] = array(
+				'taxonomy' => 'post_format',
+				'field'    => 'slug',
+				'terms'    => $format_terms,
+				'operator' => 'IN',
+			);
+		}
+		if ( $include_standard ) {
+			$format_query[] = array(
+				'taxonomy' => 'post_format',
+				'operator' => 'NOT EXISTS',
+			);
+		}
+		if ( count( $format_query ) > 1 ) {
+			$tax_query[] = $format_query;
+		}
+	}
+
+	$custom_taxonomy = isset( $attributes['filterTaxonomy'] ) ? sanitize_key( (string) $attributes['filterTaxonomy'] ) : '';
+	$custom_terms = $normalize_ids( $attributes['filterTermIds'] ?? array() );
+	if ( $custom_taxonomy && $custom_terms && taxonomy_exists( $custom_taxonomy ) && is_object_in_taxonomy( $post_type, $custom_taxonomy ) ) {
+		$tax_query[] = array(
+			'taxonomy' => $custom_taxonomy,
+			'field'    => 'term_id',
+			'terms'    => $custom_terms,
+			'operator' => 'IN',
+		);
+	}
+	if ( $tax_query ) {
+		if ( count( $tax_query ) > 1 ) {
+			$tax_query['relation'] = 'AND';
+		}
+		$args['tax_query'] = $tax_query;
+	}
+
+	if ( ! empty( $attributes['relatedPosts'] ) && is_singular() ) {
+		$current_id = get_queried_object_id();
+		if ( $current_id ) {
+			$args['post__not_in'] = array( $current_id );
+			if ( is_object_in_taxonomy( $post_type, 'category' ) ) {
+				$current_categories = wp_get_post_categories( $current_id );
+				if ( $current_categories ) {
+					if ( ! empty( $args['category__in'] ) ) {
+						$related_categories = array_values( array_intersect( $args['category__in'], $current_categories ) );
+						if ( $related_categories ) {
+							$args['category__in'] = $related_categories;
+						} else {
+							$args['post__in'] = array( 0 );
+						}
+					} else {
+						$args['category__in'] = array_values( array_map( 'absint', $current_categories ) );
+					}
+				}
+			}
+		}
+	}
+
 	if ( ! empty( $attributes['avoidDuplicates'] ) ) {
 		$seen = digipublish_core_rendered_post_ids();
 		if ( $seen ) {
-			$args['post__not_in'] = array_values( array_unique( array_map( 'absint', $seen ) ) );
+			$existing_exclusions = isset( $args['post__not_in'] ) ? (array) $args['post__not_in'] : array();
+			$args['post__not_in'] = array_values( array_unique( array_map( 'absint', array_merge( $existing_exclusions, $seen ) ) ) );
 		}
 	}
 
@@ -648,9 +724,19 @@ function techpress_editorial_card_markup( $post_id, $attributes = array() ) {
 	$show_views    = $attributes['showViews'] ?? false;
 	$show_shares   = $attributes['showShares'] ?? false;
 	$show_readmore = $attributes['showReadMore'] ?? false;
+	$compact_meta  = ! empty( $attributes['compactMeta'] );
+	$top_meta_type = isset( $attributes['topMetaType'] ) ? sanitize_key( (string) $attributes['topMetaType'] ) : 'none';
+	$card_index    = isset( $attributes['_cardIndex'] ) ? max( 1, absint( $attributes['_cardIndex'] ) ) : 1;
 	$image_size    = isset( $attributes['imageSize'] ) && in_array( $attributes['imageSize'], array( 'thumbnail', 'medium', 'medium_large', 'large', 'full' ), true ) ? $attributes['imageSize'] : 'medium_large';
 
-	$html = '<article class="tp-card">';
+	$card_classes = array( 'tp-card' );
+	if ( $compact_meta ) {
+		$card_classes[] = 'tp-card--compact-meta';
+	}
+	$html = '<article class="' . esc_attr( implode( ' ', $card_classes ) ) . '">';
+	if ( 'count' === $top_meta_type ) {
+		$html .= '<span class="tp-card__top-count" aria-hidden="true">' . esc_html( str_pad( (string) $card_index, 2, '0', STR_PAD_LEFT ) ) . '</span>';
+	}
 	if ( $show_image ) {
 		$html .= '<a class="tp-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' . techpress_editorial_image_markup( $post_id, $image_size, false, '(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw' ) . '</a>';
 	}
