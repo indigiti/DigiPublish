@@ -131,7 +131,7 @@ jobs:
             .attributes.filterTaxonomy.type == "string" and
             .attributes.filterTermIds.type == "array" and
             .attributes.relatedPosts.default == false and
-            .attributes.topMetaType.default == "none" and
+            .attributes.topMetaType.default == "" and
             .attributes.compactMeta.default == false and
             .attributes.cardHeadingTag.default == "h2" and
             .attributes.excerptLength.default == 100 and
