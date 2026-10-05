@@ -287,3 +287,9 @@ body.dp-caards-shell :where(h1,h2,h3,h4,h5,h6,.wp-block-post-title){letter-spaci
 	.dp-caards-footer-four__shell{padding:28px 20px}
 	.dp-caards-team-grid{grid-template-columns:1fr}
 }
+
+.dp-caards-nextpost-section{border-top:1px solid var(--dp-caards-border);padding-top:28px;margin-top:56px}
+.dp-caards-nextpost-section .dp-caards-entry-hero{padding-top:48px}
+.dp-caards-nextpost-sentinel{height:2px;margin:32px 0}
+.dp-caards-nextpost-status{min-height:24px;padding:8px 16px 24px;text-align:center;color:var(--dp-caards-secondary);font-size:.75rem;font-weight:600}
+.dp-caards-dark .dp-caards-nextpost-section{border-color:rgba(255,255,255,.16)}
