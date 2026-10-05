@@ -1,0 +1,25 @@
+{
+  "$schema":"https://schemas.wp.org/trunk/block.json",
+  "apiVersion":3,
+  "name":"digipublish/mega-menu",
+  "version":"0.10.2",
+  "title":"Mega Menu",
+  "category":"digipublish-editorial",
+  "icon":"menu-alt3",
+  "description":"FSE-native Caards mega menu with latest or category post cards.",
+  "textdomain":"digipublish-core",
+  "attributes":{
+    "label":{"type":"string","default":"Explore"},
+    "url":{"type":"string","default":"#"},
+    "sourceMode":{"type":"string","default":"latest"},
+    "categoryId":{"type":"integer","default":0},
+    "postsToShow":{"type":"integer","default":4},
+    "showImages":{"type":"boolean","default":true},
+    "showCategory":{"type":"boolean","default":true},
+    "showDate":{"type":"boolean","default":true}
+  },
+  "supports":{"html":false,"anchor":true,"className":true},
+  "editorScript":"digipublish-core-editor",
+  "style":"file:./style.css",
+  "render":"file:./render.php"
+}
