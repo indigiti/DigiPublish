@@ -105,10 +105,16 @@ if ( ! $posts ) {
 $heading = trim( (string) ( $attributes['heading'] ?? ( 'read-next' === $layout ? __( 'Read next', 'digipublish-core' ) : __( 'Related Features', 'digipublish-core' ) ) ) );
 
 if ( 'read-next' === $layout ) {
-	$wrapper = get_block_wrapper_attributes( array( 'class' => 'tp-related-posts tp-related-posts--read-next alignwide' ) );
+	$wrapper = get_block_wrapper_attributes(
+		digipublish_core_design_wrapper_args(
+			$attributes,
+			array( 'tp-related-posts', 'tp-related-posts--read-next', 'alignwide' )
+		)
+	);
 	echo '<section ' . $wrapper . '>';
 	if ( $heading ) {
-		echo '<h2 class="tp-read-next__heading">' . esc_html( $heading ) . '</h2>';
+		$heading_tag = digipublish_core_heading_tag( $attributes );
+		echo '<' . $heading_tag . ' class="tp-read-next__heading">' . esc_html( $heading ) . '</' . $heading_tag . '>';
 	}
 	echo '<div class="tp-read-next__grid">';
 
@@ -120,23 +126,26 @@ if ( 'read-next' === $layout ) {
 
 		echo '<article class="tp-read-next-card">';
 		echo '<div class="tp-read-next-card__body">';
+		if ( $attributes['showCategory'] ?? true ) { echo techpress_editorial_category_markup( $id ); }
 		echo '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>';
-		echo '<time datetime="' . esc_attr( get_the_date( DATE_W3C, $id ) ) . '">' . esc_html( get_the_date( get_option( 'date_format' ), $id ) ) . '</time>';
+		echo techpress_editorial_meta_markup( $id, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true );
 		if ( $attributes['showExcerpt'] ?? true ) {
 			echo '<p>' . esc_html( wp_trim_words( get_the_excerpt( $id ), 22 ) ) . '</p>';
 		}
 		echo '</div>';
 
 		echo '<a class="tp-read-next-card__image" href="' . esc_url( get_permalink( $id ) ) . '">';
-		echo techpress_editorial_image_markup( $id, 'medium_large', false, '(max-width: 680px) 82vw, (max-width: 1120px) 50vw, 25vw' );
+		echo techpress_editorial_image_markup( $id, digipublish_core_image_size( $attributes, 'medium_large' ), false, '(max-width: 680px) 82vw, (max-width: 1120px) 50vw, 25vw' );
 		echo '</a>';
 
 		echo '<div class="tp-read-next-card__footer">';
-		echo '<span>' . esc_html( sprintf( _n( '%d min read', '%d min read', $minutes, 'digipublish-core' ), $minutes ) ) . '</span>';
-		if ( $views ) {
+		if ( $attributes['showReadTime'] ?? true ) {
+			echo '<span>' . esc_html( sprintf( _n( '%d min read', '%d min read', $minutes, 'digipublish-core' ), $minutes ) ) . '</span>';
+		}
+		if ( ( $attributes['showViews'] ?? true ) && $views ) {
 			echo '<span>' . esc_html( techpress_editorial_format_metric( $views ) . ' ' . __( 'views', 'digipublish-core' ) ) . '</span>';
 		}
-		if ( $shares ) {
+		if ( ( $attributes['showShares'] ?? true ) && $shares ) {
 			echo '<span class="tp-read-next-card__shares">' . esc_html( __( 'Shares', 'digipublish-core' ) . ' ' . techpress_editorial_format_metric( $shares ) ) . '</span>';
 		}
 		echo '</div>';
@@ -147,11 +156,19 @@ if ( 'read-next' === $layout ) {
 	return;
 }
 
-echo '<section class="tp-related-posts alignwide"><h2 class="tp-section-title">' . esc_html( $heading ) . '</h2><div class="tp-related-posts__grid">';
+$wrapper = get_block_wrapper_attributes(
+	digipublish_core_design_wrapper_args(
+		$attributes,
+		array( 'tp-related-posts', 'alignwide' )
+	)
+);
+$heading_tag = digipublish_core_heading_tag( $attributes );
+echo '<section ' . $wrapper . '><' . $heading_tag . ' class="tp-section-title">' . esc_html( $heading ) . '</' . $heading_tag . '><div class="tp-related-posts__grid">';
 foreach ( $posts as $i => $post ) {
 	$id         = (int) $post->ID;
 	$cls        = 0 === $i ? 'tp-related-card tp-related-card--lead' : 'tp-related-card';
 	$image_size = 0 === $i ? 'medium_large' : 'medium';
-	echo '<article class="' . esc_attr( $cls ) . '"><a class="tp-related-card__image" href="' . esc_url( get_permalink( $id ) ) . '">' . techpress_editorial_image_markup( $id, $image_size ) . '</a><div class="tp-related-card__body">' . techpress_editorial_category_markup( $id ) . '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>' . techpress_editorial_meta_markup( $id, true, true ) . '</div></article>';
+	$category_markup = ( $attributes['showCategory'] ?? true ) ? techpress_editorial_category_markup( $id ) : '';
+	echo '<article class="' . esc_attr( $cls ) . '"><a class="tp-related-card__image" href="' . esc_url( get_permalink( $id ) ) . '">' . techpress_editorial_image_markup( $id, digipublish_core_image_size( $attributes, $image_size ) ) . '</a><div class="tp-related-card__body">' . $category_markup . '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>' . techpress_editorial_meta_markup( $id, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true ) . '</div></article>';
 }
 echo '</div></section>';

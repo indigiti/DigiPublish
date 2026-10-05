@@ -206,14 +206,13 @@ if ( ! $posts ) {
 $heading = trim( (string) ( $attributes['heading'] ?? '' ) );
 $show_heading = $attributes['showHeading'] ?? true;
 $wrapper = get_block_wrapper_attributes(
-	array(
-		'class' => 'tp-sidebar-feed tp-sidebar-feed--' . $layout,
-	)
+	digipublish_core_design_wrapper_args( $attributes, array( 'tp-sidebar-feed', 'tp-sidebar-feed--' . $layout ) )
 );
 
 echo '<section ' . $wrapper . '>';
 if ( $show_heading && '' !== $heading ) {
-	echo '<h2 class="tp-sidebar-feed__heading">' . esc_html( $heading ) . '</h2>';
+	$heading_tag = digipublish_core_heading_tag( $attributes );
+	echo '<' . $heading_tag . ' class="tp-sidebar-feed__heading">' . esc_html( $heading ) . '</' . $heading_tag . '>';
 }
 
 if ( 'meta-list' === $layout ) {
@@ -221,7 +220,10 @@ if ( 'meta-list' === $layout ) {
 	foreach ( $posts as $post ) {
 		$post_id = $post->ID;
 		echo '<article class="tp-sidebar-meta-item">';
-		echo '<div class="tp-sidebar-meta-item__meta"><span>' . esc_html( get_the_author_meta( 'display_name', $post->post_author ) ) . '</span><time datetime="' . esc_attr( get_the_date( DATE_W3C, $post_id ) ) . '">' . esc_html( get_the_date( '', $post_id ) ) . '</time></div>';
+		$meta_parts = array();
+		if ( $attributes['showAuthor'] ?? true ) { $meta_parts[] = '<span>' . esc_html( get_the_author_meta( 'display_name', $post->post_author ) ) . '</span>'; }
+		if ( $attributes['showDate'] ?? true ) { $meta_parts[] = '<time datetime="' . esc_attr( get_the_date( DATE_W3C, $post_id ) ) . '">' . esc_html( get_the_date( '', $post_id ) ) . '</time>'; }
+		if ( $meta_parts ) { echo '<div class="tp-sidebar-meta-item__meta">' . implode( '', $meta_parts ) . '</div>'; }
 		echo '<h3><a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html( get_the_title( $post_id ) ) . '</a></h3>';
 		if ( 'digipublish_gallery' === get_post_type( $post_id ) ) {
 			$photo_count = digipublish_core_get_gallery_slide_count( $post_id );
@@ -256,7 +258,7 @@ if ( 'meta-list' === $layout ) {
 		echo '<a class="' . esc_attr( $class ) . '" href="' . esc_url( get_permalink( $post_id ) ) . '" aria-label="' . esc_attr( get_the_title( $post_id ) ) . '">';
 		echo 'digipublish_gallery' === get_post_type( $post_id )
 			? digipublish_core_gallery_cover_image_markup( $post_id, 'medium', '(max-width: 1120px) 28vw, 92px' )
-			: techpress_editorial_image_markup( $post_id, 'medium', false, '(max-width: 1120px) 28vw, 92px' );
+			: techpress_editorial_image_markup( $post_id, digipublish_core_image_size( $attributes, 'medium' ), false, '(max-width: 1120px) 28vw, 92px' );
 		if ( 'digipublish_gallery' === get_post_type( $post_id ) ) {
 			$photo_count = digipublish_core_get_gallery_slide_count( $post_id );
 			if ( $photo_count ) {

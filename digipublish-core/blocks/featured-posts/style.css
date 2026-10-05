@@ -136,3 +136,14 @@
   .tp-featured__hero-excerpt{font-size:13.5px}
   .tp-featured__strip{grid-auto-columns:82%}
 }
+
+.tp-featured[style*="--dp-heading-size"] .tp-section-title{font-size:var(--dp-heading-size)}
+.tp-featured[style*="--dp-column-gap"] .tp-featured__top,.tp-featured[style*="--dp-column-gap"] .tp-featured__strip,.tp-featured[style*="--dp-column-gap"] .tp-featured__layout{column-gap:var(--dp-column-gap)}
+.tp-featured[style*="--dp-row-gap"] .tp-featured__top,.tp-featured[style*="--dp-row-gap"] .tp-featured__strip,.tp-featured[style*="--dp-row-gap"] .tp-featured__layout{row-gap:var(--dp-row-gap)}
+.tp-featured[style*="--dp-card-radius"] article,.tp-featured[style*="--dp-card-radius"] .tp-featured__hero-image,.tp-featured[style*="--dp-card-radius"] .tp-featured__side-image,.tp-featured[style*="--dp-card-radius"] .tp-featured__strip-image{border-radius:var(--dp-card-radius)}
+.tp-featured[style*="--dp-card-min-height"] article{min-height:var(--dp-card-min-height)}
+.tp-featured[style*="--dp-image-aspect"] .tp-featured__hero-image,.tp-featured[style*="--dp-image-aspect"] .tp-featured__side-image,.tp-featured[style*="--dp-image-aspect"] .tp-featured__strip-image,.tp-featured[style*="--dp-image-aspect"] .tp-featured__lead-image{height:auto;aspect-ratio:var(--dp-image-aspect)}
+@media(min-width:1121px){.dp-hide-desktop{display:none!important}}
+@media(min-width:721px) and (max-width:1120px){.dp-hide-laptop{display:none!important}}
+@media(min-width:481px) and (max-width:720px){.dp-hide-tablet{display:none!important}}
+@media(max-width:480px){.dp-hide-mobile{display:none!important}}

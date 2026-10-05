@@ -53,15 +53,17 @@ if ( ! $query->posts ) {
 }
 
 $wrapper = get_block_wrapper_attributes(
-	array(
-		'class' => 'tp-gallery-archive tp-gallery-archive--cols-' . $columns,
+	digipublish_core_design_wrapper_args(
+		$attributes,
+		array( 'tp-gallery-archive', 'tp-gallery-archive--cols-' . $columns )
 	)
 );
 $heading = trim( (string) ( $attributes['heading'] ?? '' ) );
 
 echo '<section ' . $wrapper . '>';
 if ( $heading ) {
-	echo '<div class="tp-gallery-archive__head"><h2>' . esc_html( $heading ) . '</h2>';
+	$heading_tag = digipublish_core_heading_tag( $attributes );
+	echo '<div class="tp-gallery-archive__head"><' . $heading_tag . '>' . esc_html( $heading ) . '</' . $heading_tag . '>';
 	if ( 'related' === $source ) {
 		$archive_url = get_post_type_archive_link( 'digipublish_gallery' );
 		if ( $archive_url ) {
@@ -94,19 +96,21 @@ foreach ( $query->posts as $post ) {
 
 	echo '<article class="tp-gallery-card">';
 	echo '<a class="tp-gallery-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '">';
-	echo digipublish_core_gallery_cover_image_markup( $post_id, 'medium_large', '(max-width: 680px) 100vw, (max-width: 1120px) 50vw, 25vw' );
+	echo digipublish_core_gallery_cover_image_markup( $post_id, digipublish_core_image_size( $attributes, 'medium_large' ), '(max-width: 680px) 100vw, (max-width: 1120px) 50vw, 25vw' );
 	if ( $photo_count ) {
 		echo '<span class="tp-gallery-card__count">' . esc_html( sprintf( _n( '%d Photo', '%d Photos', $photo_count, 'digipublish-core' ), $photo_count ) ) . '</span>';
 	}
 	echo '</a><div class="tp-gallery-card__body">';
-	if ( $category instanceof WP_Term ) {
+	if ( ( $attributes['showCategory'] ?? true ) && $category instanceof WP_Term ) {
 		echo '<a class="tp-gallery-card__category" href="' . esc_url( home_url( user_trailingslashit( 'photo-gallery/category/' . $category->slug ) ) ) . '">' . esc_html( $category->name ) . '</a>';
 	}
 	echo '<h3><a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html( get_the_title( $post_id ) ) . '</a></h3>';
 	if ( $attributes['showExcerpt'] ?? false ) {
 		echo '<p>' . esc_html( wp_trim_words( get_the_excerpt( $post_id ), 22 ) ) . '</p>';
 	}
-	echo '<time datetime="' . esc_attr( get_the_date( DATE_W3C, $post_id ) ) . '">' . esc_html( get_the_date( get_option( 'date_format' ), $post_id ) ) . '</time>';
+	if ( $attributes['showDate'] ?? true ) {
+		echo '<time datetime="' . esc_attr( get_the_date( DATE_W3C, $post_id ) ) . '">' . esc_html( get_the_date( get_option( 'date_format' ), $post_id ) ) . '</time>';
+	}
 	echo '</div></article>';
 }
 echo '</div>';

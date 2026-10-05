@@ -73,6 +73,14 @@ if ( empty( $post_items ) ) {
 	return;
 }
 
+$block_wrapper = get_block_wrapper_attributes(
+	digipublish_core_design_wrapper_args(
+		$attributes,
+		array( 'tp-archive-feed-block' )
+	)
+);
+echo '<div ' . $block_wrapper . '>';
+
 if ( $show_top && is_category() && 1 === $paged ) {
 	$top_ids = array();
 	foreach ( $post_items as $item ) {
@@ -97,11 +105,13 @@ if ( $show_top && is_category() && 1 === $paged ) {
 
 	if ( $top_ids ) {
 		$top_ids_for_exclusion = $top_ids;
-		echo '<section class="tp-archive-top-picks"><h2 class="tp-section-title">' . esc_html__( 'Our Top Picks', 'digipublish-core' ) . '</h2><div class="tp-archive-top-picks__grid">';
+		$heading_tag = digipublish_core_heading_tag( $attributes );
+		echo '<section class="tp-archive-top-picks"><' . $heading_tag . ' class="tp-section-title">' . esc_html__( 'Our Top Picks', 'digipublish-core' ) . '</' . $heading_tag . '><div class="tp-archive-top-picks__grid">';
 		foreach ( $top_ids as $i => $post_id ) {
 			$cls        = 0 === $i ? 'tp-top-pick tp-top-pick--lead' : 'tp-top-pick';
 			$image_size = 0 === $i ? 'medium_large' : 'medium';
-			echo '<article class="' . esc_attr( $cls ) . '"><a class="tp-top-pick__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' . techpress_editorial_image_markup( $post_id, $image_size, false, 0 === $i ? '(max-width: 760px) 86vw, 45vw' : '(max-width: 760px) 86vw, 22vw' ) . '</a><div class="tp-top-pick__body">' . techpress_editorial_category_markup( $post_id ) . '<h3><a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html( get_the_title( $post_id ) ) . '</a></h3>' . techpress_editorial_meta_markup( $post_id, true, true ) . '</div></article>';
+			$category_markup = ( $attributes['showCategory'] ?? true ) ? techpress_editorial_category_markup( $post_id ) : '';
+			echo '<article class="' . esc_attr( $cls ) . '"><a class="tp-top-pick__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' . techpress_editorial_image_markup( $post_id, digipublish_core_image_size( $attributes, $image_size ), false, 0 === $i ? '(max-width: 760px) 86vw, 45vw' : '(max-width: 760px) 86vw, 22vw' ) . '</a><div class="tp-top-pick__body">' . $category_markup . '<h3><a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html( get_the_title( $post_id ) ) . '</a></h3>' . techpress_editorial_meta_markup( $post_id, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true ) . '</div></article>';
 		}
 		echo '</div></section>';
 	}
@@ -118,10 +128,12 @@ if ( $top_ids_for_exclusion ) {
 	);
 }
 
-echo '<section class="tp-archive-feed alignwide"><div class="tp-archive-feed__heading"><h2 class="tp-section-title">' . esc_html( $context_label ) . '</h2></div><div class="tp-archive-story-grid" style="--tp-archive-columns:' . esc_attr( $columns ) . '">';
+$heading_tag = digipublish_core_heading_tag( $attributes );
+echo '<section class="tp-archive-feed alignwide"><div class="tp-archive-feed__heading"><' . $heading_tag . ' class="tp-section-title">' . esc_html( $context_label ) . '</' . $heading_tag . '></div><div class="tp-archive-story-grid" style="--tp-archive-columns:' . esc_attr( $columns ) . '">';
 foreach ( $post_items as $item ) {
 	$id = (int) $item->ID;
-	echo '<article class="tp-archive-story"><a class="tp-archive-story__image" href="' . esc_url( get_permalink( $id ) ) . '">' . techpress_editorial_image_markup( $id, 'medium', false, '(max-width: 420px) 100vw, (max-width: 760px) 50vw, 20vw' ) . '</a>' . techpress_editorial_category_markup( $id ) . '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>' . techpress_editorial_meta_markup( $id, true, true ) . '</article>';
+	$category_markup = ( $attributes['showCategory'] ?? true ) ? techpress_editorial_category_markup( $id ) : '';
+	echo '<article class="tp-archive-story"><a class="tp-archive-story__image" href="' . esc_url( get_permalink( $id ) ) . '">' . techpress_editorial_image_markup( $id, digipublish_core_image_size( $attributes, 'medium' ), false, '(max-width: 420px) 100vw, (max-width: 760px) 50vw, 20vw' ) . '</a>' . $category_markup . '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>' . techpress_editorial_meta_markup( $id, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true ) . '</article>';
 }
 echo '</div>';
 
@@ -137,4 +149,4 @@ $links = paginate_links(
 if ( $links ) {
 	echo '<nav class="tp-pagination" aria-label="' . esc_attr__( 'Posts pagination', 'digipublish-core' ) . '">' . wp_kses_post( $links ) . '</nav>';
 }
-echo '</section>';
+echo '</section></div>';
