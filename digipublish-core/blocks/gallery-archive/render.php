@@ -55,8 +55,7 @@ if ( ! $query->posts ) {
 $wrapper = get_block_wrapper_attributes(
 	digipublish_core_design_wrapper_args(
 		$attributes,
-		array( 'tp-gallery-archive', 'tp-gallery-archive--cols-' . $columns ),
-		array( 'desktop' => $columns, 'tablet' => min( 3, $columns ), 'mobile' => 1 )
+		array( 'tp-gallery-archive', 'tp-gallery-archive--cols-' . $columns )
 	)
 );
 $heading = trim( (string) ( $attributes['heading'] ?? '' ) );
