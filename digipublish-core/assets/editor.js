@@ -1075,7 +1075,7 @@
     apiVersion:3,title:__('Category Navigation','digipublish-core'),category:'digipublish-editorial',icon:'menu-alt3',
     supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
     attributes:{
-      limit:{type:'integer',default:5},showDictionary:{type:'boolean',default:true},showSearch:{type:'boolean',default:true},filterSlugs:{type:'string',default:''},
+      limit:{type:'integer',default:0},showDictionary:{type:'boolean',default:false},showGallery:{type:'boolean',default:false},showSearch:{type:'boolean',default:false},filterSlugs:{type:'string',default:''},
       filterCategoryIds:{type:'array',default:[]},orderBy:{type:'string',default:'name'},order:{type:'string',default:'ASC'},maximum:{type:'integer',default:0},alignment:{type:'string',default:'center'},
       hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}
     },
@@ -1087,14 +1087,21 @@
           el(PanelBody,{title:__('Block Settings','digipublish-core'),initialOpen:true},
             tokenIdsControl(__('Filter by Categories','digipublish-core'),a.filterCategoryIds||[],categoryOptions,function(ids){set({filterCategoryIds:ids});}),
             el(SelectControl,{label:__('Order By','digipublish-core'),value:a.orderBy||'name',options:[
-              {label:__('Name','digipublish-core'),value:'name'},{label:__('Posts count','digipublish-core'),value:'count'},
-              {label:__('Filter include','digipublish-core'),value:'slug__in'},{label:__('ID','digipublish-core'),value:'id'}
+              {label:__('Name','digipublish-core'),value:'name'},
+              {label:__('Posts count','digipublish-core'),value:'count'},
+              {label:__('Filter include','digipublish-core'),value:'slug__in'},
+              {label:__('ID','digipublish-core'),value:'id'}
             ],onChange:function(v){set({orderBy:v});}}),
             el(SelectControl,{label:__('Order','digipublish-core'),value:a.order||'ASC',options:[{label:'ASC',value:'ASC'},{label:'DESC',value:'DESC'}],onChange:function(v){set({order:v});}}),
             el(RangeControl,{label:__('Maximum count','digipublish-core'),value:a.maximum||0,min:0,max:1000,onChange:function(v){set({maximum:v||0});}}),
-            el(SelectControl,{label:__('Alignment','digipublish-core'),value:a.alignment||'center',options:[{label:__('Left','digipublish-core'),value:'flex-start'},{label:__('Right','digipublish-core'),value:'flex-end'},{label:__('Center','digipublish-core'),value:'center'}],onChange:function(v){set({alignment:v});}}),
-            el(ToggleControl,{label:__('Show Dictionary','digipublish-core'),checked:!!a.showDictionary,onChange:function(v){set({showDictionary:v});}}),
-            el(ToggleControl,{label:__('Show search','digipublish-core'),checked:!!a.showSearch,onChange:function(v){set({showSearch:v});}})
+            el(SelectControl,{label:__('Alignment','digipublish-core'),value:a.alignment||'center',options:[
+              {label:__('Left','digipublish-core'),value:'flex-start'},
+              {label:__('Right','digipublish-core'),value:'flex-end'},
+              {label:__('Center','digipublish-core'),value:'center'}
+            ],onChange:function(v){set({alignment:v});}}),
+            el(ToggleControl,{label:__('Show Dictionary (DigiPublish extension)','digipublish-core'),checked:!!a.showDictionary,onChange:function(v){set({showDictionary:v});}}),
+            el(ToggleControl,{label:__('Show Photo Galleries (DigiPublish extension)','digipublish-core'),checked:!!a.showGallery,onChange:function(v){set({showGallery:v});}}),
+            el(ToggleControl,{label:__('Show Search (DigiPublish extension)','digipublish-core'),checked:!!a.showSearch,onChange:function(v){set({showSearch:v});}})
           ),
           el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
         ),
