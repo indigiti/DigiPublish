@@ -186,10 +186,6 @@ function digipublish_core_update_gallery_slide_count( $post_id ) {
 	}
 	$slides = digipublish_core_get_gallery_slides( $post_id );
 	update_post_meta( $post_id, '_digipublish_gallery_slide_count', count( $slides ) );
-
-	if ( ! has_post_thumbnail( $post_id ) && ! empty( $slides[0]['imageId'] ) ) {
-		set_post_thumbnail( $post_id, absint( $slides[0]['imageId'] ) );
-	}
 }
 add_action( 'save_post_digipublish_gallery', 'digipublish_core_update_gallery_slide_count', 20 );
 
@@ -273,6 +269,36 @@ function digipublish_core_render_gallery_slide( $attributes, $index = 1, $total 
 
 	$html .= '</figure></article>';
 	return $html;
+}
+
+/**
+ * Cover image for gallery cards: explicit Featured Image first, otherwise the
+ * current first gallery slide so reordering slides updates the cover naturally.
+ */
+function digipublish_core_get_gallery_cover_image_id( $post_id ) {
+	$post_id = absint( $post_id );
+	$thumbnail_id = get_post_thumbnail_id( $post_id );
+	if ( $thumbnail_id ) {
+		return absint( $thumbnail_id );
+	}
+	$slides = digipublish_core_get_gallery_slides( $post_id );
+	return ! empty( $slides[0]['imageId'] ) ? absint( $slides[0]['imageId'] ) : 0;
+}
+
+function digipublish_core_gallery_cover_image_markup( $post_id, $size = 'medium_large', $sizes = '' ) {
+	$image_id = digipublish_core_get_gallery_cover_image_id( $post_id );
+	if ( ! $image_id ) {
+		return '<span class="tp-image-placeholder" aria-hidden="true"></span>';
+	}
+	$attrs = array(
+		'alt'      => trim( (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) ),
+		'loading'  => 'lazy',
+		'decoding' => 'async',
+	);
+	if ( $sizes ) {
+		$attrs['sizes'] = $sizes;
+	}
+	return wp_get_attachment_image( $image_id, $size, false, $attrs );
 }
 
 /**
