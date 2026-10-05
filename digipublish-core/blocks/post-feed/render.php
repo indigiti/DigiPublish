@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$layout = isset( $attributes['layout'] ) ? sanitize_key( $attributes['layout'] ) : 'grid-3';
+$layout = isset( $attributes['layout'] ) ? sanitize_key( $attributes['layout'] ) : 'standard-1';
 $allowed = array(
 	'list', 'grid-2', 'grid-3', 'grid-4', 'grid-5',
 	'standard-1', 'standard-2', 'standard-3', 'standard-4',
@@ -20,7 +20,7 @@ $allowed = array(
 	'carousel-1', 'carousel-2',
 );
 if ( ! in_array( $layout, $allowed, true ) ) {
-	$layout = 'grid-3';
+	$layout = 'standard-1';
 }
 
 $is_horizontal = str_starts_with( $layout, 'horizontal-' ) || 'list' === $layout;
@@ -55,39 +55,87 @@ if ( $is_carousel ) {
 
 $styles = array();
 $legacy_columns = str_starts_with( $layout, 'grid-' ) ? max( 1, min( 5, absint( substr( $layout, 5 ) ) ) ) : 1;
-$default_columns = $is_carousel ? 4 : ( $is_modern ? 1 : $legacy_columns );
-$desktop = absint( $attributes['columnsDesktop'] ?? 0 ) ?: $default_columns;
-$tablet  = absint( $attributes['columnsTablet'] ?? 0 ) ?: ( $is_horizontal ? 1 : min( 2, $desktop ) );
-$mobile  = absint( $attributes['columnsMobile'] ?? 0 ) ?: 1;
+
+$source_columns = array( 'desktop' => 1, 'laptop' => 1, 'tablet' => 1, 'mobile' => 1 );
+if ( 'carousel-1' === $layout ) {
+	$source_columns = array( 'desktop' => 4, 'laptop' => 4, 'tablet' => 2, 'mobile' => 1 );
+} elseif ( 'carousel-2' === $layout ) {
+	$source_columns = array( 'desktop' => 4, 'laptop' => 4, 'tablet' => 3, 'mobile' => 1 );
+} elseif ( ! $is_modern && 'list' !== $layout ) {
+	$source_columns = array( 'desktop' => $legacy_columns, 'laptop' => min( $legacy_columns, 4 ), 'tablet' => min( $legacy_columns, 2 ), 'mobile' => 1 );
+}
+
+$desktop = absint( $attributes['columnsDesktop'] ?? 0 ) ?: $source_columns['desktop'];
+$laptop  = absint( $attributes['columnsLaptop'] ?? 0 ) ?: ( ! empty( $attributes['columnsDesktop'] ) ? $desktop : $source_columns['laptop'] );
+$tablet  = absint( $attributes['columnsTablet'] ?? 0 ) ?: $source_columns['tablet'];
+$mobile  = absint( $attributes['columnsMobile'] ?? 0 ) ?: $source_columns['mobile'];
 
 if ( 'list' !== $layout ) {
 	$styles[] = '--dp-columns-desktop:' . max( 1, min( 6, $desktop ) );
+	$styles[] = '--dp-columns-laptop:' . max( 1, min( 6, $laptop ) );
 	$styles[] = '--dp-columns-tablet:' . max( 1, min( 6, $tablet ) );
 	$styles[] = '--dp-columns-mobile:' . max( 1, min( 3, $mobile ) );
 }
 
+$length_value = static function ( $responsive_key, $legacy_key, $default = '' ) use ( $attributes ) {
+	$value = digipublish_core_css_length( $attributes[ $responsive_key ] ?? '' );
+	if ( $value ) {
+		return $value;
+	}
+	$value = $legacy_key ? digipublish_core_css_length( $attributes[ $legacy_key ] ?? '' ) : '';
+	return $value ?: $default;
+};
+
 foreach ( array(
-	'columnGap'           => '--dp-column-gap',
-	'rowGap'              => '--dp-row-gap',
-	'cardRadius'          => '--dp-card-radius',
-	'cardMinHeight'       => '--dp-card-min-height',
-	'headingFontSize'     => '--dp-heading-size',
-	'cardHeadingFontSize' => '--dp-card-heading-size',
-	'excerptFontSize'     => '--dp-excerpt-size',
-	'imageBorderRadius'   => '--dp-image-radius',
+	'columnGap' => array( 'columnGapDesktop', 'columnGapLaptop', 'columnGapTablet', 'columnGapMobile', '40px' ),
+	'rowGap'    => array( 'rowGapDesktop', 'rowGapLaptop', 'rowGapTablet', 'rowGapMobile', '40px' ),
+) as $legacy_key => $config ) {
+	foreach ( array( 'd', 'l', 't', 'm' ) as $index => $suffix ) {
+		$value = $length_value( $config[ $index ], $legacy_key, $config[4] );
+		$styles[] = '--dp-' . ( 'columnGap' === $legacy_key ? 'column-gap-' : 'row-gap-' ) . $suffix . ':' . $value;
+	}
+}
+
+$content_gap_defaults = array(
+	'standard-1' => array( '32px', '32px', '32px', '32px' ),
+	'standard-2' => array( '32px', '32px', '32px', '32px' ),
+	'standard-3' => array( '32px', '32px', '32px', '32px' ),
+	'standard-4' => array( '32px', '32px', '32px', '32px' ),
+	'horizontal-1' => array( '16px', '16px', '16px', '16px' ),
+	'horizontal-2' => array( '40px', '40px', '40px', '40px' ),
+	'horizontal-3' => array( '40px', '40px', '40px', '20px' ),
+);
+$content_defaults = $content_gap_defaults[ $layout ] ?? array( '16px', '16px', '16px', '16px' );
+foreach ( array( 'Desktop' => 'd', 'Laptop' => 'l', 'Tablet' => 't', 'Mobile' => 'm' ) as $device => $suffix ) {
+	$index = array_search( $suffix, array( 'd', 'l', 't', 'm' ), true );
+	$styles[] = '--dp-content-gap-' . $suffix . ':' . $length_value( 'contentGap' . $device, 'contentGap', $content_defaults[ $index ] );
+}
+
+$title_defaults = array( '1.5rem', '1.5rem', '1.5rem', '1.5rem' );
+if ( in_array( $layout, array( 'horizontal-1', 'horizontal-2', 'horizontal-4', 'horizontal-5', 'tile-3', 'tile-4' ), true ) ) {
+	$title_defaults = array( '1rem', '1rem', '1rem', '1rem' );
+} elseif ( 'horizontal-3' === $layout ) {
+	$title_defaults = array( '2.625rem', '2.625rem', '2rem', '1.5rem' );
+} elseif ( $is_carousel ) {
+	$title_defaults = array( '1.25rem', '1.25rem', '1.25rem', '1.25rem' );
+}
+foreach ( array( 'Desktop' => 'd', 'Laptop' => 'l', 'Tablet' => 't', 'Mobile' => 'm' ) as $device => $suffix ) {
+	$index = array_search( $suffix, array( 'd', 'l', 't', 'm' ), true );
+	$styles[] = '--dp-card-heading-size-' . $suffix . ':' . $length_value( 'cardHeadingFontSize' . $device, 'cardHeadingFontSize', $title_defaults[ $index ] );
+	$styles[] = '--dp-excerpt-size-' . $suffix . ':' . $length_value( 'excerptFontSize' . $device, 'excerptFontSize', '.875rem' );
+	$styles[] = '--dp-card-min-height-' . $suffix . ':' . $length_value( 'cardMinHeight' . $device, 'cardMinHeight', 'auto' );
+}
+
+foreach ( array(
+	'cardRadius'        => '--dp-card-radius',
+	'headingFontSize'   => '--dp-heading-size',
+	'imageBorderRadius' => '--dp-image-radius',
 ) as $key => $var ) {
 	$value = digipublish_core_css_length( $attributes[ $key ] ?? '' );
 	if ( $value ) {
 		$styles[] = $var . ':' . $value;
 	}
 }
-
-$content_gap_defaults = array(
-	'standard-1'=>'32px','standard-2'=>'32px','standard-3'=>'32px','standard-4'=>'32px',
-	'horizontal-1'=>'16px','horizontal-2'=>'40px','horizontal-3'=>'40px',
-);
-$content_gap = digipublish_core_css_length( $attributes['contentGap'] ?? '', $content_gap_defaults[ $layout ] ?? '16px' );
-$styles[] = '--dp-content-gap:' . $content_gap;
 
 $image_width_map = array( 'one-fourth'=>'25%', 'one-third'=>'33.333%', 'half'=>'50%' );
 $image_width_key = sanitize_key( (string) ( $attributes['imageWidth'] ?? '' ) );
