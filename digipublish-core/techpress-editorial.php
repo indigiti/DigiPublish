@@ -957,9 +957,14 @@ function digipublish_core_post_feed_card_markup( $post_id, $attributes = array()
 		$classes[] = 'tp-card--compact-meta';
 	}
 
+	$format_layouts = array( 'standard-1', 'standard-2', 'standard-3', 'standard-4', 'masonry-1', 'horizontal-1', 'horizontal-2', 'horizontal-3' );
+	$video_layouts  = array( 'standard-1', 'standard-2', 'standard-3', 'standard-4', 'masonry-1', 'horizontal-3', 'tile-1', 'tile-2' );
+	$show_format    = in_array( $semantic_layout, $format_layouts, true ) && ( $attributes['showPostFormat'] ?? true );
+	$allow_video    = in_array( $semantic_layout, $video_layouts, true ) && ! empty( $attributes['enableVideoBackgrounds'] );
+
 	$media = '';
 	if ( $has_image ) {
-		$video_url = ! empty( $attributes['enableVideoBackgrounds'] )
+		$video_url = $allow_video
 			? esc_url_raw( (string) get_post_meta( $post_id, 'digipublish_post_video_url', true ) )
 			: '';
 		$video_path = $video_url ? wp_parse_url( $video_url, PHP_URL_PATH ) : '';
@@ -977,7 +982,7 @@ function digipublish_core_post_feed_card_markup( $post_id, $attributes = array()
 				'</a>';
 		}
 
-		if ( $media && ( $attributes['showPostFormat'] ?? true ) ) {
+		if ( $media && $show_format ) {
 			$format = get_post_format( $post_id );
 			if ( $format ) {
 				$labels = array(
