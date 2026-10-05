@@ -5,348 +5,118 @@
     "appearanceTools": true,
     "useRootPaddingAwareAlignments": true,
     "layout": {
-      "contentSize": "860px",
-      "wideSize": "1320px",
-      "allowEditing": false,
-      "allowCustomContentAndWideSize": false
+      "contentSize": "677px",
+      "wideSize": "1440px",
+      "allowEditing": true,
+      "allowCustomContentAndWideSize": true
     },
     "color": {
       "defaultPalette": false,
       "palette": [
-        {
-          "slug": "ink",
-          "name": "Ink",
-          "color": "#1C2642"
-        },
-        {
-          "slug": "body",
-          "name": "Body",
-          "color": "#2E364E"
-        },
-        {
-          "slug": "muted",
-          "name": "Muted",
-          "color": "#757575"
-        },
-        {
-          "slug": "brand",
-          "name": "Brand",
-          "color": "#0077CC"
-        },
-        {
-          "slug": "brand-dark",
-          "name": "Brand Dark",
-          "color": "#005A9C"
-        },
-        {
-          "slug": "accent",
-          "name": "Accent",
-          "color": "#E25C5C"
-        },
-        {
-          "slug": "border",
-          "name": "Border",
-          "color": "#E0E0E0"
-        },
-        {
-          "slug": "surface",
-          "name": "Surface",
-          "color": "#F1F5FF"
-        },
-        {
-          "slug": "surface-soft",
-          "name": "Surface Soft",
-          "color": "#F7F9FC"
-        },
-        {
-          "slug": "white",
-          "name": "White",
-          "color": "#FFFFFF"
-        },
-        {
-          "slug": "footer",
-          "name": "Footer",
-          "color": "#1C2642"
-        }
+        {"slug":"site","name":"Caards Site","color":"#E6E9EB"},
+        {"slug":"surface","name":"Caards Surface","color":"#F6F7F8"},
+        {"slug":"white","name":"White","color":"#FFFFFF"},
+        {"slug":"primary","name":"Primary","color":"#2F323D"},
+        {"slug":"secondary","name":"Secondary","color":"#78848F"},
+        {"slug":"accent","name":"Accent","color":"#2D5DE0"},
+        {"slug":"accent-hover","name":"Accent Hover","color":"#1048DE"},
+        {"slug":"border","name":"Border","color":"#DEE2E6"},
+        {"slug":"dark","name":"Dark Surface","color":"#1B1C1F"},
+        {"slug":"dark-site","name":"Dark Site","color":"#30323E"}
       ],
-      "custom": false,
-      "customGradient": false,
+      "custom": true,
+      "customGradient": true,
       "defaultGradients": false,
       "defaultDuotone": false
     },
     "spacing": {
       "defaultSpacingSizes": false,
       "spacingSizes": [
-        {
-          "slug": "xs",
-          "name": "XS",
-          "size": "8px"
-        },
-        {
-          "slug": "sm",
-          "name": "S",
-          "size": "12px"
-        },
-        {
-          "slug": "md",
-          "name": "M",
-          "size": "16px"
-        },
-        {
-          "slug": "lg",
-          "name": "L",
-          "size": "24px"
-        },
-        {
-          "slug": "xl",
-          "name": "XL",
-          "size": "32px"
-        },
-        {
-          "slug": "2xl",
-          "name": "2XL",
-          "size": "48px"
-        },
-        {
-          "slug": "3xl",
-          "name": "3XL",
-          "size": "64px"
-        }
+        {"slug":"xs","name":"XS","size":"8px"},
+        {"slug":"sm","name":"S","size":"12px"},
+        {"slug":"md","name":"M","size":"16px"},
+        {"slug":"lg","name":"L","size":"24px"},
+        {"slug":"xl","name":"XL","size":"32px"},
+        {"slug":"2xl","name":"2XL","size":"48px"},
+        {"slug":"3xl","name":"3XL","size":"64px"},
+        {"slug":"4xl","name":"4XL","size":"96px"}
       ],
-      "units": [
-        "px",
-        "rem",
-        "%",
-        "vw",
-        "vh"
-      ],
-      "customSpacingSize": false
+      "units":["px","rem","em","%","vw","vh"],
+      "customSpacingSize": true
     },
     "typography": {
       "fluid": true,
       "defaultFontSizes": false,
       "fontFamilies": [
-        {
-          "slug": "sans",
-          "name": "Editorial Sans",
-          "fontFamily": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"
-        },
-        {
-          "slug": "reading",
-          "name": "Reading Sans",
-          "fontFamily": "Helvetica, Arial, sans-serif"
-        }
+        {"slug":"manrope","name":"Manrope","fontFamily":"Manrope, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"},
+        {"slug":"system","name":"System Sans","fontFamily":"-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"}
       ],
       "fontSizes": [
-        {
-          "slug": "xs",
-          "name": "XS",
-          "size": "12px"
-        },
-        {
-          "slug": "sm",
-          "name": "Small",
-          "size": "14px"
-        },
-        {
-          "slug": "md",
-          "name": "Body",
-          "size": "17px"
-        },
-        {
-          "slug": "lg",
-          "name": "Large",
-          "size": "20px"
-        },
-        {
-          "slug": "xl",
-          "name": "H3",
-          "size": "22px"
-        },
-        {
-          "slug": "2xl",
-          "name": "H2",
-          "size": "24px"
-        },
-        {
-          "slug": "3xl",
-          "name": "H1",
-          "size": "32px"
-        },
-        {
-          "slug": "display",
-          "name": "Display",
-          "size": "clamp(36px, 5vw, 56px)"
-        }
+        {"slug":"xs","name":"XS","size":"0.75rem"},
+        {"slug":"sm","name":"Small","size":"0.875rem"},
+        {"slug":"md","name":"Body","size":"1rem"},
+        {"slug":"lg","name":"Large","size":"1.125rem"},
+        {"slug":"xl","name":"H4","size":"1.375rem"},
+        {"slug":"2xl","name":"H3","size":"1.75rem"},
+        {"slug":"3xl","name":"H2","size":"2.25rem"},
+        {"slug":"4xl","name":"H1","size":"clamp(2.5rem,5vw,4.75rem)"},
+        {"slug":"display","name":"Display","size":"clamp(3rem,7vw,6.5rem)"}
       ],
-      "customFontSize": false
+      "customFontSize": true
     },
-    "border": {
-      "radius": true,
-      "color": true,
-      "style": true,
-      "width": true
-    },
-    "shadow": {
-      "presets": [
-        {
-          "slug": "card",
-          "name": "Card",
-          "shadow": "0 1px 2px rgba(28,38,66,.04), 0 8px 32px rgba(28,38,66,.08)"
-        },
-        {
-          "slug": "floating",
-          "name": "Floating",
-          "shadow": "0 12px 30px rgba(28,38,66,.12)"
-        }
-      ]
-    },
+    "border":{"radius":true,"color":true,"style":true,"width":true},
+    "shadow":{"defaultPresets":false,"presets":[
+      {"slug":"card","name":"Caards Card","shadow":"0 12px 40px rgba(47,50,61,.08)"},
+      {"slug":"floating","name":"Caards Floating","shadow":"0 20px 70px rgba(47,50,61,.16)"}
+    ]},
     "blocks": {
-      "core/button": {
-        "border": {
-          "radius": true
-        }
-      },
-      "core/group": {
-        "border": {
-          "radius": true
-        }
-      },
-      "core/image": {
-        "border": {
-          "radius": true
-        }
-      }
+      "core/button":{"border":{"radius":true}},
+      "core/group":{"border":{"radius":true}},
+      "core/image":{"border":{"radius":true}},
+      "core/navigation":{"typography":{"fontSize":true}}
     }
   },
   "styles": {
-    "color": {
-      "background": "#FFFFFF",
-      "text": "#2E364E"
-    },
-    "spacing": {
-      "padding": {
-        "left": "var:preset|spacing|md",
-        "right": "var:preset|spacing|md"
-      }
-    },
-    "typography": {
-      "fontFamily": "var:preset|font-family|sans",
-      "fontSize": "var:preset|font-size|md",
-      "lineHeight": "1.5"
-    },
+    "color":{"background":"var:preset|color|site","text":"var:preset|color|primary"},
+    "typography":{"fontFamily":"var:preset|font-family|manrope","fontSize":"var:preset|font-size|md","lineHeight":"1.5"},
+    "spacing":{"padding":{"left":"var:preset|spacing|md","right":"var:preset|spacing|md"}},
     "elements": {
-      "heading": {
-        "color": {
-          "text": "var:preset|color|ink"
-        },
-        "typography": {
-          "fontFamily": "var:preset|font-family|sans",
-          "fontWeight": "600",
-          "lineHeight": "1.25"
-        }
-      },
-      "h1": {
-        "typography": {
-          "fontSize": "var:preset|font-size|3xl"
-        }
-      },
-      "h2": {
-        "typography": {
-          "fontSize": "var:preset|font-size|2xl"
-        }
-      },
-      "h3": {
-        "typography": {
-          "fontSize": "var:preset|font-size|xl"
-        }
-      },
-      "link": {
-        "color": {
-          "text": "var:preset|color|brand"
-        },
-        ":hover": {
-          "color": {
-            "text": "var:preset|color|brand-dark"
-          }
-        }
-      },
-      "button": {
-        "color": {
-          "background": "var:preset|color|brand",
-          "text": "var:preset|color|white"
-        },
-        "border": {
-          "radius": "6px"
-        },
-        "typography": {
-          "fontSize": "16px",
-          "fontWeight": "600"
-        },
-        "spacing": {
-          "padding": {
-            "top": "10px",
-            "right": "16px",
-            "bottom": "10px",
-            "left": "16px"
-          }
-        }
-      }
+      "heading":{"color":{"text":"var:preset|color|primary"},"typography":{"fontFamily":"var:preset|font-family|manrope","fontWeight":"700","lineHeight":"1.08","letterSpacing":"-0.035em"}},
+      "h1":{"typography":{"fontSize":"var:preset|font-size|4xl"}},
+      "h2":{"typography":{"fontSize":"var:preset|font-size|3xl"}},
+      "h3":{"typography":{"fontSize":"var:preset|font-size|2xl"}},
+      "link":{"color":{"text":"var:preset|color|primary"},":hover":{"color":{"text":"var:preset|color|accent"}}},
+      "button":{"color":{"background":"var:preset|color|accent","text":"var:preset|color|white"},"border":{"radius":"6px"},"typography":{"fontSize":"0.875rem","fontWeight":"600"},"spacing":{"padding":{"top":"11px","right":"18px","bottom":"11px","left":"18px"}}}
     },
     "blocks": {
-      "core/paragraph": {
-        "typography": {
-          "fontFamily": "var:preset|font-family|reading",
-          "fontSize": "17px",
-          "lineHeight": "1.55"
-        },
-        "color": {
-          "text": "var:preset|color|body"
-        }
-      },
-      "core/post-title": {
-        "color": {
-          "text": "var:preset|color|ink"
-        },
-        "typography": {
-          "fontFamily": "var:preset|font-family|sans",
-          "fontWeight": "600",
-          "lineHeight": "1.2"
-        }
-      },
-      "core/post-excerpt": {
-        "typography": {
-          "fontFamily": "var:preset|font-family|reading",
-          "fontSize": "16px",
-          "lineHeight": "1.5"
-        },
-        "color": {
-          "text": "var:preset|color|body"
-        }
-      },
-      "core/navigation": {
-        "typography": {
-          "fontSize": "15px",
-          "fontWeight": "600"
-        }
-      }
+      "core/paragraph":{"typography":{"fontFamily":"var:preset|font-family|manrope","lineHeight":"1.65"}},
+      "core/post-title":{"typography":{"fontFamily":"var:preset|font-family|manrope","fontWeight":"700","lineHeight":"1.08","letterSpacing":"-0.035em"}},
+      "core/navigation":{"typography":{"fontFamily":"var:preset|font-family|manrope","fontSize":"0.75rem","fontWeight":"600"}}
     }
   },
+  "customTemplates": [
+    {"name":"single-standard","title":"Caards Post — Standard","postTypes":["post"]},
+    {"name":"single-large","title":"Caards Post — Large Hero","postTypes":["post"]},
+    {"name":"single-full","title":"Caards Post — Full Hero","postTypes":["post"]},
+    {"name":"single-title","title":"Caards Post — Title Only","postTypes":["post"]},
+    {"name":"single-no-sidebar","title":"Caards Post — No Sidebar","postTypes":["post"]},
+    {"name":"page-large","title":"Caards Page — Large Hero","postTypes":["page"]},
+    {"name":"page-full","title":"Caards Page — Full Hero","postTypes":["page"]},
+    {"name":"page-title","title":"Caards Page — Title Only","postTypes":["page"]},
+    {"name":"page-no-title","title":"Caards Page — No Header","postTypes":["page"]},
+    {"name":"meet-team","title":"Caards Meet Team","postTypes":["page"]}
+  ],
   "templateParts": [
-    {
-      "name": "header",
-      "title": "Header",
-      "area": "header"
-    },
-    {
-      "name": "footer",
-      "title": "Footer",
-      "area": "footer"
-    },
-    {
-      "name": "sidebar",
-      "title": "Article Sidebar",
-      "area": "uncategorized"
-    }
+    {"name":"header","title":"Header — Caards 1","area":"header"},
+    {"name":"header-one","title":"Header — Caards 1","area":"header"},
+    {"name":"header-two","title":"Header — Caards 2","area":"header"},
+    {"name":"header-three","title":"Header — Caards 3","area":"header"},
+    {"name":"header-four","title":"Header — Caards 4","area":"header"},
+    {"name":"footer","title":"Footer — Caards 1","area":"footer"},
+    {"name":"footer-one","title":"Footer — Caards 1","area":"footer"},
+    {"name":"footer-two","title":"Footer — Caards 2","area":"footer"},
+    {"name":"footer-three","title":"Footer — Caards 3","area":"footer"},
+    {"name":"footer-four","title":"Footer — Caards 4","area":"footer"},
+    {"name":"sidebar","title":"Article Sidebar","area":"uncategorized"}
   ]
 }
