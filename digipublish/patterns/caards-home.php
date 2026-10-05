@@ -58,8 +58,8 @@
 </div>
 <!-- /wp:group -->
 
-<!-- wp:group {"align":"wide","className":"dp-caards-home-section dp-caards-home-section--latest","layout":{"type":"default"}} -->
-<div class="wp-block-group alignwide dp-caards-home-section dp-caards-home-section--latest">
+<!-- wp:group {"anchor":"latest","align":"wide","className":"dp-caards-home-section dp-caards-home-section--latest","layout":{"type":"default"}} -->
+<div id="latest" class="wp-block-group alignwide dp-caards-home-section dp-caards-home-section--latest">
 	<!-- wp:digipublish/post-feed {"heading":"Latest Stories","postsToShow":8,"layout":"standard-1","offset":6,"columnsDesktop":4,"columnsTablet":2,"columnsMobile":1,"showExcerpt":true,"excerptLength":90,"showAuthor":false,"showDate":true,"showReadTime":true,"showViews":true,"showCategory":true} /-->
 </div>
 <!-- /wp:group -->
