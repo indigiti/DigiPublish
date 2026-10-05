@@ -44,6 +44,121 @@
     "filterLimit": {
       "type": "integer",
       "default": 6
+    },
+    "columnGap": {
+      "type": "string",
+      "default": ""
+    },
+    "rowGap": {
+      "type": "string",
+      "default": ""
+    },
+    "cardRadius": {
+      "type": "string",
+      "default": ""
+    },
+    "cardMinHeight": {
+      "type": "string",
+      "default": ""
+    },
+    "headingFontSize": {
+      "type": "string",
+      "default": ""
+    },
+    "headingTag": {
+      "type": "string",
+      "default": "h2"
+    },
+    "imageSize": {
+      "type": "string",
+      "default": ""
+    },
+    "imageAspect": {
+      "type": "string",
+      "default": ""
+    },
+    "hideDesktop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLaptop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideMobile": {
+      "type": "boolean",
+      "default": false
+    },
+    "order": {
+      "type": "string",
+      "default": "DESC"
+    },
+    "offset": {
+      "type": "integer",
+      "default": 0
+    },
+    "filterCategoryIds": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "integer"
+      }
+    },
+    "filterTagIds": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "integer"
+      }
+    },
+    "excludeCategoryIds": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "integer"
+      }
+    },
+    "excludeTagIds": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "integer"
+      }
+    },
+    "filterPostIds": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "integer"
+      }
+    },
+    "avoidDuplicates": {
+      "type": "boolean",
+      "default": false
+    },
+    "showCategory": {
+      "type": "boolean",
+      "default": true
+    },
+    "showComments": {
+      "type": "boolean",
+      "default": false
+    },
+    "showReadTime": {
+      "type": "boolean",
+      "default": false
+    },
+    "showViews": {
+      "type": "boolean",
+      "default": false
+    },
+    "showShares": {
+      "type": "boolean",
+      "default": false
     }
   },
   "supports": {
@@ -52,7 +167,17 @@
       "full"
     ],
     "html": false,
-    "anchor": true
+    "anchor": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "border": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true
+    }
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
