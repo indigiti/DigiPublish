@@ -9,7 +9,7 @@ DigiPublish is a Gutenberg-first publishing framework for WordPress, built as a 
 
 ## Current version
 
-**0.9.0**
+**0.10.0**
 
 ## Capabilities
 
@@ -24,7 +24,7 @@ DigiPublish is a Gutenberg-first publishing framework for WordPress, built as a 
 
 ## Backward compatibility
 
-DigiPublish was initially developed under the internal TechPress name. Version 0.9.0 uses the canonical `digipublish/*` Gutenberg namespace throughout the theme and plugin. Existing saved content from earlier releases is automatically migrated on upgrade.
+DigiPublish was initially developed under the internal TechPress name. Version 0.10.0 uses the canonical `digipublish/*` Gutenberg namespace throughout the theme and plugin. Existing saved content from earlier releases is automatically migrated on upgrade.
 
 ## Installation
 
@@ -54,3 +54,21 @@ DigiPublish 0.9.0 adds a reusable **Post Sidebar Feed** block with three layouts
 - Visual Stories — featured-image mosaic
 
 The default single-post sidebar includes all three as a reusable theme pattern. Editors can remove, reorder or configure them independently.
+
+
+## Photo galleries
+
+DigiPublish 0.10.0 adds a first-class `Photo Gallery` content type.
+
+- Archive: `/photo-gallery/`
+- Category archive: `/photo-gallery/category/<category-slug>/`
+- Gallery single: `/photo-gallery/<category-slug>/<gallery-slug>/`
+- Editor blocks: `digipublish/gallery` + nested `digipublish/gallery-slide`
+- Presentation modes: Story, Swipe and Grid
+- Optional counters, captions, credits, thumbnails, fullscreen, sharing and Story-mode ad intervals
+- Archive/related-gallery cards expose photo counts
+- Sidebar feeds can source Articles, Galleries or Mixed content
+
+New galleries start with the Gallery block already inserted. Editors can bulk-select images, reorder generated slides, and edit each slide's heading, caption, credit and alt text.
+
+All slides are server-rendered under one canonical URL. JavaScript only enhances swipe/counter/fullscreen/share behavior.
