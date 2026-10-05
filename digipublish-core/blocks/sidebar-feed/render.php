@@ -112,7 +112,12 @@ if ( 'image-grid' === $layout ) {
 		array_filter(
 			$posts,
 			static function ( $post ) {
-				return $post instanceof WP_Post && has_post_thumbnail( $post->ID );
+				if ( ! $post instanceof WP_Post ) {
+					return false;
+				}
+				return 'digipublish_gallery' === $post->post_type
+					? (bool) digipublish_core_get_gallery_cover_image_id( $post->ID )
+					: has_post_thumbnail( $post->ID );
 			}
 		)
 	);
@@ -121,17 +126,19 @@ if ( 'image-grid' === $layout ) {
 		$args = techpress_editorial_feed_query_args( $feed_attributes );
 		$args['post_type'] = $post_types;
 		$args['posts_per_page'] = $count;
-		$args['meta_query'] = array(
-			array(
-				'key'     => '_thumbnail_id',
-				'compare' => 'EXISTS',
-			),
-		);
+		if ( 'post' === $content_type ) {
+			$args['meta_query'] = array(
+				array(
+					'key'     => '_thumbnail_id',
+					'compare' => 'EXISTS',
+				),
+			);
+		}
 		$args['post__not_in'] = array_values(
 			array_unique(
 				array_merge(
 					wp_list_pluck( $posts, 'ID' ),
-					is_singular( 'post' ) ? array( get_queried_object_id() ) : array()
+					is_singular( array( 'post', 'digipublish_gallery' ) ) ? array( get_queried_object_id() ) : array()
 				)
 			)
 		);
@@ -140,7 +147,12 @@ if ( 'image-grid' === $layout ) {
 			if ( count( $posts ) >= $count ) {
 				break;
 			}
-			$posts[] = $post;
+			$has_visual = 'digipublish_gallery' === $post->post_type
+				? (bool) digipublish_core_get_gallery_cover_image_id( $post->ID )
+				: has_post_thumbnail( $post->ID );
+			if ( $has_visual ) {
+				$posts[] = $post;
+			}
 		}
 
 		if ( count( $posts ) < $count ) {
@@ -150,17 +162,19 @@ if ( 'image-grid' === $layout ) {
 			$latest_args = techpress_editorial_feed_query_args( $latest_attributes );
 			$latest_args['post_type'] = $post_types;
 			$latest_args['posts_per_page'] = $count - count( $posts );
-			$latest_args['meta_query'] = array(
-				array(
-					'key'     => '_thumbnail_id',
-					'compare' => 'EXISTS',
-				),
-			);
+			if ( 'post' === $content_type ) {
+				$latest_args['meta_query'] = array(
+					array(
+						'key'     => '_thumbnail_id',
+						'compare' => 'EXISTS',
+					),
+				);
+			}
 			$latest_args['post__not_in'] = array_values(
 				array_unique(
 					array_merge(
 						wp_list_pluck( $posts, 'ID' ),
-						is_singular( 'post' ) ? array( get_queried_object_id() ) : array()
+						is_singular( array( 'post', 'digipublish_gallery' ) ) ? array( get_queried_object_id() ) : array()
 					)
 				)
 			);
@@ -169,7 +183,12 @@ if ( 'image-grid' === $layout ) {
 				if ( count( $posts ) >= $count ) {
 					break;
 				}
-				$posts[] = $post;
+				$has_visual = 'digipublish_gallery' === $post->post_type
+					? (bool) digipublish_core_get_gallery_cover_image_id( $post->ID )
+					: has_post_thumbnail( $post->ID );
+				if ( $has_visual ) {
+					$posts[] = $post;
+				}
 			}
 		}
 	}
@@ -235,7 +254,9 @@ if ( 'meta-list' === $layout ) {
 		$post_id = $post->ID;
 		$class = 'tp-sidebar-image-grid__item tp-sidebar-image-grid__item--' . ( ( $index % 7 ) + 1 );
 		echo '<a class="' . esc_attr( $class ) . '" href="' . esc_url( get_permalink( $post_id ) ) . '" aria-label="' . esc_attr( get_the_title( $post_id ) ) . '">';
-		echo techpress_editorial_image_markup( $post_id, 'medium', false, '(max-width: 1120px) 28vw, 92px' );
+		echo 'digipublish_gallery' === get_post_type( $post_id )
+			? digipublish_core_gallery_cover_image_markup( $post_id, 'medium', '(max-width: 1120px) 28vw, 92px' )
+			: techpress_editorial_image_markup( $post_id, 'medium', false, '(max-width: 1120px) 28vw, 92px' );
 		if ( 'digipublish_gallery' === get_post_type( $post_id ) ) {
 			$photo_count = digipublish_core_get_gallery_slide_count( $post_id );
 			if ( $photo_count ) {
