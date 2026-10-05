@@ -239,7 +239,7 @@ foreach ( $query->posts as $index => $post ) {
 	echo digipublish_core_post_feed_card_markup( $post->ID, $card_attributes );
 
 	if ( 'masonry-1' === $layout && ! empty( $attributes['masonryWidgets'] ) ) {
-		$current = $index + 1;
+		$current = $base_index + $index + 1;
 		$after = max( 1, absint( $attributes['masonryWidgetsAfter'] ?? 3 ) );
 		if ( 0 === $current % $after ) {
 			$sidebar = sanitize_key( (string) ( $attributes['masonryWidgetArea'] ?? 'sidebar-archive' ) );
