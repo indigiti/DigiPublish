@@ -1006,10 +1006,15 @@ function digipublish_core_rest_post_feed( WP_REST_Request $request ) {
 	$page = isset( $params['page'] ) ? max( 1, absint( $params['page'] ) ) : 2;
 	$exclude = isset( $params['exclude'] ) && is_array( $params['exclude'] ) ? array_values( array_unique( array_filter( array_map( 'absint', $params['exclude'] ) ) ) ) : array();
 
-	$attributes['_paged'] = $page;
+	// Already-rendered IDs are explicitly excluded, so query the first page of
+	// the remaining result set. Advancing paged at the same time would skip
+	// another full page after exclusions are applied.
+	$attributes['_paged'] = $exclude ? 1 : $page;
 	$attributes['_excludePostIds'] = $exclude;
 	$attributes['paginationType'] = 'ajax';
-	$attributes['_relatedPostId'] = isset( $params['relatedPostId'] ) ? absint( $params['relatedPostId'] ) : 0;
+	if ( isset( $params['relatedPostId'] ) ) {
+		$attributes['_relatedPostId'] = absint( $params['relatedPostId'] );
+	}
 
 	$query = new WP_Query( techpress_editorial_post_query_args( $attributes ) );
 	$base_index = ( $page - 1 ) * max( 1, absint( $attributes['postsToShow'] ?? 4 ) );
@@ -1022,11 +1027,11 @@ function digipublish_core_rest_post_feed( WP_REST_Request $request ) {
 
 	return rest_ensure_response(
 		array(
-			'page'        => $page,
-			'maxPages'    => (int) $query->max_num_pages,
-			'postsEnd'    => ! $query->have_posts() || $page >= (int) $query->max_num_pages,
-			'content'     => $content,
-			'loadedIds'   => array_values( array_map( 'intval', wp_list_pluck( $query->posts, 'ID' ) ) ),
+			'page'      => $page,
+			'maxPages'  => (int) $query->max_num_pages,
+			'postsEnd'  => count( $query->posts ) < max( 1, absint( $attributes['postsToShow'] ?? 4 ) ),
+			'content'   => $content,
+			'loadedIds' => array_values( array_map( 'intval', wp_list_pluck( $query->posts, 'ID' ) ) ),
 		)
 	);
 }
