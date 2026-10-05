@@ -1,0 +1,82 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "digipublish/section",
+  "version": "0.11.0",
+  "title": "Section",
+  "category": "digipublish-editorial",
+  "icon": "columns",
+  "description": "Caards-compatible content/sidebar section.",
+  "textdomain": "digipublish-core",
+  "attributes": {
+    "layout": {
+      "type": "string",
+      "default": "right-sidebar"
+    },
+    "gapDesktop": {
+      "type": "string",
+      "default": "40px"
+    },
+    "gapLaptop": {
+      "type": "string",
+      "default": "40px"
+    },
+    "gapTablet": {
+      "type": "string",
+      "default": "40px"
+    },
+    "gapMobile": {
+      "type": "string",
+      "default": "40px"
+    },
+    "sidebarWidthDesktop": {
+      "type": "string",
+      "default": "390px"
+    },
+    "sidebarWidthLaptop": {
+      "type": "string",
+      "default": "390px"
+    },
+    "sidebarWidthTablet": {
+      "type": "string",
+      "default": "300px"
+    },
+    "sidebarWidthMobile": {
+      "type": "string",
+      "default": "300px"
+    },
+    "hideDesktop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLaptop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideMobile": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "supports": {
+    "html": false,
+    "anchor": true,
+    "customClassName": true,
+    "spacing": {
+      "margin": true,
+      "padding": true
+    },
+    "border": {
+      "radius": true,
+      "color": true,
+      "width": true,
+      "style": true
+    }
+  },
+  "editorScript": "digipublish-core-editor",
+  "style": "file:./style.css"
+}
