@@ -1,11 +1,13 @@
-DigiPublish Core 0.8.4
+DigiPublish Core 0.9.0
 
-Homepage resilience release.
+Article sidebar editorial-modules release.
 
-- Top Weekly uses genuine 7-day ranking first, then fills missing slots from a cached randomized all-time pool.
-- Random fallback is performed in PHP; no SQL ORDER BY RAND() is used.
-- Cross-section de-duplication is preserved whenever possible.
-- Popular Categories and Dictionary remain visible on sparse/fresh installations.
-- All custom Gutenberg blocks are versioned 0.8.4.
+- Adds the dynamic digipublish/sidebar-feed block.
+- Layouts: metadata list, numbered ranking list and image mosaic.
+- Content sources: current article category, latest posts or selected category.
+- Supports newest/updated/most-discussed/alphabetical ordering and all-time/24h/7d/30d windows.
+- Sparse-content fallback keeps modules populated without SQL ORDER BY RAND().
+- Visual Stories prefers featured-image posts and fills from latest thumbnail posts when needed.
+- Gutenberg variations expose Recent Stories, Top Stories and Visual Stories directly in the inserter.
 
-Use with DigiPublish theme 0.8.4.
+Use with DigiPublish theme 0.9.0.

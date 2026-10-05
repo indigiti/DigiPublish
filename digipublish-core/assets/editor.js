@@ -245,6 +245,86 @@
     });
   }
 
+  registerBlockType('digipublish/sidebar-feed', {
+    apiVersion: 3,
+    title: __('Post Sidebar Feed', 'digipublish-core'),
+    category: 'digipublish-editorial',
+    icon: 'columns',
+    attributes: {
+      heading: { type: 'string', default: 'Recent Stories' },
+      layout: { type: 'string', default: 'meta-list' },
+      sourceMode: { type: 'string', default: 'current' },
+      categoryId: { type: 'integer', default: 0 },
+      postsToShow: { type: 'integer', default: 5 },
+      orderBy: { type: 'string', default: 'date' },
+      period: { type: 'string', default: 'all' },
+      showHeading: { type: 'boolean', default: true }
+    },
+    edit: function (props) {
+      const a = props.attributes, set = props.setAttributes, categoryOptions = useCategoryOptions();
+      return el(Fragment, {},
+        el(InspectorControls, {},
+          el(PanelBody, { title: __('Sidebar feed', 'digipublish-core'), initialOpen: true },
+            el(TextControl, { label: __('Heading', 'digipublish-core'), value: a.heading || '', onChange: function(v){ set({ heading:v }); } }),
+            el(SelectControl, { label: __('Layout', 'digipublish-core'), value: a.layout || 'meta-list', options: [
+              { label: __('Recent stories / metadata list', 'digipublish-core'), value:'meta-list' },
+              { label: __('Numbered top stories', 'digipublish-core'), value:'ranked-list' },
+              { label: __('Featured image mosaic', 'digipublish-core'), value:'image-grid' }
+            ], onChange: function(v){ set({ layout:v }); } }),
+            el(SelectControl, { label: __('Content source', 'digipublish-core'), value: a.sourceMode || 'current', options: [
+              { label: __('Current article category', 'digipublish-core'), value:'current' },
+              { label: __('Latest posts', 'digipublish-core'), value:'latest' },
+              { label: __('Selected category', 'digipublish-core'), value:'category' }
+            ], onChange: function(v){ set({ sourceMode:v }); } }),
+            a.sourceMode === 'category' ? el(SelectControl, { label: __('Category', 'digipublish-core'), value: a.categoryId || 0, options: categoryOptions, onChange: function(v){ set({ categoryId:parseInt(v,10)||0 }); } }) : null,
+            el(RangeControl, { label: __('Stories', 'digipublish-core'), value: a.postsToShow || 5, min:3, max:12, onChange: function(v){ set({ postsToShow:v }); } }),
+            el(SelectControl, { label: __('Order by', 'digipublish-core'), value: a.orderBy || 'date', options: [
+              { label: __('Newest', 'digipublish-core'), value:'date' },
+              { label: __('Recently updated', 'digipublish-core'), value:'modified' },
+              { label: __('Most discussed', 'digipublish-core'), value:'comment_count' },
+              { label: __('Alphabetical', 'digipublish-core'), value:'title' }
+            ], onChange: function(v){ set({ orderBy:v }); } }),
+            el(SelectControl, { label: __('Time period', 'digipublish-core'), value: a.period || 'all', options: [
+              { label: __('All time', 'digipublish-core'), value:'all' },
+              { label: __('Past 24 hours', 'digipublish-core'), value:'day' },
+              { label: __('Past 7 days', 'digipublish-core'), value:'week' },
+              { label: __('Past 30 days', 'digipublish-core'), value:'month' }
+            ], onChange: function(v){ set({ period:v }); } }),
+            el(ToggleControl, { label: __('Show heading', 'digipublish-core'), checked: a.showHeading !== false, onChange: function(v){ set({ showHeading:v }); } })
+          )
+        ),
+        el(Preview, { name:'digipublish/sidebar-feed', attributes:a })
+      );
+    },
+    save: function(){ return null; }
+  });
+
+  [
+    {
+      name:'sidebar-recent-stories',
+      title:__('Sidebar: Recent Stories', 'digipublish-core'),
+      description:__('Author/date/title list for the post sidebar.', 'digipublish-core'),
+      icon:'list-view',
+      attributes:{ heading:'Recent Stories', layout:'meta-list', sourceMode:'current', postsToShow:5, orderBy:'date', period:'all', showHeading:true }
+    },
+    {
+      name:'sidebar-top-stories',
+      title:__('Sidebar: Top Stories', 'digipublish-core'),
+      description:__('Numbered ranking list for the post sidebar.', 'digipublish-core'),
+      icon:'editor-ol',
+      attributes:{ heading:'Top Stories', layout:'ranked-list', sourceMode:'latest', postsToShow:5, orderBy:'comment_count', period:'week', showHeading:true }
+    },
+    {
+      name:'sidebar-visual-stories',
+      title:__('Sidebar: Visual Stories', 'digipublish-core'),
+      description:__('Featured-image mosaic for the post sidebar.', 'digipublish-core'),
+      icon:'format-gallery',
+      attributes:{ heading:'Visual Stories', layout:'image-grid', sourceMode:'latest', postsToShow:12, orderBy:'date', period:'all', showHeading:true }
+    }
+  ].forEach(function(variation){
+    registerBlockVariation('digipublish/sidebar-feed', Object.assign({ scope:['inserter'] }, variation));
+  });
+
   registerContextBlock('digipublish/archive-hero', __('Archive Hero', 'digipublish-core'), 'welcome-widgets-menus', function (p) { return el(InspectorControls, {}, el(PanelBody, { title: __('Archive hero', 'digipublish-core') }, el(ToggleControl, { label: __('Show search', 'digipublish-core'), checked: !!p.attributes.showSearch, onChange: function (v) { p.setAttributes({ showSearch: v }); } }), el(ToggleControl, { label: __('Show featured terms', 'digipublish-core'), checked: !!p.attributes.showFeaturedTerms, onChange: function (v) { p.setAttributes({ showFeaturedTerms: v }); } }))); });
   registerContextBlock('digipublish/archive-feed', __('Archive Story Feed', 'digipublish-core'), 'grid-view', function (p) { return el(InspectorControls, {}, el(PanelBody, { title: __('Archive feed', 'digipublish-core') }, el(RangeControl, { label: __('Posts per page', 'digipublish-core'), min: 5, max: 20, value: p.attributes.postsPerPage || 10, onChange: function (v) { p.setAttributes({ postsPerPage: v }); } }), el(RangeControl, { label: __('Columns', 'digipublish-core'), min: 2, max: 5, value: p.attributes.columns || 5, onChange: function (v) { p.setAttributes({ columns: v }); } }), el(ToggleControl, { label: __('Show category top picks', 'digipublish-core'), checked: !!p.attributes.showTopPicks, onChange: function (v) { p.setAttributes({ showTopPicks: v }); } }))); });
   registerContextBlock('digipublish/popular-categories', __('Popular Categories', 'digipublish-core'), 'category', function (p) { return el(InspectorControls, {}, el(PanelBody, { title: __('Popular categories', 'digipublish-core') }, el(TextControl, { label: __('Heading', 'digipublish-core'), value: p.attributes.heading || '', onChange: function (v) { p.setAttributes({ heading: v }); } }), el(RangeControl, { label: __('Categories', 'digipublish-core'), min: 4, max: 12, value: p.attributes.limit || 8, onChange: function (v) { p.setAttributes({ limit: v }); } }))); });

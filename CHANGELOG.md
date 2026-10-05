@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.9.0
+
+- Added the new dynamic `digipublish/sidebar-feed` block for article sidebars.
+- Added three sidebar layouts: author/date/title list, numbered Top Stories, and featured-image mosaic.
+- Added direct Gutenberg variations for Recent Stories, Top Stories, and Visual Stories.
+- Added a reusable `Post Sidebar Widgets` pattern and inserted it into the default article sidebar.
+- Default sidebar modules use a clean heading-free dark editorial style inspired by the supplied references.
+- Sidebar widgets use current-category/latest/category sources, period and ordering controls, and sparse-content fallback.
+- Visual Stories filters for posts with featured images and falls back to latest thumbnail posts when the current source is sparse.
+- On tablet/mobile the editorial sidebar modules move below the article while duplicate desktop Trust/TOC components remain hidden.
+- Added CI guards for the sidebar block, pattern, variations and default sidebar placement.
+- Bumped theme, plugin and all custom blocks to 0.9.0.
+
+
 ## 0.8.4
 
 - Keeps Top Weekly visible when the genuine 7-day pool is sparse.

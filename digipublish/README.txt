@@ -1,10 +1,10 @@
-DigiPublish Theme 0.8.4
+DigiPublish Theme 0.9.0
 
-Homepage resilience release.
+Article sidebar editorial-modules release.
 
-- Top Weekly remains visible even when the current seven-day pool is sparse.
-- Popular Categories no longer vanishes on a fresh site with zero-count categories.
-- Tech Dictionary retains a useful topic/empty-state shell while dictionary content is being built.
-- Existing v0.8.3 mobile Featured alignment remains unchanged.
+- Adds Recent Stories, Top Stories and Visual Stories to the default single-post sidebar.
+- Uses a reusable Post Sidebar Widgets pattern so editors can reorder/remove modules in the Site Editor.
+- Keeps desktop sidebar behavior sticky while tablet/mobile modules move below article content.
+- Retains the v0.8.3 mobile Featured alignment and v0.8.4 homepage resilience work.
 
-Requires DigiPublish Core 0.8.4.
+Requires DigiPublish Core 0.9.0.
