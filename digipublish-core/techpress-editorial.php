@@ -930,7 +930,7 @@ function digipublish_core_post_feed_card_markup( $post_id, $attributes = array()
 	$heading_tag = digipublish_core_post_feed_heading_tag( $attributes );
 	$image_size = digipublish_core_image_size( $attributes, 'medium_large' );
 	$has_image = ! empty( $attributes['showImage'] ) && ! in_array( $semantic_layout, array( 'standard-4', 'horizontal-4' ), true );
-	$is_overlay = str_starts_with( $semantic_layout, 'tile-' ) || str_starts_with( $semantic_layout, 'carousel-' ) || 'horizontal-5' === $semantic_layout;
+	$is_overlay = str_starts_with( $semantic_layout, 'tile-' ) || str_starts_with( $semantic_layout, 'carousel-' );
 	$all_inline_meta = in_array( $semantic_layout, array( 'horizontal-4', 'horizontal-5' ), true );
 
 	$classes = array( 'tp-card', 'tp-card--' . $semantic_layout );
@@ -973,7 +973,7 @@ function digipublish_core_post_feed_card_markup( $post_id, $attributes = array()
 		$html .= $top_meta . $content . $footer;
 	} elseif ( $is_overlay ) {
 		$html .= $image . '<div class="tp-card__overlay-content">' . $top_meta . $content . $footer . '</div>';
-	} elseif ( in_array( $semantic_layout, array( 'horizontal-1', 'horizontal-2', 'horizontal-3' ), true ) ) {
+	} elseif ( in_array( $semantic_layout, array( 'horizontal-1', 'horizontal-2', 'horizontal-3', 'horizontal-5' ), true ) ) {
 		$html .= $image . '<div class="tp-card__horizontal-content">' . $top_meta . $content . $footer . '</div>';
 	} elseif ( 'horizontal-4' === $semantic_layout ) {
 		$html .= $content . $footer;
