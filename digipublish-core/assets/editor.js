@@ -535,7 +535,30 @@
   registerContextBlock('digipublish/archive-hero', __('Archive Hero', 'digipublish-core'), 'welcome-widgets-menus', function (p) { return el(InspectorControls, {}, el(PanelBody, { title: __('Archive hero', 'digipublish-core') }, el(ToggleControl, { label: __('Show search', 'digipublish-core'), checked: !!p.attributes.showSearch, onChange: function (v) { p.setAttributes({ showSearch: v }); } }), el(ToggleControl, { label: __('Show featured terms', 'digipublish-core'), checked: !!p.attributes.showFeaturedTerms, onChange: function (v) { p.setAttributes({ showFeaturedTerms: v }); } }))); });
   registerContextBlock('digipublish/archive-feed', __('Archive Story Feed', 'digipublish-core'), 'grid-view', function (p) { return el(InspectorControls, {}, el(PanelBody, { title: __('Archive feed', 'digipublish-core') }, el(RangeControl, { label: __('Posts per page', 'digipublish-core'), min: 5, max: 20, value: p.attributes.postsPerPage || 10, onChange: function (v) { p.setAttributes({ postsPerPage: v }); } }), el(RangeControl, { label: __('Columns', 'digipublish-core'), min: 2, max: 5, value: p.attributes.columns || 5, onChange: function (v) { p.setAttributes({ columns: v }); } }), el(ToggleControl, { label: __('Show category top picks', 'digipublish-core'), checked: !!p.attributes.showTopPicks, onChange: function (v) { p.setAttributes({ showTopPicks: v }); } }))); });
   registerContextBlock('digipublish/popular-categories', __('Popular Categories', 'digipublish-core'), 'category', function (p) { return el(InspectorControls, {}, el(PanelBody, { title: __('Popular categories', 'digipublish-core') }, el(TextControl, { label: __('Heading', 'digipublish-core'), value: p.attributes.heading || '', onChange: function (v) { p.setAttributes({ heading: v }); } }), el(RangeControl, { label: __('Categories', 'digipublish-core'), min: 4, max: 12, value: p.attributes.limit || 8, onChange: function (v) { p.setAttributes({ limit: v }); } }))); });
-  ['digipublish/author-profile', 'digipublish/category-experts', 'digipublish/related-posts', 'digipublish/post-author-card', 'digipublish/article-toc', 'digipublish/article-byline'].forEach(function (name) { registerContextBlock(name, name.split('/')[1].replace(/-/g, ' '), 'admin-post'); });
+  ['digipublish/author-profile', 'digipublish/category-experts', 'digipublish/post-author-card', 'digipublish/article-toc', 'digipublish/article-byline'].forEach(function (name) { registerContextBlock(name, name.split('/')[1].replace(/-/g, ' '), 'admin-post'); });
+  registerContextBlock('digipublish/related-posts', __('Related / Read Next', 'digipublish-core'), 'images-alt2', function (p) {
+    return el(InspectorControls, {}, el(PanelBody, { title: __('Related stories', 'digipublish-core'), initialOpen: true },
+      el(TextControl, { label: __('Heading', 'digipublish-core'), value: p.attributes.heading || '', onChange: function(v){ p.setAttributes({ heading:v }); } }),
+      el(SelectControl, { label: __('Layout', 'digipublish-core'), value: p.attributes.layout || 'features', options: [
+        { label: __('Read Next cards', 'digipublish-core'), value:'read-next' },
+        { label: __('Related Features', 'digipublish-core'), value:'features' }
+      ], onChange: function(v){ p.setAttributes({ layout:v }); } }),
+      el(SelectControl, { label: __('Related by', 'digipublish-core'), value: p.attributes.relationMode || 'category-tags', options: [
+        { label: __('Categories + tags', 'digipublish-core'), value:'category-tags' },
+        { label: __('Categories only', 'digipublish-core'), value:'category' }
+      ], onChange: function(v){ p.setAttributes({ relationMode:v }); } }),
+      el(RangeControl, { label: __('Stories', 'digipublish-core'), min:3, max:8, value:p.attributes.postsToShow || 4, onChange:function(v){ p.setAttributes({ postsToShow:v }); } }),
+      el(ToggleControl, { label: __('Show excerpt', 'digipublish-core'), checked:p.attributes.showExcerpt !== false, onChange:function(v){ p.setAttributes({ showExcerpt:v }); } })
+    ));
+  });
+  registerBlockVariation('digipublish/related-posts', {
+    name:'read-next',
+    title:__('Read Next', 'digipublish-core'),
+    description:__('Four-card category-and-tag related story row for below articles.', 'digipublish-core'),
+    icon:'excerpt-view',
+    scope:['inserter'],
+    attributes:{ heading:'Read next', postsToShow:4, layout:'read-next', relationMode:'category-tags', showExcerpt:true }
+  });
 })(window.wp);
 
 (function (wp) {
