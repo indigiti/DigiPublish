@@ -6,7 +6,7 @@
   "title": "Section Sidebar",
   "category": "digipublish-editorial",
   "icon": "align-pull-right",
-  "description": "Legacy Caards-compatible structural block retained for existing content. Use Core Group/Columns patterns for new content.",
+  "description": "Legacy section sidebar retained for saved-content compatibility.",
   "textdomain": "digipublish-core",
   "attributes": {
     "textColor": {
