@@ -26,6 +26,21 @@ function cardsFor( root ) {
 	return track ? Array.from( track.querySelectorAll( '.tp-card' ) ) : [];
 }
 
+function postIds( root ) {
+	return root
+		? Array.from( root.querySelectorAll( '.tp-card[data-post-id]' ) )
+				.map(
+					( card ) =>
+						parseInt( card.getAttribute( 'data-post-id' ), 10 ) || 0
+				)
+				.filter( Boolean )
+		: [];
+}
+
+function feedRoot( element ) {
+	return element && element.closest ? element.closest( '.tp-post-feed' ) : null;
+}
+
 function normalizeIndex( context, total, index ) {
 	if ( context.wrap ) {
 		if ( index < 0 ) return total - 1;
@@ -101,6 +116,73 @@ const { actions } = store( 'digipublish/post-feed', {
 		},
 	},
 	actions: {
+		*loadNext() {
+			const context = getContext();
+			const { ref } = getElement();
+			const root = feedRoot( ref );
+
+			if (
+				! root ||
+				context.isLoading ||
+				context.ended ||
+				context.page >= context.maxPages ||
+				! context.restUrl
+			) {
+				return;
+			}
+
+			const track = root.querySelector( '.tp-feed' );
+			if ( ! track ) {
+				return;
+			}
+
+			context.isLoading = true;
+			context.status = 'Loading…';
+
+			try {
+				const response = yield fetch( context.restUrl, {
+					method: 'POST',
+					credentials: 'same-origin',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify( {
+						page: context.page + 1,
+						attributes: context.attributes || {},
+						exclude: postIds( root ),
+						relatedPostId:
+							parseInt(
+								context.attributes?._relatedPostId || 0,
+								10
+							) || 0,
+					} ),
+				} );
+
+				if ( ! response.ok ) {
+					throw new Error( 'HTTP ' + response.status );
+				}
+
+				const data = yield response.json();
+				if ( data?.content ) {
+					track.insertAdjacentHTML( 'beforeend', data.content );
+				}
+
+				const nextPage = data?.page
+					? parseInt( data.page, 10 )
+					: context.page + 1;
+
+				context.page = nextPage;
+				root.setAttribute( 'data-dp-page', String( nextPage ) );
+				context.ended =
+					! data ||
+					Boolean( data.postsEnd ) ||
+					nextPage >= context.maxPages ||
+					! data.content;
+				context.status = '';
+			} catch ( error ) {
+				context.status = 'Could not load more posts.';
+			} finally {
+				context.isLoading = false;
+			}
+		},
 		previous() {
 			const context = getContext();
 			const { ref } = getElement();
@@ -135,6 +217,33 @@ const { actions } = store( 'digipublish/post-feed', {
 		},
 	},
 	callbacks: {
+		initInfinite() {
+			const context = getContext();
+			const { ref } = getElement();
+
+			if (
+				context.pagination !== 'infinite' ||
+				! ref ||
+				! ( 'IntersectionObserver' in window )
+			) {
+				return;
+			}
+
+			const observer = new IntersectionObserver(
+				withScope( ( entries ) => {
+					if (
+						entries.some( ( entry ) => entry.isIntersecting ) &&
+						! context.ended
+					) {
+						actions.loadNext();
+					}
+				} ),
+				{ rootMargin: '600px 0px' }
+			);
+
+			observer.observe( ref );
+			return () => observer.disconnect();
+		},
 		init() {
 			const context = getContext();
 			const { ref } = getElement();
