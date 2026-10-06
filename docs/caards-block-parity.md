@@ -8,10 +8,10 @@ This matrix tracks the Caards 1.0.4 block-related extensions that are present in
 | Posts query/meta/pagination/spacing/border/responsive controls | `digipublish/post-feed` | Complete |
 | Posts per-layout margin/alignment/image-width/post-format/video/color controls | `digipublish/post-feed` | Complete |
 | Masonry inserted content/repeat | `digipublish/post-feed` + synced Gutenberg patterns (`wp_block`) | Complete — Classic Widgets removed |
-| Canvas Section Heading Caards color fields | `digipublish/section-heading` | Complete |
-| Canvas Section responsive gap/sidebar width | `digipublish/section` | Complete |
-| Canvas Section Content text/background colors | `digipublish/section-content` | Complete |
-| Canvas Section Sidebar text/background colors | `digipublish/section-sidebar` | Complete |
+| Canvas Section Heading Caards visual treatments | Core `heading` styles + native heading patterns; legacy `digipublish/section-heading` retained for saved content | Complete — native replacement |
+| Canvas Section responsive content/sidebar layout | Core `columns` + DigiPublish Editorial Section style/patterns; legacy `digipublish/section` retained for saved content | Complete — native replacement |
+| Canvas Section Content colors/spacing | Core `column` / `group` color and spacing controls; legacy `digipublish/section-content` retained for saved content | Complete — native replacement |
+| Canvas Section Sidebar colors/spacing | Core `column` / `group` color and spacing controls; legacy `digipublish/section-sidebar` retained for saved content | Complete — native replacement |
 | Current Date | `digipublish/current-date` | Complete |
 | Category Navigation | `digipublish/category-nav` | Complete |
 | Custom Link + Styled variation | `digipublish/custom-link` | Complete |
@@ -45,3 +45,17 @@ DigiPublish preserves useful Caards capabilities while replacing the original ru
 - Remote Google Fonts → dependency-free system stacks; optional locally hosted fonts are managed through WordPress Font Library.
 
 The objective is feature parity without third-party runtime coupling.
+
+
+## Core layout consolidation
+
+New content no longer inserts the legacy DigiPublish Section block family. The four historical structural blocks remain registered with `supports.inserter=false` so existing posts, templates and patterns continue to edit/render without database migration.
+
+New editorial composition uses:
+
+- Core Columns + `DigiPublish Editorial Section` style for right/left sidebar layouts.
+- Core Group for full-width sections.
+- Core Heading + `DigiPublish Accent` / `DigiPublish Accent Box` styles.
+- WordPress Core spacing, color, border and visibility controls instead of parallel DigiPublish structural attributes.
+
+Replacement patterns are available as `digipublish/editorial-section-right`, `digipublish/editorial-section-left`, `digipublish/editorial-section-full`, `digipublish/section-heading-accent` and `digipublish/section-heading-accent-box`.
