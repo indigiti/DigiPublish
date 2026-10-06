@@ -6,21 +6,32 @@ test('frontend shell loads canonical runtime and primary interactions work', asy
 
   await page.goto('/');
   await expect(page.locator('body')).toHaveClass(/digipublish-shell/);
-  await expect(page.locator('.dp-header').first()).toBeVisible();
+
+  const header = page.locator('.dp-header').first();
+  await expect(header).toBeVisible();
+  await expect(header).toHaveAttribute('data-wp-interactive', 'digipublish/site');
+  await expect(header).toHaveAttribute('data-wp-on-document--keydown', 'callbacks.handleKeydown');
 
   const scheme = page.locator('[data-dp-scheme-toggle]:visible').first();
+  await expect(scheme).toHaveAttribute('data-wp-on--click', 'actions.toggleScheme');
   await scheme.click();
   await expect(page.locator('html')).toHaveClass(/dp-theme-dark/);
   await expect(page.locator('html')).toHaveAttribute('data-dp-scheme', 'dark');
   await expect(scheme).toHaveAttribute('aria-pressed', 'true');
 
   const searchToggle = page.locator('[data-dp-search-toggle]:visible').first();
+  const searchPanel = page.locator('.dp-search').first();
+  await expect(searchToggle).toHaveAttribute('data-wp-on--click', 'actions.toggleSearch');
+  await expect(searchPanel).toHaveAttribute('data-wp-interactive', 'digipublish/site');
   await searchToggle.click();
-  await expect(page.locator('.dp-search').first()).toHaveClass(/is-open/);
+  await expect(searchPanel).toHaveClass(/is-open/);
   await expect(searchToggle).toHaveAttribute('aria-expanded', 'true');
 
   await page.keyboard.press('Escape');
-  await expect(page.locator('.dp-search').first()).not.toHaveClass(/is-open/);
+  await expect(searchPanel).not.toHaveClass(/is-open/);
+
+  await page.evaluate(() => window.scrollTo(0, 240));
+  await expect(header).toHaveClass(/is-sticky/);
 
   expect(errors).toEqual([]);
 });
@@ -30,16 +41,20 @@ test('mobile fullscreen menu has coherent expanded state', async ({ page }) => {
   await page.goto('/');
 
   const toggle = page.locator('[data-dp-fullscreen-toggle]:visible').first();
-  await expect(toggle).toBeVisible();
-  await toggle.click();
+  const overlay = page.locator('.dp-fullscreen').first();
 
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveAttribute('data-wp-on--click', 'actions.toggleMenu');
+  await expect(overlay).toHaveAttribute('data-wp-interactive', 'digipublish/site');
+
+  await toggle.click();
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-  await expect(page.locator('.dp-fullscreen').first()).toHaveClass(/is-open/);
+  await expect(overlay).toHaveClass(/is-open/);
   await expect(page.locator('body')).toHaveClass(/dp-menu-open/);
 
   await page.keyboard.press('Escape');
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-  await expect(page.locator('.dp-fullscreen').first()).not.toHaveClass(/is-open/);
+  await expect(overlay).not.toHaveClass(/is-open/);
 });
 
 test('editor loads DigiPublish block registrations and modular editor APIs', async ({ page }) => {
@@ -59,7 +74,6 @@ test('editor loads DigiPublish block registrations and modular editor APIs', asy
 
   expect(state).toEqual({ postFeed: true, queryModule: true, designModule: true });
 });
-
 
 test('Post Feed carousel is owned by the WordPress Interactivity API', async ({ page }) => {
   const errors = [];
