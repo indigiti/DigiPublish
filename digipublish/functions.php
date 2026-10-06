@@ -250,14 +250,14 @@ function digipublish_singular_body_classes( $classes ) {
 		$post_id = get_queried_object_id();
 		$sidebar = sanitize_key( (string) get_post_meta( $post_id, 'digipublish_singular_sidebar', true ) );
 		if ( ! in_array( $sidebar, array( 'left', 'right', 'disabled' ), true ) ) {
-			$sidebar = sanitize_key( (string) get_option( 'digipublish_caards_default_sidebar', 'right' ) );
+			$sidebar = sanitize_key( (string) digipublish_legacy_layout_option( 'default_sidebar', 'right' ) );
 		}
 		if ( ! in_array( $sidebar, array( 'left', 'right', 'disabled' ), true ) ) {
 			$sidebar = 'right';
 		}
 		$header = sanitize_key( (string) get_post_meta( $post_id, 'digipublish_page_header_type', true ) );
 		if ( ! in_array( $header, array( 'standard', 'large', 'full', 'title', 'none' ), true ) ) {
-			$header = sanitize_key( (string) get_option( 'digipublish_caards_default_header', 'standard' ) );
+			$header = sanitize_key( (string) digipublish_legacy_layout_option( 'default_header', 'standard' ) );
 		}
 		if ( ! in_array( $header, array( 'standard', 'large', 'full', 'title', 'none' ), true ) ) {
 			$header = 'standard';
@@ -292,7 +292,7 @@ function digipublish_load_next_enabled( $post_id ) {
 	if ( 'disabled' === $value ) {
 		return false;
 	}
-	return (bool) get_option( 'digipublish_caards_load_nextpost_enabled', false );
+	return (bool) get_option( 'digipublish_load_next_enabled', false );
 }
 
 /**
@@ -305,8 +305,8 @@ function digipublish_adjacent_post_id( $post_id, $exclude = array() ) {
 	}
 
 	$exclude = array_values( array_unique( array_filter( array_map( 'absint', (array) $exclude ) ) ) );
-	$same_category = (bool) get_option( 'digipublish_caards_load_nextpost_same_category', false );
-	$reverse       = (bool) get_option( 'digipublish_caards_load_nextpost_reverse', false );
+	$same_category = (bool) get_option( 'digipublish_load_next_same_category', false );
+	$reverse       = (bool) get_option( 'digipublish_load_next_reverse', false );
 
 	global $post;
 	$original_post = $post;
@@ -360,7 +360,7 @@ function digipublish_render_next_article( $post_id ) {
 
 	$sidebar_setting = sanitize_key( (string) get_post_meta( $post_id, 'digipublish_singular_sidebar', true ) );
 	if ( ! in_array( $sidebar_setting, array( 'left', 'right', 'disabled' ), true ) ) {
-		$sidebar_setting = sanitize_key( (string) get_option( 'digipublish_caards_default_sidebar', 'right' ) );
+		$sidebar_setting = sanitize_key( (string) digipublish_legacy_layout_option( 'default_sidebar', 'right' ) );
 	}
 	if ( ! in_array( $sidebar_setting, array( 'left', 'right', 'disabled' ), true ) ) {
 		$sidebar_setting = 'right';
@@ -423,17 +423,49 @@ function digipublish_register_load_next_route() {
 add_action( 'rest_api_init', 'digipublish_register_load_next_route' );
 
 /**
+ * Migrate non-visual publishing behavior settings to canonical DigiPublish keys.
+ *
+ * Old option names are read once and copied forward. Historical visual-layout
+ * options are intentionally not migrated into new theme settings because the
+ * Site Editor owns visual composition.
+ */
+function digipublish_migrate_publishing_settings() {
+	if ( get_option( 'digipublish_publishing_settings_migrated_100', false ) ) {
+		return;
+	}
+
+	$map = array(
+		'digipublish_caards_load_nextpost_enabled'       => 'digipublish_load_next_enabled',
+		'digipublish_caards_load_nextpost_same_category' => 'digipublish_load_next_same_category',
+		'digipublish_caards_load_nextpost_reverse'       => 'digipublish_load_next_reverse',
+	);
+
+	$missing = '__digipublish_missing__';
+	foreach ( $map as $legacy => $canonical ) {
+		if ( $missing !== get_option( $canonical, $missing ) ) {
+			continue;
+		}
+		$value = get_option( $legacy, $missing );
+		if ( $missing !== $value ) {
+			update_option( $canonical, (bool) $value, false );
+		}
+	}
+
+	update_option( 'digipublish_publishing_settings_migrated_100', true, false );
+}
+add_action( 'init', 'digipublish_migrate_publishing_settings', 5 );
+
+/**
  * Register non-visual publishing behavior settings.
  *
- * Visual composition belongs in the Site Editor. Historical layout option
- * keys remain registered separately so existing sites keep their saved
- * behavior without exposing a parallel theme-design control surface.
+ * Colors, typography, templates, headers, footers and layout composition are
+ * owned by theme.json and the Site Editor.
  */
 function digipublish_register_publishing_settings() {
 	foreach ( array(
-		'digipublish_caards_load_nextpost_enabled',
-		'digipublish_caards_load_nextpost_same_category',
-		'digipublish_caards_load_nextpost_reverse',
+		'digipublish_load_next_enabled',
+		'digipublish_load_next_same_category',
+		'digipublish_load_next_reverse',
 	) as $option ) {
 		register_setting(
 			'digipublish_publishing',
@@ -445,82 +477,8 @@ function digipublish_register_publishing_settings() {
 			)
 		);
 	}
-
-	$legacy_layout_settings = array(
-		'digipublish_caards_header_variant' => array( 'default' => 'one', 'allowed' => array( 'one', 'two', 'three', 'four' ) ),
-		'digipublish_caards_footer_variant' => array( 'default' => 'one', 'allowed' => array( 'one', 'two', 'three', 'four' ) ),
-		'digipublish_caards_default_header'  => array( 'default' => 'standard', 'allowed' => array( 'standard', 'large', 'full', 'title', 'none' ) ),
-		'digipublish_caards_default_sidebar' => array( 'default' => 'right', 'allowed' => array( 'right', 'left', 'disabled' ) ),
-	);
-
-	foreach ( $legacy_layout_settings as $option => $config ) {
-		register_setting(
-			'digipublish_legacy_layout',
-			$option,
-			array(
-				'type'              => 'string',
-				'default'           => $config['default'],
-				'sanitize_callback' => static function ( $value ) use ( $config ) {
-					$value = sanitize_key( (string) $value );
-					return in_array( $value, $config['allowed'], true ) ? $value : $config['default'];
-				},
-			)
-		);
-	}
 }
 add_action( 'admin_init', 'digipublish_register_publishing_settings' );
-
-/**
- * Whether a canonical template part has been customized in the Site Editor.
- */
-function digipublish_site_editor_part_is_custom( $slug ) {
-	if ( ! function_exists( 'get_block_template' ) ) {
-		return false;
-	}
-
-	$slug = sanitize_key( (string) $slug );
-	if ( ! in_array( $slug, array( 'header', 'footer' ), true ) ) {
-		return false;
-	}
-
-	$template = get_block_template( get_stylesheet() . '//' . $slug, 'wp_template_part' );
-	return $template instanceof WP_Block_Template && 'custom' === $template->source;
-}
-
-/**
- * Honor legacy non-default header/footer selections from earlier releases.
- *
- * New sites and the historical "one" default render the canonical Site Editor
- * template parts directly. This keeps old selections 2–4 working without
- * making a hidden option override the Site Editor on new installations.
- */
-function digipublish_route_legacy_template_parts( $parsed_block ) {
-	if ( empty( $parsed_block['blockName'] ) || 'core/template-part' !== $parsed_block['blockName'] ) {
-		return $parsed_block;
-	}
-
-	$slug = isset( $parsed_block['attrs']['slug'] ) ? sanitize_key( (string) $parsed_block['attrs']['slug'] ) : '';
-	if ( 'header' === $slug ) {
-		if ( digipublish_site_editor_part_is_custom( 'header' ) ) {
-			return $parsed_block;
-		}
-		$variant = sanitize_key( (string) get_option( 'digipublish_caards_header_variant', '' ) );
-		if ( in_array( $variant, array( 'two', 'three', 'four' ), true ) ) {
-			$parsed_block['attrs']['slug'] = 'header-' . $variant;
-		}
-	} elseif ( 'footer' === $slug ) {
-		if ( digipublish_site_editor_part_is_custom( 'footer' ) ) {
-			return $parsed_block;
-		}
-		$variant = sanitize_key( (string) get_option( 'digipublish_caards_footer_variant', '' ) );
-		if ( in_array( $variant, array( 'two', 'three', 'four' ), true ) ) {
-			$parsed_block['attrs']['slug'] = 'footer-' . $variant;
-		}
-	}
-
-	return $parsed_block;
-}
-add_filter( 'render_block_data', 'digipublish_route_legacy_template_parts', 15 );
 
 /**
  * Non-visual publishing behavior page.
@@ -552,15 +510,15 @@ function digipublish_render_publishing_settings_page() {
 			<table class="form-table" role="presentation">
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Auto Load Next Post', 'digipublish' ); ?></th>
-					<td><input type="hidden" name="digipublish_caards_load_nextpost_enabled" value="0"><label><input type="checkbox" name="digipublish_caards_load_nextpost_enabled" value="1" <?php checked( get_option( 'digipublish_caards_load_nextpost_enabled', false ) ); ?>> <?php esc_html_e( 'Enable globally (individual posts can override this)', 'digipublish' ); ?></label></td>
+					<td><input type="hidden" name="digipublish_load_next_enabled" value="0"><label><input type="checkbox" name="digipublish_load_next_enabled" value="1" <?php checked( get_option( 'digipublish_load_next_enabled', false ) ); ?>> <?php esc_html_e( 'Enable globally (individual posts can override this)', 'digipublish' ); ?></label></td>
 				</tr>
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Same category only', 'digipublish' ); ?></th>
-					<td><input type="hidden" name="digipublish_caards_load_nextpost_same_category" value="0"><label><input type="checkbox" name="digipublish_caards_load_nextpost_same_category" value="1" <?php checked( get_option( 'digipublish_caards_load_nextpost_same_category', false ) ); ?>> <?php esc_html_e( 'Only auto-load adjacent posts from the same category', 'digipublish' ); ?></label></td>
+					<td><input type="hidden" name="digipublish_load_next_same_category" value="0"><label><input type="checkbox" name="digipublish_load_next_same_category" value="1" <?php checked( get_option( 'digipublish_load_next_same_category', false ) ); ?>> <?php esc_html_e( 'Only auto-load adjacent posts from the same category', 'digipublish' ); ?></label></td>
 				</tr>
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Reverse direction', 'digipublish' ); ?></th>
-					<td><input type="hidden" name="digipublish_caards_load_nextpost_reverse" value="0"><label><input type="checkbox" name="digipublish_caards_load_nextpost_reverse" value="1" <?php checked( get_option( 'digipublish_caards_load_nextpost_reverse', false ) ); ?>> <?php esc_html_e( 'Load previous posts instead of next posts', 'digipublish' ); ?></label></td>
+					<td><input type="hidden" name="digipublish_load_next_reverse" value="0"><label><input type="checkbox" name="digipublish_load_next_reverse" value="1" <?php checked( get_option( 'digipublish_load_next_reverse', false ) ); ?>> <?php esc_html_e( 'Load previous posts instead of next posts', 'digipublish' ); ?></label></td>
 				</tr>
 			</table>
 			<?php submit_button(); ?>

@@ -11,7 +11,9 @@ $layout = sanitize_key( $attributes['layout'] ?? 'auto' );
 if ( 'auto' === $layout ) {
 	$layout = sanitize_key( (string) get_post_meta( $post_id, 'digipublish_page_header_type', true ) );
 	if ( ! in_array( $layout, array( 'standard', 'large', 'full', 'title', 'none' ), true ) ) {
-		$layout = sanitize_key( (string) get_option( 'digipublish_caards_default_header', 'standard' ) );
+		$layout = function_exists( 'digipublish_legacy_layout_option' )
+			? digipublish_legacy_layout_option( 'default_header', 'standard' )
+			: 'standard';
 	}
 	if ( ! in_array( $layout, array( 'standard', 'large', 'full', 'title', 'none' ), true ) ) {
 		$layout = 'standard';

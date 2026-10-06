@@ -45,11 +45,11 @@ The Site Editor owns:
 
 The Appearance → DigiPublish Publishing page intentionally contains only non-visual behavior such as Auto Load Next Post.
 
-Historical header/footer/default-layout option keys are still read for compatibility with existing installations but are no longer presented as the primary visual configuration UI.
+Historical header/footer/default-layout option keys are isolated in `digipublish/inc/compatibility.php`. Active theme code does not read them directly. The compatibility router is attached only when an older installation has a non-default header/footer variant saved.
 
 ## Dark design
 
-`styles/dark.json` provides a native **DigiPublish Dark** Global Style variation for site-wide editorial use.
+Native Global Style variations are shipped in `styles/`: **DigiPublish Dark**, **DigiPublish Editorial**, and **DigiPublish High Contrast**. They provide site-wide visual presets without introducing a separate theme-options framework.
 
 The frontend scheme toggle remains a separate per-visitor enhancement. Its canonical storage key is `digipublish-scheme`; the older key and CSS class are read/toggled only for upgrade compatibility.
 
@@ -78,3 +78,16 @@ Historical header/footer variant options remain a fallback for older installatio
 The canonical homepage composition is `digipublish/editorial-home`, used by both `front-page.html` and `home.html`.
 
 The historical `digipublish/caards-home` pattern remains registered with `Inserter: false` solely so saved pattern references continue to resolve. New templates and new editor insertion use the DigiPublish-native slug.
+
+
+## Publishing settings ownership
+
+The Appearance → DigiPublish Publishing screen contains only non-visual behavior. Active option keys are:
+
+- `digipublish_load_next_enabled`
+- `digipublish_load_next_same_category`
+- `digipublish_load_next_reverse`
+
+Older Caards-era Auto Load Next option names are migrated once to the canonical keys and retained only as historical data. The migration runs on `init` so frontend behavior is preserved before an administrator visits wp-admin.
+
+Visual options are not migrated into replacement theme settings. Existing non-default header/footer choices continue through the compatibility layer until the canonical template part is saved in the Site Editor.

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "title": "DigiPublish Editorial",
+  "styles": {
+    "color": {
+      "background": "#F6F7F8",
+      "text": "#2F323D"
+    },
+    "typography": {
+      "fontSize": "1rem",
+      "lineHeight": "1.6"
+    },
+    "elements": {
+      "heading": {
+        "typography": {
+          "fontWeight": "750",
+          "lineHeight": "1.06",
+          "letterSpacing": "-0.04em"
+        }
+      },
+      "link": {
+        "color": {
+          "text": "#2F323D"
+        },
+        ":hover": {
+          "color": {
+            "text": "#2D5DE0"
+          }
+        }
+      },
+      "button": {
+        "border": {
+          "radius": "4px"
+        }
+      }
+    },
+    "blocks": {
+      "core/post-title": {
+        "typography": {
+          "fontWeight": "750",
+          "lineHeight": "1.04",
+          "letterSpacing": "-0.04em"
+        }
+      },
+      "core/paragraph": {
+        "typography": {
+          "lineHeight": "1.7"
+        }
+      },
+      "core/quote": {
+        "border": {
+          "left": {
+            "color": "#2D5DE0",
+            "width": "4px"
+          }
+        }
+      }
+    }
+  }
+}
