@@ -453,7 +453,7 @@ function digipublish_migrate_publishing_settings() {
 
 	update_option( 'digipublish_publishing_settings_migrated_100', true, false );
 }
-add_action( 'admin_init', 'digipublish_migrate_publishing_settings', 5 );
+add_action( 'init', 'digipublish_migrate_publishing_settings', 5 );
 
 /**
  * Register non-visual publishing behavior settings.
