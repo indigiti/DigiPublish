@@ -238,8 +238,13 @@
         onChange: function (v) { setAttribute(set, item[0], v); }
       }));
     });
-    if (responsiveChildren.length) {
-      panels.push(el(PanelBody, { title: __('Responsive Settings', 'digipublish-core'), initialOpen: false }, responsiveChildren));
+    if (responsiveChildren.length && legacyVisibilityInUse(a)) {
+      panels.push(
+        el(PanelBody, { title: __('Legacy Visibility', 'digipublish-core'), initialOpen: false },
+          el(Notice, { status: 'warning', isDismissible: false }, __('This block still has DigiPublish legacy viewport rules saved. Clear them here, then use WordPress Visibility for future responsive visibility changes.', 'digipublish-core')),
+          responsiveChildren
+        )
+      );
     }
 
     return panels.length ? el(InspectorControls, {}, panels) : null;
@@ -426,6 +431,10 @@
     });
   }
 
+  function legacyVisibilityInUse(a) {
+    return !!(a && (a.hideDesktop || a.hideLaptop || a.hideTablet || a.hideMobile));
+  }
+
   function responsiveVisibilityControls(a, set) {
     return [
       el(ToggleControl,{label:__('Hide On Desktop','digipublish-core'),checked:!!a.hideDesktop,onChange:function(v){set({hideDesktop:v});}}),
@@ -433,6 +442,14 @@
       el(ToggleControl,{label:__('Hide On Tablet','digipublish-core'),checked:!!a.hideTablet,onChange:function(v){set({hideTablet:v});}}),
       el(ToggleControl,{label:__('Hide On Mobile','digipublish-core'),checked:!!a.hideMobile,onChange:function(v){set({hideMobile:v});}})
     ];
+  }
+
+  function legacyResponsiveVisibilityPanel(a, set) {
+    if (!legacyVisibilityInUse(a)) return null;
+    return el(PanelBody,{title:__('Legacy Visibility','digipublish-core'),initialOpen:false},
+      el(Notice,{status:'warning',isDismissible:false},__('This block still has DigiPublish legacy viewport rules saved. Clear them here, then use WordPress Visibility for future responsive visibility changes.','digipublish-core')),
+      responsiveVisibilityControls(a,set)
+    );
   }
 
   function postFeedInspectorControls(props) {
@@ -588,7 +605,7 @@
         ],onChange:function(v){set({blockBorderStyle:v});}}),
         a.blockBorderStyle&&a.blockBorderStyle!=='none'?lengthControl(__('Border Width','digipublish-core'),a.blockBorderWidth,function(v){set({blockBorderWidth:v});},'1px'):null
       ),
-      el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set)),
+      legacyResponsiveVisibilityPanel(a,set),
       el(PanelBody,{title:__('Advanced','digipublish-core'),initialOpen:false},
         el(Notice,{status:'info',isDismissible:false},__('HTML anchor and Additional CSS class(es) are available in WordPress block Advanced settings.','digipublish-core')),
         el(TextareaControl,{label:__('Additional CSS','digipublish-core'),help:__('Add declarations only, for example: color: red; background: #fff;','digipublish-core'),value:a.customCss||'',onChange:function(v){set({customCss:v});}})
@@ -914,7 +931,7 @@
             el(ToggleControl,{label:__('Show Photo Galleries (DigiPublish extension)','digipublish-core'),checked:!!a.showGallery,onChange:function(v){set({showGallery:v});}}),
             el(ToggleControl,{label:__('Show Search (DigiPublish extension)','digipublish-core'),checked:!!a.showSearch,onChange:function(v){set({showSearch:v});}})
           ),
-          el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
+          legacyResponsiveVisibilityPanel(a,set)
         ),
         el(Preview,{name:'digipublish/category-nav',attributes:a})
       );
@@ -1322,7 +1339,7 @@
           lengthControl(__('Font Size — Tablet','digipublish-core'),a.fontSizeTablet,function(v){set({fontSizeTablet:v});},'0.75rem'),
           lengthControl(__('Font Size — Mobile','digipublish-core'),a.fontSizeMobile,function(v){set({fontSizeMobile:v});},'0.75rem')
         ),
-        el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
+        legacyResponsiveVisibilityPanel(a,set)
       ),el(Preview,{name:'digipublish/current-date',attributes:a}));},
     save:function(){return null;}
   });
@@ -1361,7 +1378,7 @@
           lengthControl(__('Font Size — Tablet','digipublish-core'),a.fontSizeTablet,function(v){set({fontSizeTablet:v});},'0.875rem'),
           lengthControl(__('Font Size — Mobile','digipublish-core'),a.fontSizeMobile,function(v){set({fontSizeMobile:v});},'0.875rem')
         ),
-        el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
+        legacyResponsiveVisibilityPanel(a,set)
       ),el(Preview,{name:'digipublish/custom-link',attributes:a}));},save:function(){return null;}
   });
 
@@ -1385,7 +1402,7 @@
           el(ToggleControl,{label:__('Show follow button','digipublish-core'),checked:a.showFollowButton!==false,onChange:function(v){set({showFollowButton:v});}}),
           el(TextareaControl,{label:isInstagram?__('Items: image URL | post URL | alt text','digipublish-core'):__('Items: text | URL | author | @handle','digipublish-core'),value:a.items||'',rows:8,onChange:function(v){set({items:v});}})
         ),
-        el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
+        legacyResponsiveVisibilityPanel(a,set)
       ),
       el(Preview,{name:isInstagram?'digipublish/instagram-carousel':'digipublish/twitter-carousel',attributes:a})
     );
@@ -1422,7 +1439,7 @@
             colorControl(__('Accent Contrast Color','digipublish-core'),a.accentContrastColor,function(v){set({accentContrastColor:v});}),
             colorControl(__('Text Color','digipublish-core'),a.textColor,function(v){set({textColor:v});})
           ),
-          el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
+          legacyResponsiveVisibilityPanel(a,set)
         ),
         el('div',bp,el(RichText,{tagName:'h'+(a.level||2),className:'wp-block-digipublish-section-heading__text',value:a.text,onChange:function(v){set({text:v});},placeholder:__('Section Heading','digipublish-core')}))
       );
@@ -1465,7 +1482,7 @@
           a.layout!=='full'?lengthControl(__('Sidebar Width — Tablet','digipublish-core'),a.sidebarWidthTablet,function(v){set({sidebarWidthTablet:v});},'300px'):null,
           a.layout!=='full'?lengthControl(__('Sidebar Width — Mobile','digipublish-core'),a.sidebarWidthMobile,function(v){set({sidebarWidthMobile:v});},'300px'):null
         ),
-        el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
+        legacyResponsiveVisibilityPanel(a,set)
       ),
       el('div',bp,el('div',{className:'wp-block-digipublish-section__inner'},el(InnerBlocks,{allowedBlocks:['digipublish/section-content','digipublish/section-sidebar'],template:a.layout==='full'?[['digipublish/section-content']]:[['digipublish/section-content'],['digipublish/section-sidebar']],templateLock:false})))
     );},
@@ -1481,7 +1498,7 @@
         el(InspectorControls,{},el(PanelBody,{title:__('Color Settings','digipublish-core'),initialOpen:true},
           colorControl(__('Text Color','digipublish-core'),a.textColor,function(v){set({textColor:v});}),
           colorControl(__('Background Color','digipublish-core'),a.backgroundColor,function(v){set({backgroundColor:v});})
-        ),el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))),
+        ),legacyResponsiveVisibilityPanel(a,set)),
         el('div',bp,el(InnerBlocks,{}))
       );},
       save:function(props){const a=props.attributes,styles={};if(a.textColor)styles['--dp-section-'+className+'-color']=a.textColor;if(a.backgroundColor)styles['--dp-section-'+className+'-bg']=a.backgroundColor;const classes=[a.hideDesktop?'dp-hide-desktop':'',a.hideLaptop?'dp-hide-laptop':'',a.hideTablet?'dp-hide-tablet':'',a.hideMobile?'dp-hide-mobile':''].filter(Boolean).join(' ');return el('div',useBlockProps.save({className:classes,style:styles}),el(InnerBlocks.Content));}
@@ -1511,7 +1528,7 @@
           colorControl(__('Button Background Hover','digipublish-core'),a.buttonHoverBackground,function(v){set({buttonHoverBackground:v});}),
           colorControl(__('Button Color Hover','digipublish-core'),a.buttonHoverColor,function(v){set({buttonHoverColor:v});})
         ),
-        el(PanelBody,{title:__('Responsive Settings','digipublish-core'),initialOpen:false},responsiveVisibilityControls(a,set))
+        legacyResponsiveVisibilityPanel(a,set)
       ),el(Preview,{name:'digipublish/opt-in-form',attributes:a}));},save:function(){return null;}
   });
 
