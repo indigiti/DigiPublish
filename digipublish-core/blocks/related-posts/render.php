@@ -169,6 +169,6 @@ foreach ( $posts as $i => $post ) {
 	$cls        = 0 === $i ? 'tp-related-card tp-related-card--lead' : 'tp-related-card';
 	$image_size = 0 === $i ? 'medium_large' : 'medium';
 	$category_markup = ( $attributes['showCategory'] ?? true ) ? digipublish_core_category_markup( $id ) : '';
-	echo '<article class="' . esc_attr( $cls ) . '"><a class="tp-related-card__image" href="' . esc_url( get_permalink( $id ) ) . '">' . digipublish_core_image_markup( $id, digipublish_core_image_size( $attributes, $image_size ) ) . '</a><div class="tp-related-card__body">' . $category_markup . '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>' . digipublish_core_meta_markup( $id, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true ) . '</div></article>';
+	echo '<article class="' . esc_attr( $cls ) . '"><a class="tp-related-card__image" href="' . esc_url( get_permalink( $id ) ) . '" aria-label="' . esc_attr( sprintf( __( 'Read %s', 'digipublish-core' ), get_the_title( $id ) ) ) . '">' . digipublish_core_image_markup( $id, digipublish_core_image_size( $attributes, $image_size ) ) . '</a><div class="tp-related-card__body">' . $category_markup . '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>' . digipublish_core_meta_markup( $id, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true ) . '</div></article>';
 }
 echo '</div></section>';
