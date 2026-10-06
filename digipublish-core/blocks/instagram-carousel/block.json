@@ -6,7 +6,7 @@
   "title": "Instagram Carousel",
   "category": "digipublish-editorial",
   "icon": "instagram",
-  "description": "Caards-compatible Instagram carousel. Can be populated manually or by an integration using a filter.",
+  "description": "Instagram presentation block for manually supplied or provider-filtered feed items.",
   "textdomain": "digipublish-core",
   "attributes": {
     "heading": {
