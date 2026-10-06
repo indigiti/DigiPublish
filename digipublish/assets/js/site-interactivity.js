@@ -22,7 +22,7 @@ function bindNextPostHistory( section ) {
 	const observer = new IntersectionObserver(
 		( entries ) => {
 			entries.forEach( ( entry ) => {
-				if ( entry.isIntersecting && entry.intersectionRatio > 0.35 ) {
+				if ( entry.isIntersecting ) {
 					const title = section.getAttribute( 'data-title' ) || document.title;
 					const url = section.getAttribute( 'data-url' );
 					if ( url && window.location.href !== url ) {
@@ -32,7 +32,10 @@ function bindNextPostHistory( section ) {
 				}
 			} );
 		},
-		{ threshold: [ 0.35, 0.6 ] }
+		{
+			rootMargin: '-35% 0px -55% 0px',
+			threshold: 0,
+		}
 	);
 	observer.observe( section );
 }
