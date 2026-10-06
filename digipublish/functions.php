@@ -24,6 +24,67 @@ function digipublish_theme_setup() {
 }
 add_action( 'after_setup_theme', 'digipublish_theme_setup' );
 
+/**
+ * Replace Core's empty Navigation Page List fallback with valid Navigation
+ * Link children. This keeps fresh installs accessible until an editor saves a
+ * real wp_navigation menu in the Site Editor.
+ */
+function digipublish_navigation_fallback_blocks( $fallback_blocks ) {
+	$has_page_list = false;
+	foreach ( (array) $fallback_blocks as $block ) {
+		if ( isset( $block['blockName'] ) && 'core/page-list' === $block['blockName'] ) {
+			$has_page_list = true;
+			break;
+		}
+	}
+
+	if ( ! $has_page_list ) {
+		return $fallback_blocks;
+	}
+
+	$blocks = array(
+		array(
+			'blockName'    => 'core/home-link',
+			'attrs'        => array( 'label' => __( 'Home', 'digipublish' ) ),
+			'innerBlocks'  => array(),
+			'innerHTML'    => '',
+			'innerContent' => array(),
+		),
+	);
+
+	$pages = get_pages(
+		array(
+			'number'      => 12,
+			'post_status' => 'publish',
+			'sort_column' => 'menu_order,post_title',
+			'sort_order'  => 'ASC',
+		)
+	);
+
+	foreach ( $pages as $page ) {
+		if ( ! $page instanceof WP_Post ) {
+			continue;
+		}
+		$blocks[] = array(
+			'blockName'    => 'core/navigation-link',
+			'attrs'        => array(
+				'label' => get_the_title( $page ),
+				'type'  => 'page',
+				'id'    => (int) $page->ID,
+				'url'   => get_permalink( $page ),
+				'kind'  => 'post-type',
+			),
+			'innerBlocks'  => array(),
+			'innerHTML'    => '',
+			'innerContent' => array(),
+		);
+	}
+
+	return $blocks;
+}
+add_filter( 'block_core_navigation_render_fallback', 'digipublish_navigation_fallback_blocks' );
+
+
 
 /**
  * Register DigiPublish visual treatments on WordPress Core layout blocks.
