@@ -140,15 +140,24 @@ function digipublish_core_attribution_label( $type ) {
  * can load only the CSS needed by the blocks rendered on a request.
  */
 function digipublish_core_register_blocks() {
-	$editor_js        = DIGIPUBLISH_CORE_DIR . 'assets/editor.js';
-	$editor_query_js  = DIGIPUBLISH_CORE_DIR . 'assets/editor-query.js';
-	$editor_native_js = DIGIPUBLISH_CORE_DIR . 'assets/editor-native.js';
+	$editor_js          = DIGIPUBLISH_CORE_DIR . 'assets/editor.js';
+	$editor_query_js    = DIGIPUBLISH_CORE_DIR . 'assets/editor-query.js';
+	$editor_native_js   = DIGIPUBLISH_CORE_DIR . 'assets/editor-native.js';
+	$editor_document_js = DIGIPUBLISH_CORE_DIR . 'assets/editor-document.js';
 
 	wp_register_script(
 		'digipublish-core-editor-native',
 		DIGIPUBLISH_CORE_URL . 'assets/editor-native.js',
 		array( 'wp-hooks' ),
 		file_exists( $editor_native_js ) ? (string) filemtime( $editor_native_js ) : DIGIPUBLISH_CORE_VERSION,
+		true
+	);
+
+	wp_register_script(
+		'digipublish-core-editor-document',
+		DIGIPUBLISH_CORE_URL . 'assets/editor-document.js',
+		array( 'wp-components', 'wp-core-data', 'wp-data', 'wp-editor', 'wp-element', 'wp-i18n', 'wp-plugins' ),
+		file_exists( $editor_document_js ) ? (string) filemtime( $editor_document_js ) : DIGIPUBLISH_CORE_VERSION,
 		true
 	);
 
@@ -163,7 +172,7 @@ function digipublish_core_register_blocks() {
 	wp_register_script(
 		'digipublish-core-editor',
 		DIGIPUBLISH_CORE_URL . 'assets/editor.js',
-		array( 'digipublish-core-editor-native', 'digipublish-core-editor-query', 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-data', 'wp-core-data', 'wp-plugins', 'wp-editor', 'wp-edit-post' ),
+		array( 'digipublish-core-editor-native', 'digipublish-core-editor-query', 'digipublish-core-editor-document', 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-data', 'wp-core-data' ),
 		file_exists( $editor_js ) ? (string) filemtime( $editor_js ) : DIGIPUBLISH_CORE_VERSION,
 		true
 	);
