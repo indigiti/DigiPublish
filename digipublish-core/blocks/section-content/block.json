@@ -6,7 +6,7 @@
   "title": "Section Content",
   "category": "digipublish-editorial",
   "icon": "align-wide",
-  "description": "Legacy Caards-compatible structural block retained for existing content. Use Core Group/Columns patterns for new content.",
+  "description": "Legacy section content column retained for saved-content compatibility.",
   "textdomain": "digipublish-core",
   "attributes": {
     "textColor": {
