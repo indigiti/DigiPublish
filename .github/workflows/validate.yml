@@ -881,7 +881,9 @@ jobs:
           grep -Fq ':is(.dp-footer,.dp-caards-footer)' digipublish/assets/css/site.css || exit 1
           grep -Fq ':is(.dp-entry-hero--full,.dp-caards-entry-hero--full)' digipublish/assets/css/site.css || exit 1
           grep -Fq ':is(.dp-social-carousel,.dp-caards-social-carousel)' digipublish/assets/css/site.css || exit 1
-          grep -Fq 'data-dp-fullscreen-toggle' digipublish/assets/js/site-interactions.js || exit 1
+          grep -R -Fq 'data-dp-fullscreen-toggle' digipublish/parts/header*.html || exit 1
+          grep -Fq 'toggleMenu()' digipublish/assets/js/site-interactivity.js || exit 1
+          grep -Fq "data-wp-on--click', 'actions.toggleMenu'" digipublish/functions.php || exit 1
           grep -Fq 'IntersectionObserver' digipublish/assets/js/site-interactions.js || exit 1
           grep -Fq 'Caards 1.0.4' THIRD_PARTY_NOTICES.md || exit 1
 
