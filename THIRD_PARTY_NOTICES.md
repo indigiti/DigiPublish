@@ -32,7 +32,7 @@ Primary adapted implementation locations include:
 
 - `digipublish/theme.json`
 - `digipublish/assets/css/site.css`
-- `digipublish/assets/js/site-interactions.js`
+- `digipublish/assets/js/site-interactivity.js`
 - `digipublish/parts/header*.html`
 - `digipublish/parts/footer*.html`
 - `digipublish/templates/*.html`

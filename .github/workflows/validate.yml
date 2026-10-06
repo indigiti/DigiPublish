@@ -292,7 +292,6 @@ jobs:
           funcs="digipublish/functions.php"
           compat="digipublish/inc/compatibility.php"
           interactions="digipublish/assets/js/site-interactivity.js"
-          load_next="digipublish/assets/js/site-interactions.js"
 
           jq empty "$theme"
           jq empty digipublish/styles/dark.json
@@ -360,12 +359,12 @@ jobs:
 
           # Canonical shell interactions use the WordPress Interactivity API.
           test -f "$interactions"
-          test -f "$load_next"
+          test ! -f digipublish/assets/js/site-interactions.js
           test ! -f digipublish/assets/js/caards-shell.js
           grep -Fq "assets/js/site-interactivity.js" "$funcs" || exit 1
           grep -Fq "'digipublish-site-interactivity'" "$funcs" || exit 1
-          grep -Fq "assets/js/site-interactions.js" "$funcs" || exit 1
-          grep -Fq "'digiPublishSite'" "$funcs" || exit 1
+          ! grep -Fq "assets/js/site-interactions.js" "$funcs" || exit 1
+          ! grep -Fq "'digiPublishSite'" "$funcs" || exit 1
           grep -Fq "digipublish-scheme" "$interactions" || exit 1
           grep -Fq "legacySchemeKey = 'digipublish-caards-scheme'" "$interactions" || exit 1
 
@@ -401,7 +400,6 @@ jobs:
           set -euo pipefail
           css="digipublish/assets/css/site.css"
           shell_js="digipublish/assets/js/site-interactivity.js"
-          load_next_js="digipublish/assets/js/site-interactions.js"
           compat="digipublish/inc/compatibility.php"
 
           # Active filesystem markup/renderers use only canonical dp-* classes.
@@ -435,10 +433,11 @@ jobs:
           grep -Fq "dp-caards-search" "$compat" || exit 1
           grep -Fq "dp-caards-fullscreen" "$compat" || exit 1
 
-          # Load Next keeps only its singular saved-markup compatibility hook.
-          grep -Fq "legacySingular='.dp-caards-singular'" "$load_next_js" || exit 1
-          grep -Fq "sentinel.className='dp-nextpost-sentinel'" "$load_next_js" || exit 1
-          ! grep -Fq "dp-caards-header" "$load_next_js" || exit 1
+          # Auto Load Next is owned by the canonical site Interactivity store.
+          grep -Fq "*loadNextPost()" "$shell_js" || exit 1
+          grep -Fq "initLoadNext()" "$shell_js" || exit 1
+          grep -Fq "bindNextPostHistory" "$shell_js" || exit 1
+          grep -Fq "dp-nextpost-sentinel" digipublish/functions.php || exit 1
 
           # Historical shell class is emitted only through compatibility code.
           ! grep -Fq "dp-caards-shell" digipublish/functions.php || exit 1
@@ -535,7 +534,7 @@ jobs:
 
           # Compatibility locations are intentionally allowed to recognize old markup.
           grep -Fq 'dp-caards-' digipublish/assets/css/site.css || exit 1
-          grep -Fq 'dp-caards-' digipublish/assets/js/site-interactions.js || exit 1
+          grep -Fq 'dp-caards-' digipublish/assets/js/site-interactivity.js || exit 1
           grep -Fq 'dp-caards-shell' digipublish/inc/compatibility.php || exit 1
           grep -Fq 'dp-caards-' digipublish/patterns/caards-home.php || exit 1
 
@@ -615,7 +614,6 @@ jobs:
         run: |
           set -euo pipefail
           module="digipublish/assets/js/site-interactivity.js"
-          fallback="digipublish/assets/js/site-interactions.js"
           funcs="digipublish/functions.php"
           browser="tests/e2e/shell.spec.js"
 
@@ -637,10 +635,14 @@ jobs:
             exit 1
           }
 
-          grep -Fq "initLoadNextPost" "$fallback" || exit 1
-          ! grep -Fq "data-dp-search-toggle" "$fallback" || exit 1
-          ! grep -Fq "data-dp-fullscreen-toggle" "$fallback" || exit 1
-          ! grep -Fq "data-dp-scheme-toggle" "$fallback" || exit 1
+          test ! -f digipublish/assets/js/site-interactions.js
+          grep -Fq "*loadNextPost()" "$module" || exit 1
+          grep -Fq "initLoadNext()" "$module" || exit 1
+          grep -Fq "withScope" "$module" || exit 1
+          grep -Fq "digipublish_interactive_singular_group" "$funcs" || exit 1
+          grep -Fq "data-wp-init=\"callbacks.initLoadNext\"" "$funcs" || exit 1
+          grep -Fq "data-wp-text=\"context.loadStatus\"" "$funcs" || exit 1
+          grep -Fq "Auto Load Next is owned by the WordPress Interactivity API" "$browser" || exit 1
 
           grep -Fq "data-wp-interactive', 'digipublish/site'" "$browser" || exit 1
           grep -Fq "actions.toggleSearch" "$browser" || exit 1
@@ -887,7 +889,7 @@ jobs:
           grep -R -Fq 'data-dp-fullscreen-toggle' digipublish/parts/header*.html || exit 1
           grep -Fq 'toggleMenu()' digipublish/assets/js/site-interactivity.js || exit 1
           grep -Fq "data-wp-on--click', 'actions.toggleMenu'" digipublish/functions.php || exit 1
-          grep -Fq 'IntersectionObserver' digipublish/assets/js/site-interactions.js || exit 1
+          grep -Fq 'IntersectionObserver' digipublish/assets/js/site-interactivity.js || exit 1
           grep -Fq 'Caards 1.0.4' THIRD_PARTY_NOTICES.md || exit 1
 
 

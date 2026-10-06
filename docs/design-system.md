@@ -55,7 +55,7 @@ The frontend scheme toggle remains a separate per-visitor enhancement. Its canon
 
 ## Interaction runtime
 
-The first-party browser controller is `assets/js/site-interactions.js`. It owns theme interactions such as:
+The first-party WordPress Interactivity API module is `assets/js/site-interactivity.js`. It owns theme interactions such as:
 
 - dark/light scheme toggle;
 - search overlay;
@@ -95,6 +95,6 @@ Visual options are not migrated into replacement theme settings. Existing non-de
 
 ## Runtime class namespace
 
-Active theme/template/block presentation markup uses the canonical `dp-*` class namespace. Historical `dp-caards-*` class selectors remain paired in `assets/css/site.css` only for previously saved Site Editor/template markup. Interaction compatibility for old saved headers and singular layouts is explicit in `site-interactions.js`.
+Active theme/template/block presentation markup uses the canonical `dp-*` class namespace. Historical `dp-caards-*` class selectors remain paired in `assets/css/site.css` only for previously saved Site Editor/template markup. Interaction compatibility for old saved headers is isolated in PHP compatibility routing; singular Auto Load Next now uses the canonical Interactivity runtime.
 
 See `docs/runtime-class-namespace.md`.

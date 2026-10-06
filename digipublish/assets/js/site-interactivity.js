@@ -1,14 +1,46 @@
 import {
 	store,
+	getContext,
 	getElement,
 	watch,
+	withScope,
 } from '@wordpress/interactivity';
 
 const schemeKey = 'digipublish-scheme';
 const legacySchemeKey = 'digipublish-caards-scheme';
 const root = document.documentElement;
 
-const { state } = store( 'digipublish/site', {
+function bindNextPostHistory( section ) {
+	if (
+		! section ||
+		! section.dataset.url ||
+		! ( 'IntersectionObserver' in window )
+	) {
+		return;
+	}
+
+	const observer = new IntersectionObserver(
+		( entries ) => {
+			entries.forEach( ( entry ) => {
+				if ( entry.isIntersecting ) {
+					const title = section.getAttribute( 'data-title' ) || document.title;
+					const url = section.getAttribute( 'data-url' );
+					if ( url && window.location.href !== url ) {
+						window.history.replaceState( { dpNextPost: true }, title, url );
+						document.title = title;
+					}
+				}
+			} );
+		},
+		{
+			rootMargin: '-35% 0px -55% 0px',
+			threshold: 0,
+		}
+	);
+	observer.observe( section );
+}
+
+const { state, actions } = store( 'digipublish/site', {
 	state: {
 		searchOpen: false,
 		menuOpen: false,
@@ -38,6 +70,67 @@ const { state } = store( 'digipublish/site', {
 			state.dark = ! state.dark;
 			state.schemeReady = true;
 			state.schemeLabel = state.dark ? 'Use light mode' : 'Use dark mode';
+		},
+		*loadNextPost() {
+			const context = getContext();
+			const { ref } = getElement();
+
+			if (
+				! ref ||
+				context.isLoading ||
+				context.ended ||
+				! context.currentPostId ||
+				! context.restUrl
+			) {
+				return;
+			}
+
+			context.isLoading = true;
+			context.loadStatus = 'Loading next post…';
+
+			try {
+				const response = yield fetch( context.restUrl, {
+					method: 'POST',
+					credentials: 'same-origin',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify( {
+						postId: context.currentPostId,
+						exclude: context.loadedPostIds || [],
+					} ),
+				} );
+
+				if ( ! response.ok ) {
+					throw new Error( 'HTTP ' + response.status );
+				}
+
+				const data = yield response.json();
+				if ( ! data || data.end || ! data.content ) {
+					context.ended = true;
+					context.loadStatus = '';
+					return;
+				}
+
+				const wrap = document.createElement( 'div' );
+				wrap.innerHTML = data.content;
+				const section = wrap.firstElementChild;
+				if ( section ) {
+					ref.parentNode.insertBefore( section, ref );
+					const nextId = parseInt( data.postId, 10 ) || 0;
+					context.currentPostId = nextId;
+					if (
+						nextId &&
+						! context.loadedPostIds.includes( nextId )
+					) {
+						context.loadedPostIds = [ ...context.loadedPostIds, nextId ];
+					}
+					bindNextPostHistory( section );
+				}
+				context.loadStatus = '';
+			} catch ( error ) {
+				context.loadStatus = 'Could not load the next post.';
+			} finally {
+				context.isLoading = false;
+			}
 		},
 	},
 	callbacks: {
@@ -81,6 +174,32 @@ const { state } = store( 'digipublish/site', {
 					input.focus();
 				}
 			} );
+		},
+		initLoadNext() {
+			const context = getContext();
+			const { ref } = getElement();
+			if (
+				! ref ||
+				context.ended ||
+				! ( 'IntersectionObserver' in window )
+			) {
+				return;
+			}
+
+			const scopedLoad = withScope( actions.loadNextPost );
+			const observer = new IntersectionObserver(
+				( entries ) => {
+					if (
+						entries.some( ( entry ) => entry.isIntersecting ) &&
+						! context.ended
+					) {
+						scopedLoad();
+					}
+				},
+				{ rootMargin: '900px 0px' }
+			);
+			observer.observe( ref );
+			return () => observer.disconnect();
 		},
 	},
 } );
