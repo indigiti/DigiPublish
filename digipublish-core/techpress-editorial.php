@@ -577,11 +577,14 @@ function digipublish_core_meta_markup( $post_id, $show_author, $show_date ) {
 	$parts = array();
 	if ( $show_author ) {
 		$author_id = (int) get_post_field( 'post_author', $post_id );
-		$parts[]   = sprintf(
-			'<a href="%1$s">%2$s</a>',
-			esc_url( get_author_posts_url( $author_id ) ),
-			esc_html( get_the_author_meta( 'display_name', $author_id ) )
-		);
+		$author    = $author_id ? get_userdata( $author_id ) : false;
+		if ( $author instanceof WP_User && '' !== trim( (string) $author->display_name ) ) {
+			$parts[] = sprintf(
+				'<a href="%1$s">%2$s</a>',
+				esc_url( get_author_posts_url( $author_id ) ),
+				esc_html( $author->display_name )
+			);
+		}
 	}
 	if ( $show_date ) {
 		$published = (int) get_post_time( 'U', true, $post_id );
