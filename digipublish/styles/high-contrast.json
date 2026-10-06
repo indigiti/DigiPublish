@@ -1,0 +1,65 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "title": "DigiPublish High Contrast",
+  "styles": {
+    "color": {
+      "background": "#FFFFFF",
+      "text": "#111111"
+    },
+    "elements": {
+      "heading": {
+        "color": {
+          "text": "#000000"
+        },
+        "typography": {
+          "fontWeight": "800"
+        }
+      },
+      "link": {
+        "color": {
+          "text": "#0037B8"
+        },
+        ":hover": {
+          "color": {
+            "text": "#001F6B"
+          }
+        }
+      },
+      "button": {
+        "color": {
+          "background": "#000000",
+          "text": "#FFFFFF"
+        },
+        "border": {
+          "color": "#000000",
+          "radius": "2px",
+          "width": "2px"
+        }
+      }
+    },
+    "blocks": {
+      "core/navigation": {
+        "color": {
+          "text": "#000000"
+        },
+        "typography": {
+          "fontWeight": "700"
+        }
+      },
+      "core/post-title": {
+        "color": {
+          "text": "#000000"
+        },
+        "typography": {
+          "fontWeight": "800"
+        }
+      },
+      "core/group": {
+        "border": {
+          "color": "#111111"
+        }
+      }
+    }
+  }
+}
