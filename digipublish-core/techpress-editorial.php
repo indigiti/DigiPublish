@@ -15,18 +15,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TECHPRESS_EDITORIAL_VERSION', '0.11.1' );
-define( 'TECHPRESS_EDITORIAL_DIR', plugin_dir_path( __FILE__ ) );
-define( 'TECHPRESS_EDITORIAL_URL', plugin_dir_url( __FILE__ ) );
+define( 'DIGIPUBLISH_CORE_VERSION', '0.11.1' );
+define( 'DIGIPUBLISH_CORE_DIR', plugin_dir_path( __FILE__ ) );
+define( 'DIGIPUBLISH_CORE_URL', plugin_dir_url( __FILE__ ) );
 
 /**
- * Canonical DigiPublish constants.
- *
- * Legacy TECHPRESS_* constants remain available for backward compatibility.
+ * Legacy TechPress constants remain as aliases for backward compatibility.
  */
-define( 'DIGIPUBLISH_CORE_VERSION', TECHPRESS_EDITORIAL_VERSION );
-define( 'DIGIPUBLISH_CORE_DIR', TECHPRESS_EDITORIAL_DIR );
-define( 'DIGIPUBLISH_CORE_URL', TECHPRESS_EDITORIAL_URL );
+define( 'TECHPRESS_EDITORIAL_VERSION', DIGIPUBLISH_CORE_VERSION );
+define( 'TECHPRESS_EDITORIAL_DIR', DIGIPUBLISH_CORE_DIR );
+define( 'TECHPRESS_EDITORIAL_URL', DIGIPUBLISH_CORE_URL );
 
 require_once DIGIPUBLISH_CORE_DIR . 'includes/gallery.php';
 require_once DIGIPUBLISH_CORE_DIR . 'includes/query.php';
@@ -129,31 +127,31 @@ function digipublish_core_attribution_label( $type ) {
  * can load only the CSS needed by the blocks rendered on a request.
  */
 function digipublish_core_register_blocks() {
-	$editor_js        = TECHPRESS_EDITORIAL_DIR . 'assets/editor.js';
-	$editor_query_js  = TECHPRESS_EDITORIAL_DIR . 'assets/editor-query.js';
-	$editor_native_js = TECHPRESS_EDITORIAL_DIR . 'assets/editor-native.js';
+	$editor_js        = DIGIPUBLISH_CORE_DIR . 'assets/editor.js';
+	$editor_query_js  = DIGIPUBLISH_CORE_DIR . 'assets/editor-query.js';
+	$editor_native_js = DIGIPUBLISH_CORE_DIR . 'assets/editor-native.js';
 
 	wp_register_script(
 		'digipublish-core-editor-native',
-		TECHPRESS_EDITORIAL_URL . 'assets/editor-native.js',
+		DIGIPUBLISH_CORE_URL . 'assets/editor-native.js',
 		array( 'wp-hooks' ),
-		file_exists( $editor_native_js ) ? (string) filemtime( $editor_native_js ) : TECHPRESS_EDITORIAL_VERSION,
+		file_exists( $editor_native_js ) ? (string) filemtime( $editor_native_js ) : DIGIPUBLISH_CORE_VERSION,
 		true
 	);
 
 	wp_register_script(
 		'digipublish-core-editor-query',
-		TECHPRESS_EDITORIAL_URL . 'assets/editor-query.js',
+		DIGIPUBLISH_CORE_URL . 'assets/editor-query.js',
 		array( 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-data', 'wp-core-data' ),
-		file_exists( $editor_query_js ) ? (string) filemtime( $editor_query_js ) : TECHPRESS_EDITORIAL_VERSION,
+		file_exists( $editor_query_js ) ? (string) filemtime( $editor_query_js ) : DIGIPUBLISH_CORE_VERSION,
 		true
 	);
 
 	wp_register_script(
 		'digipublish-core-editor',
-		TECHPRESS_EDITORIAL_URL . 'assets/editor.js',
+		DIGIPUBLISH_CORE_URL . 'assets/editor.js',
 		array( 'digipublish-core-editor-native', 'digipublish-core-editor-query', 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-data', 'wp-core-data', 'wp-plugins', 'wp-editor', 'wp-edit-post' ),
-		file_exists( $editor_js ) ? (string) filemtime( $editor_js ) : TECHPRESS_EDITORIAL_VERSION,
+		file_exists( $editor_js ) ? (string) filemtime( $editor_js ) : DIGIPUBLISH_CORE_VERSION,
 		true
 	);
 
