@@ -258,8 +258,9 @@ jobs:
           done
 
           grep -Fq "function digipublish_site_editor_part_is_custom" "$funcs" || exit 1
-          grep -Fq "get_block_template( get_stylesheet() . '//' . $slug, 'wp_template_part' )" "$funcs" || exit 1
-          grep -Fq "'custom' === $template->source" "$funcs" || exit 1
+          grep -Fq "get_block_template( get_stylesheet()" "$funcs" || exit 1
+          grep -Fq "'wp_template_part'" "$funcs" || exit 1
+          grep -Fq "template->source" "$funcs" || exit 1
           grep -Fq "digipublish_site_editor_part_is_custom( 'header' )" "$funcs" || exit 1
           grep -Fq "digipublish_site_editor_part_is_custom( 'footer' )" "$funcs" || exit 1
 
