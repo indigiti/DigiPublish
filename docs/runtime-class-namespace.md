@@ -44,3 +44,8 @@ The historical dark/menu state classes remain as temporary runtime aliases becau
 - Dynamic renderers use `dp-*`.
 - CSS continues to support saved `dp-caards-*` markup during the 1.x compatibility window.
 - The hidden `digipublish/caards-home` pattern remains a compatibility fixture; `digipublish/editorial-home` is canonical.
+
+
+## CI enforcement
+
+The release workflow rejects any `dp-caards-*` class emitted by active filesystem templates, template parts, the canonical homepage pattern or dynamic block renderers. Historical class names are permitted only in compatibility CSS/JS, `inc/compatibility.php` and the hidden legacy homepage pattern.
