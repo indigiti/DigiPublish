@@ -45,6 +45,19 @@ if ( ! $existing ) {
 }
 
 
+$pagination_page = get_page_by_path( 'digipublish-pagination-test' );
+if ( ! $pagination_page ) {
+	wp_insert_post(
+		array(
+			'post_title'   => 'DigiPublish Pagination Test',
+			'post_name'    => 'digipublish-pagination-test',
+			'post_status'  => 'publish',
+			'post_type'    => 'page',
+			'post_content' => '<!-- wp:digipublish/post-feed {"heading":"Pagination Test","postsToShow":3,"layout":"standard-1","paginationType":"ajax","showImage":false,"showExcerpt":false,"showAuthor":false,"showDate":false} /-->',
+		)
+	);
+}
+
 $carousel_page = get_page_by_path( 'digipublish-carousel-test' );
 if ( ! $carousel_page ) {
 	wp_insert_post(
