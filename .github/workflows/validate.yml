@@ -763,7 +763,6 @@ jobs:
           editor_query="digipublish-core/assets/editor-query.js"
           render="digipublish-core/blocks/post-feed/render.php"
           css="digipublish-core/blocks/post-feed/style.css"
-          view="digipublish-core/blocks/post-feed/view.js"
           module="digipublish-core/blocks/post-feed/view-interactivity.js"
           module_asset="digipublish-core/blocks/post-feed/view-interactivity.asset.php"
           core="digipublish-core/techpress-editorial.php"
@@ -787,7 +786,7 @@ jobs:
             .supports.anchor == true and
             .supports.customClassName == true and
             .supports.interactivity == true and
-            .viewScript == "file:./view.js" and
+            (has("viewScript") | not) and
             .viewScriptModule == "file:./view-interactivity.js"
           ' "$block" >/dev/null
 
@@ -820,16 +819,20 @@ jobs:
           grep -Fq 'data-dp-infinite-sentinel' "$render" || exit 1
           grep -Fq '.tp-feed--masonry-1' "$css" || exit 1
           grep -Fq '.tp-feed--carousel-1' "$css" || exit 1
-          grep -Fq 'IntersectionObserver' "$view" || exit 1
-          ! grep -Fq 'initCarousel' "$view" || {
-            echo "Classic Posts view script regained carousel ownership."
-            exit 1
-          }
+          test ! -f digipublish-core/blocks/post-feed/view.js
           test -f "$module"
           test -f "$module_asset"
           grep -Fq "@wordpress/interactivity" "$module" || exit 1
           grep -Fq "store( 'digipublish/post-feed'" "$module" || exit 1
           grep -Fq "withScope" "$module" || exit 1
+          grep -Fq "*loadNext()" "$module" || exit 1
+          grep -Fq "initInfinite()" "$module" || exit 1
+          grep -Fq "IntersectionObserver" "$module" || exit 1
+          grep -Fq 'data-wp-on--click="actions.loadNext"' "$render" || exit 1
+          grep -Fq 'data-wp-init="callbacks.initInfinite"' "$render" || exit 1
+          grep -Fq 'data-wp-bind--aria-busy' "$render" || exit 1
+          grep -Fq 'data-wp-text="context.status"' "$render" || exit 1
+          grep -Fq "Post Feed Load More uses the WordPress Interactivity API" tests/e2e/shell.spec.js || exit 1
           grep -Fq "@wordpress/interactivity" "$module_asset" || exit 1
           grep -Fq 'digipublish/v1' "$core" || exit 1
           grep -Fq 'GPL-3.0 Caards theme by Code Supply Co.' "$core" || exit 1

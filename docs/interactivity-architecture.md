@@ -30,7 +30,7 @@ It owns:
 - prefers-reduced-motion handling;
 - reactive current-slide counter and ARIA selection state.
 
-`blocks/post-feed/view.js` remains a classic view script only for AJAX Load More and infinite pagination. It must not initialize carousel behavior.
+`blocks/post-feed/view-interactivity.js` is now the sole Posts frontend controller. It owns carousel, AJAX Load More and infinite pagination; the former classic `view.js` is no longer registered.
 
 ## Compatibility
 
@@ -53,10 +53,8 @@ The Playwright release fixture at `/digipublish-carousel-test/` verifies:
 
 After this phase is stable:
 
-1. migrate Posts Load More/infinite pagination;
-2. consolidate Instagram/Twitter carousel behavior on the same store pattern where semantics align;
-3. migrate shell overlays/dark-mode state;
-4. migrate Auto Load Next after dedicated history/REST browser coverage.
+1. consolidate Instagram/Twitter carousel behavior on the same store pattern where semantics align;
+2. migrate Auto Load Next after dedicated history/REST browser coverage.
 
 
 ## Phase 2: Site shell
@@ -83,9 +81,14 @@ The header template part is marked as an interactive root through `register_bloc
 
 Search, menu, scheme, Escape handling and sticky-header behavior must not return to that classic controller.
 
+## Phase 3: Posts async pagination
+
+The existing `digipublish/post-feed` store now also owns Load More and Infinite Scroll. Server-rendered context tracks page, maximum pages, REST URL, query attributes, loading state, end state and accessible status text. The Load More button and infinite sentinel use Core directives, while `withScope()` preserves the Interactivity API context inside `IntersectionObserver` callbacks.
+
+The historical `data-dp-*` pagination hooks remain in markup during the 1.x compatibility window, but no classic Posts frontend controller is registered.
+
 ## Remaining migration slices
 
-1. Posts Load More/infinite pagination.
-2. Auto Load Next Post with history/REST lifecycle coverage.
-3. Social/gallery interactions where classic DOM lifecycle code still exists.
-4. Client-navigation compatibility declarations only after each migrated flow passes runtime tests.
+1. Auto Load Next Post with history/REST lifecycle coverage.
+2. Social/gallery interactions where classic DOM lifecycle code still exists.
+3. Client-navigation compatibility declarations only after each migrated flow passes runtime tests.
