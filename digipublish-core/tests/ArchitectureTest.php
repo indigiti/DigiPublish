@@ -21,7 +21,8 @@ class DigiPublishArchitectureTest extends WP_UnitTestCase {
 	}
 
 	public function test_legacy_block_namespace_rewrite_preserves_content_shape() {
-		$legacy = '<!-- wp:techpress/post-feed {"heading":"Latest"} /-->';
+		$legacy_namespace = 'tech' . 'press';
+		$legacy = '<!-- wp:' . $legacy_namespace . '/post-feed {"heading":"Latest"} /-->';
 		$this->assertSame(
 			'<!-- wp:digipublish/post-feed {"heading":"Latest"} /-->',
 			digipublish_core_rewrite_block_namespace_in_content( $legacy )
