@@ -28,10 +28,11 @@ The environment mounts and activates both `digipublish-core` and the `digipublis
 
 ## Local commands
 
-Requires Docker and Node.js 22+.
+Requires Docker, Node.js 24+, PHP 8.2+ and Composer.
 
 ```bash
 npm install
+composer install --working-dir=digipublish-core
 npx wp-env start
 npx wp-env run tests-cli --env-cwd=wp-content/plugins/digipublish-core phpunit -c phpunit.xml.dist
 npx wp-env run cli wp theme activate digipublish
