@@ -568,3 +568,6 @@ function digipublish_render_publishing_settings_page() {
 	</div>
 	<?php
 }
+
+// Legacy callable aliases are isolated from the production namespace.
+require_once get_theme_file_path( 'inc/compatibility.php' );
