@@ -18,7 +18,7 @@ if ( ! $author_role ) {
 
 $attribution_type    = (string) get_post_meta( $post_id, '_techpress_attribution_type', true );
 $attribution_user_id = (int) get_post_meta( $post_id, '_techpress_attribution_user', true );
-$attribution_label   = techpress_editorial_attribution_label( $attribution_type );
+$attribution_label   = digipublish_core_attribution_label( $attribution_type );
 $attribution_user    = $attribution_user_id ? get_userdata( $attribution_user_id ) : null;
 $modified_iso        = get_the_modified_date( DATE_W3C, $post_id );
 $modified_display    = get_the_modified_date( 'j F Y', $post_id );
