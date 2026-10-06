@@ -98,6 +98,49 @@ jobs:
           }
 
 
+      - name: Guard Core layout consolidation
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for block in section section-content section-sidebar section-heading; do
+            jq -e '.supports.inserter == false' "digipublish-core/blocks/$block/block.json" >/dev/null || {
+              echo "Legacy structural block returned to the inserter: $block"
+              exit 1
+            }
+          done
+
+          for pattern in editorial-section-right editorial-section-left editorial-section-full section-heading-accent section-heading-accent-box; do
+            test -f "digipublish/patterns/$pattern.php" || {
+              echo "Missing Core layout replacement pattern: $pattern"
+              exit 1
+            }
+          done
+
+          if grep -R --line-number -E 'wp:digipublish/(section|section-content|section-sidebar|section-heading)'             digipublish/patterns/editorial-section-right.php             digipublish/patterns/editorial-section-left.php             digipublish/patterns/editorial-section-full.php             digipublish/patterns/section-heading-accent.php             digipublish/patterns/section-heading-accent-box.php; then
+            echo "New layout patterns must use WordPress Core blocks, not legacy DigiPublish structural blocks."
+            exit 1
+          fi
+
+          grep -Fq "register_block_style(" digipublish/functions.php || exit 1
+          grep -Fq "'core/columns'" digipublish/functions.php || exit 1
+          grep -Fq "'digipublish-editorial-section'" digipublish/functions.php || exit 1
+          grep -Fq "'core/heading'" digipublish/functions.php || exit 1
+          grep -Fq "'digipublish-accent'" digipublish/functions.php || exit 1
+          grep -Fq "'digipublish-accent-box'" digipublish/functions.php || exit 1
+
+          test -f digipublish/assets/css/core-section.css
+          test -f digipublish/assets/css/core-heading.css
+          grep -Fq 'is-style-digipublish-editorial-section' digipublish/assets/css/core-section.css || exit 1
+          grep -Fq 'is-style-digipublish-accent' digipublish/assets/css/core-heading.css || exit 1
+
+          # Saved content compatibility remains: old blocks are still registered.
+          php -r '$m=require $argv[1]; foreach (array("section","section-content","section-sidebar","section-heading") as $b) { if (!isset($m[$b])) exit(1); }' digipublish-core/blocks-manifest.php || {
+            echo "Legacy structural blocks must remain registered for saved-content compatibility."
+            exit 1
+          }
+
+
       - name: Guard dependency-free runtime
         shell: bash
         run: |
