@@ -1,0 +1,52 @@
+# DigiPublish 1.0 Modernization Status
+
+This document distinguishes **Caards feature parity** from the separate **DigiPublish 1.0 architecture modernization** target.
+
+## Completed foundations
+
+| Area | Status | Current state |
+| --- | --- | --- |
+| Block theme / Site Editor | Complete | `theme.json` v3, HTML templates, template parts, patterns and Global Styles are the primary presentation system. |
+| Runtime dependency removal | Complete | No Canvas, Powerkit, Flickity, Colcade, Magnific Popup, Classic Widgets, jQuery theme runtime or remote Google Fonts dependency. |
+| Classic Widget replacement | Complete | Masonry inserted content uses synced Gutenberg patterns. |
+| Query architecture | Complete foundation | Posts, Featured, Editorial Feed, Sidebar Feed and REST pagination share canonical `digipublish_core_query_*` services. |
+| Block registration | Complete | All block metadata is registered through WordPress' metadata collection API and guarded against stale manifests. |
+| Structural layout modernization | Complete for new content | New layouts use Core Group/Columns/Heading. Four historical Section blocks remain registered and non-insertable for saved-content compatibility. |
+| Visibility modernization | Complete for new visibility rules | New decisions use WordPress block visibility. Historical viewport flags remain only for saved-content compatibility. |
+| Design-system normalization | Complete active layer | Active theme/block styling consumes canonical `--dp-*` tokens. Compatibility color/preset aliases remain for old content. |
+| Header/footer visual ownership | Complete primary path | Site Editor template parts/patterns own visual composition; historical variant options are fallback-only. |
+| Homepage namespace | Complete primary path | New templates use `digipublish/editorial-home`; the old Caards pattern slug remains hidden for saved references. |
+| Version consistency | Complete | Theme, Core and README are aligned at 0.11.1. |
+
+## Partially complete
+
+| Area | Why it is not finished |
+| --- | --- |
+| Block consolidation | 32 block types are still registered. Four structural blocks are compatibility-only, gallery-slide is a child block, and several query/presentation blocks still exist as separate public block types even though internals are increasingly shared. |
+| Editor modularization | Shared query/native support has been extracted, but `digipublish-core/assets/editor.js` is still about 134 KB. The original target was block-scoped editor modules/build outputs rather than one large registration bundle. |
+| Responsive architecture | Core visibility is native, but many blocks still store legacy `hideDesktop/hideLaptop/hideTablet/hideMobile` attributes and custom desktop/laptop/tablet/mobile column/gap settings. |
+| Legacy namespace cleanup | Canonical callable functions/constants are being moved to `digipublish*`; stored CPT/taxonomy/meta identifiers and many frontend `dp-caards-*` CSS classes still require compatibility-safe migration. |
+
+## Not yet complete
+
+| Area | Required work |
+| --- | --- |
+| WordPress Interactivity API | Current interactions are first-party/browser-native but not yet implemented through the WordPress Interactivity API. |
+| Real automated test harness | CI has extensive syntax/static regression guards, but there is no PHPUnit/WP integration, Playwright browser/editor, accessibility, WPCS/PHPCS, ESLint/Stylelint or visual-regression harness yet. |
+| Accessibility certification | Existing code includes accessibility considerations, but there is no automated/manual release gate proving WCAG behavior across editor/frontend interactions. |
+| Core Web Vitals/performance budget | Architecture is performance-oriented, but there is no repeatable Lighthouse/CWV release budget in CI. |
+| Stored identifier migration | `tech_term`, `tech_topic`, `techpress_role`, `_techpress_views`, `_techpress_shares`, attribution meta keys and historical option keys cannot be renamed safely without an explicit dual-read/write and migration strategy. |
+| Full Caards CSS-class retirement | `dp-caards-*` remains in templates/rendered markup for compatibility. New canonical classes must be introduced alongside old classes before selectors can be retired. |
+
+## Release rule
+
+DigiPublish should not be labelled **1.0 architecture complete** until:
+
+1. production callable code is canonical DigiPublish namespace with legacy aliases isolated;
+2. new content no longer depends on legacy block/layout/visibility identifiers;
+3. the editor bundle is modularized further;
+4. interaction modules have one documented architecture;
+5. PHP/browser/accessibility/performance tests are release gates;
+6. stored-data and CSS-class migrations have an explicit compatibility policy.
+
+Caards parity can remain documented as complete for supported capabilities while these modernization tasks continue.
