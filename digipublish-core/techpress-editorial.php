@@ -144,6 +144,18 @@ function digipublish_core_register_blocks() {
 	$editor_query_js  = DIGIPUBLISH_CORE_DIR . 'assets/editor-query.js';
 	$editor_design_js = DIGIPUBLISH_CORE_DIR . 'assets/editor-design.js';
 	$editor_native_js = DIGIPUBLISH_CORE_DIR . 'assets/editor-native.js';
+	$post_feed_interactivity_js = DIGIPUBLISH_CORE_DIR . 'assets/post-feed-interactivity.js';
+
+	wp_register_script_module(
+		'digipublish-core-post-feed-interactivity',
+		DIGIPUBLISH_CORE_URL . 'assets/post-feed-interactivity.js',
+		array( '@wordpress/interactivity' ),
+		file_exists( $post_feed_interactivity_js ) ? (string) filemtime( $post_feed_interactivity_js ) : DIGIPUBLISH_CORE_VERSION,
+		array(
+			'in_footer'     => true,
+			'fetchpriority' => 'low',
+		)
+	);
 
 	wp_register_script(
 		'digipublish-core-editor-native',
