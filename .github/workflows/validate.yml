@@ -196,10 +196,12 @@ jobs:
           grep -Fq '"title": "Header — DigiPublish 1"' "$theme" || exit 1
 
           # Compatibility palette slugs are not exposed as duplicate Global Style choices.
-          test "$(jq '.settings.color.palette | length' "$theme")" -eq 10 || {
-            echo "Unexpected DigiPublish palette size."
-            exit 1
-          }
+          for canonical_slug in site surface white primary secondary accent accent-hover border dark dark-site; do
+            jq -e --arg slug "$canonical_slug" '.settings.color.palette[] | select(.slug == $slug)' "$theme" >/dev/null || {
+              echo "Required DigiPublish palette color is missing: $canonical_slug"
+              exit 1
+            }
+          done
           for legacy_slug in ink body muted brand brand-dark surface-soft footer; do
             ! jq -e --arg slug "$legacy_slug" '.settings.color.palette[] | select(.slug == $slug)' "$theme" >/dev/null || {
               echo "Compatibility color leaked back into the editor palette: $legacy_slug"
