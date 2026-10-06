@@ -21,7 +21,7 @@ class DigiPublishArchitectureTest extends WP_UnitTestCase {
 
 		$this->assertTrue( $metadata['supports']['interactivity'] );
 		$this->assertSame( 'file:./view-interactivity.js', $metadata['viewScriptModule'] );
-		$this->assertSame( 'file:./view.js', $metadata['viewScript'] );
+		$this->assertArrayNotHasKey( 'viewScript', $metadata );
 	}
 
 	public function test_query_id_normalization_is_stable() {
