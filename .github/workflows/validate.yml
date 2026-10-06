@@ -224,6 +224,7 @@ jobs:
           theme="digipublish/theme.json"
           css="digipublish/assets/css/site.css"
           funcs="digipublish/functions.php"
+          compat="digipublish/inc/compatibility.php"
           interactions="digipublish/assets/js/site-interactions.js"
 
           jq empty "$theme"
@@ -307,11 +308,15 @@ jobs:
             exit 1
           }
 
-          # Compatibility keys remain readable for existing sites.
-          grep -Fq "digipublish_caards_header_variant" "$funcs" || exit 1
-          grep -Fq "digipublish_caards_footer_variant" "$funcs" || exit 1
-          grep -Fq "digipublish_caards_default_header" "$funcs" || exit 1
-          grep -Fq "digipublish_caards_default_sidebar" "$funcs" || exit 1
+          # Active theme code does not directly consume historical visual keys.
+          ! grep -Fq "digipublish_caards_header_variant" "$funcs" || exit 1
+          ! grep -Fq "digipublish_caards_footer_variant" "$funcs" || exit 1
+          ! grep -Fq "digipublish_caards_default_header" "$funcs" || exit 1
+          ! grep -Fq "digipublish_caards_default_sidebar" "$funcs" || exit 1
+          grep -Fq "digipublish_caards_header_variant" digipublish/inc/compatibility.php || exit 1
+          grep -Fq "digipublish_caards_footer_variant" digipublish/inc/compatibility.php || exit 1
+          grep -Fq "digipublish_caards_default_header" digipublish/inc/compatibility.php || exit 1
+          grep -Fq "digipublish_caards_default_sidebar" digipublish/inc/compatibility.php || exit 1
 
           grep -Fq "DigiPublish Layout Options" digipublish-core/assets/editor.js || exit 1
           ! grep -Fq "Caards Layout Options" digipublish-core/assets/editor.js || exit 1
@@ -334,17 +339,57 @@ jobs:
             grep -Fq "parts/footer-$variant.html" "$footer" || exit 1
           done
 
-          grep -Fq "function digipublish_site_editor_part_is_custom" "$funcs" || exit 1
-          grep -Fq "get_block_template( get_stylesheet()" "$funcs" || exit 1
-          grep -Fq "'wp_template_part'" "$funcs" || exit 1
-          grep -Fq "template->source" "$funcs" || exit 1
-          grep -Fq "digipublish_site_editor_part_is_custom( 'header' )" "$funcs" || exit 1
-          grep -Fq "digipublish_site_editor_part_is_custom( 'footer' )" "$funcs" || exit 1
+          grep -Fq "function digipublish_site_editor_part_is_custom" "$compat" || exit 1
+          grep -Fq "get_block_template( get_stylesheet()" "$compat" || exit 1
+          grep -Fq "'wp_template_part'" "$compat" || exit 1
+          grep -Fq "template->source" "$compat" || exit 1
+          grep -Fq "function digipublish_route_legacy_template_parts" "$compat" || exit 1
+          grep -Fq "add_filter( 'render_block_data', 'digipublish_route_legacy_template_parts'" "$compat" || exit 1
 
-          # Legacy variant options remain a fallback only when canonical parts
-          # have not yet been customized in the Site Editor.
-          grep -Fq "digipublish_caards_header_variant" "$funcs" || exit 1
-          grep -Fq "digipublish_caards_footer_variant" "$funcs" || exit 1
+          # Legacy variant options are isolated to the compatibility layer.
+          ! grep -Fq "digipublish_caards_header_variant" "$funcs" || exit 1
+          ! grep -Fq "digipublish_caards_footer_variant" "$funcs" || exit 1
+          grep -Fq "digipublish_caards_header_variant" "$compat" || exit 1
+          grep -Fq "digipublish_caards_footer_variant" "$compat" || exit 1
+
+
+      - name: Guard canonical publishing settings
+        shell: bash
+        run: |
+          set -euo pipefail
+          funcs="digipublish/functions.php"
+          compat="digipublish/inc/compatibility.php"
+          hero="digipublish-core/blocks/entry-hero/render.php"
+          css="digipublish/assets/css/site.css"
+
+          for option in digipublish_load_next_enabled digipublish_load_next_same_category digipublish_load_next_reverse; do
+            grep -Fq "$option" "$funcs" || {
+              echo "Missing canonical publishing option: $option"
+              exit 1
+            }
+          done
+
+          grep -Fq "digipublish_publishing_settings_migrated_100" "$funcs" || exit 1
+          grep -Fq "digipublish_legacy_layout_option" "$funcs" || exit 1
+          grep -Fq "digipublish_legacy_layout_option" "$hero" || exit 1
+
+          # Historical functional option names may exist only in the migration map.
+          test "$(grep -c "digipublish_caards_load_nextpost_enabled" "$funcs")" -eq 1 || exit 1
+          test "$(grep -c "digipublish_caards_load_nextpost_same_category" "$funcs")" -eq 1 || exit 1
+          test "$(grep -c "digipublish_caards_load_nextpost_reverse" "$funcs")" -eq 1 || exit 1
+
+          # Visual legacy keys are isolated from active theme/plugin code.
+          ! grep -Fq "digipublish_caards_header_variant" "$funcs" || exit 1
+          ! grep -Fq "digipublish_caards_footer_variant" "$funcs" || exit 1
+          ! grep -Fq "digipublish_caards_default_header" "$funcs" || exit 1
+          ! grep -Fq "digipublish_caards_default_sidebar" "$funcs" || exit 1
+          grep -Fq "function digipublish_legacy_layout_option" "$compat" || exit 1
+
+          # Historical token names are aliases only; active CSS cannot consume them.
+          if grep -nE 'var\(--dp-caards-' "$css"; then
+            echo "Active CSS is consuming a historical Caards token."
+            exit 1
+          fi
 
 
       - name: Guard dependency-free runtime
@@ -550,11 +595,11 @@ jobs:
           grep -Fq '"name": "single-full"' digipublish/theme.json || exit 1
           grep -Fq '"name": "meet-team"' digipublish/theme.json || exit 1
 
-          grep -Fq 'digipublish_caards_header_variant' digipublish/functions.php || exit 1
-          grep -Fq 'digipublish_caards_footer_variant' digipublish/functions.php || exit 1
-          grep -Fq 'digipublish_caards_default_header' digipublish/functions.php || exit 1
-          grep -Fq 'digipublish_caards_default_sidebar' digipublish/functions.php || exit 1
-          grep -Fq 'render_block_data' digipublish/functions.php || exit 1
+          grep -Fq 'digipublish_caards_header_variant' digipublish/inc/compatibility.php || exit 1
+          grep -Fq 'digipublish_caards_footer_variant' digipublish/inc/compatibility.php || exit 1
+          grep -Fq 'digipublish_caards_default_header' digipublish/inc/compatibility.php || exit 1
+          grep -Fq 'digipublish_caards_default_sidebar' digipublish/inc/compatibility.php || exit 1
+          grep -Fq 'render_block_data' digipublish/inc/compatibility.php || exit 1
           grep -Fq 'digipublish/v1/load-next-post' digipublish/functions.php || exit 1
 
           grep -Fq '.dp-caards-header' digipublish/assets/css/site.css || exit 1
