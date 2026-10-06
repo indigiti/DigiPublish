@@ -123,3 +123,10 @@ DigiPublish uses `theme.json` and Global Styles as the primary visual configurat
 Visual configuration such as colors, typography, templates, headers and footers belongs in the Site Editor. The active palette exposes only canonical DigiPublish colors; historical color slugs remain CSS compatibility aliases instead of duplicate editor choices. The Appearance → DigiPublish Publishing page is limited to non-visual publishing behavior. A native `DigiPublish Dark` Global Style variation is available under `digipublish/styles/dark.json`.
 
 The default front page and posts home now use the canonical `digipublish/editorial-home` pattern. The former `digipublish/caards-home` slug remains hidden from the inserter for saved-content compatibility.
+
+
+## 1.0 modernization status
+
+Caards capability parity and DigiPublish architecture modernization are tracked separately. The dependency-free Gutenberg/Site Editor foundation is in place, while namespace/data compatibility, editor modularization, Interactivity API adoption and full automated release testing remain active 1.0 work.
+
+See `docs/modernization-status.md`.
