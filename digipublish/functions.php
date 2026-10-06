@@ -316,9 +316,9 @@ function digipublish_interactive_header_template_part( $block_content, $block ) 
 
 	while ( $processor->next_tag() ) {
 		$class = (string) $processor->get_attribute( 'class' );
-		$is_header = (bool) preg_match( '/(?:^|\\s)(?:dp-header|dp-caards-header)(?:\\s|$)/', $class );
-		$is_search = (bool) preg_match( '/(?:^|\\s)(?:dp-search|dp-caards-search)(?:\\s|$)/', $class );
-		$is_fullscreen = (bool) preg_match( '/(?:^|\\s)(?:dp-fullscreen|dp-caards-fullscreen)(?:\\s|$)/', $class );
+		$is_header = digipublish_runtime_class_matches( $class, 'dp-header' );
+		$is_search = digipublish_runtime_class_matches( $class, 'dp-search' );
+		$is_fullscreen = digipublish_runtime_class_matches( $class, 'dp-fullscreen' );
 
 		if ( $is_header ) {
 			$processor->set_attribute( 'data-wp-interactive', 'digipublish/site' );
