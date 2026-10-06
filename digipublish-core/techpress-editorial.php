@@ -1111,9 +1111,20 @@ function digipublish_core_read_time( $post_id ) {
  * hidden rather than displaying fabricated counters.
  */
 function digipublish_core_metric_value( $post_id, $key ) {
-	$value = max( 0, (int) get_post_meta( $post_id, $key, true ) );
-	$filter = '_digipublish_views' === $key ? 'techpress_post_views' : ( '_digipublish_shares' === $key ? 'techpress_post_shares' : 'techpress_post_metric' );
-	return max( 0, (int) apply_filters( $filter, $value, $post_id, $key ) );
+	$value = max( 0, (int) digipublish_core_get_post_meta_compat( $post_id, $key ) );
+
+	if ( '_digipublish_views' === $key ) {
+		$value = apply_filters( 'digipublish_post_views', $value, $post_id, $key );
+		$value = apply_filters( 'techpress_post_views', $value, $post_id, '_techpress_views' );
+	} elseif ( '_digipublish_shares' === $key ) {
+		$value = apply_filters( 'digipublish_post_shares', $value, $post_id, $key );
+		$value = apply_filters( 'techpress_post_shares', $value, $post_id, '_techpress_shares' );
+	} else {
+		$value = apply_filters( 'digipublish_post_metric', $value, $post_id, $key );
+		$value = apply_filters( 'techpress_post_metric', $value, $post_id, $key );
+	}
+
+	return max( 0, (int) $value );
 }
 
 function digipublish_core_format_metric( $value ) {
