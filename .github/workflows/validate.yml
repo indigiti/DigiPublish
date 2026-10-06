@@ -51,6 +51,34 @@ jobs:
             node --check "$file"
           done < <(find digipublish digipublish-core -type f -name '*.js' -print0)
 
+      - name: Guard dependency-free runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # No Classic Widgets runtime. Gutenberg patterns/blocks own all layout composition.
+          if grep -R --line-number --include='*.php' -E 'register_sidebar[[:space:]]*\(|dynamic_sidebar[[:space:]]*\(|the_widget[[:space:]]*\(' digipublish digipublish-core; then
+            echo "Classic Widgets runtime dependency found."
+            exit 1
+          fi
+
+          # No remote Google Fonts dependency in the production theme/plugin.
+          if grep -R --line-number -E 'fonts\.googleapis\.com|fonts\.gstatic\.com' digipublish digipublish-core; then
+            echo "Remote font dependency found."
+            exit 1
+          fi
+
+          # Guard the original Caards runtime libraries from returning.
+          if grep -R --line-number --include='*.js' -E 'new[[:space:]]+Flickity|Colcade[[:space:]]*\(|magnificPopup[[:space:]]*\(' digipublish digipublish-core; then
+            echo "Retired Caards JavaScript runtime dependency found."
+            exit 1
+          fi
+
+          grep -Fq 'digipublish_core_post_feed_loop_pattern' digipublish-core/techpress-editorial.php || exit 1
+          grep -Fq 'masonryPatternId' digipublish-core/blocks/post-feed/block.json || exit 1
+          grep -Fq 'useSyncedPatternOptions' digipublish-core/assets/editor.js || exit 1
+
+
       - name: Guard obsolete theme-part slug
         shell: bash
         run: |
