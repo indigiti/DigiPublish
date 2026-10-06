@@ -44,6 +44,7 @@ $post_id = wp_insert_post(
     "post_title"   => "Compatibility Probe",
     "post_status"  => "publish",
     "post_type"    => "post",
+    "post_author"  => 1,
     "post_content" => "Compatibility probe content."
   )
 );
