@@ -52,6 +52,9 @@ jobs:
       - name: Start WordPress test environment
         run: npx wp-env start
 
+      - name: Activate DigiPublish theme
+        run: npx wp-env run cli wp theme activate digipublish
+
       - name: Seed deterministic editorial content
         run: npx wp-env run cli --env-cwd=wp-content/plugins/digipublish-core wp eval-file tests/fixtures/seed.php
 
