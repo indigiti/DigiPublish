@@ -244,6 +244,7 @@ add_action( 'init', 'digipublish_caards_register_singular_meta', 15 );
  * Expose selected singular layout choices to the theme shell.
  */
 function digipublish_caards_body_classes( $classes ) {
+	$classes[] = 'digipublish-shell';
 	$classes[] = 'dp-caards-shell';
 	if ( is_singular( array( 'post', 'page' ) ) ) {
 		$post_id = get_queried_object_id();
@@ -422,16 +423,20 @@ function digipublish_caards_register_load_next_route() {
 add_action( 'rest_api_init', 'digipublish_caards_register_load_next_route' );
 
 /**
- * Appearance settings for Caards Auto Load Next Post behavior.
+ * Register non-visual publishing behavior settings.
+ *
+ * Visual composition belongs in the Site Editor. Historical layout option
+ * keys remain registered separately so existing sites keep their saved
+ * behavior without exposing a parallel theme-design control surface.
  */
-function digipublish_caards_register_settings() {
+function digipublish_register_publishing_settings() {
 	foreach ( array(
 		'digipublish_caards_load_nextpost_enabled',
 		'digipublish_caards_load_nextpost_same_category',
 		'digipublish_caards_load_nextpost_reverse',
 	) as $option ) {
 		register_setting(
-			'digipublish_caards',
+			'digipublish_publishing',
 			$option,
 			array(
 				'type'              => 'boolean',
@@ -441,15 +446,16 @@ function digipublish_caards_register_settings() {
 		);
 	}
 
-	$string_settings = array(
+	$legacy_layout_settings = array(
 		'digipublish_caards_header_variant' => array( 'default' => 'one', 'allowed' => array( 'one', 'two', 'three', 'four' ) ),
 		'digipublish_caards_footer_variant' => array( 'default' => 'one', 'allowed' => array( 'one', 'two', 'three', 'four' ) ),
 		'digipublish_caards_default_header'  => array( 'default' => 'standard', 'allowed' => array( 'standard', 'large', 'full', 'title', 'none' ) ),
 		'digipublish_caards_default_sidebar' => array( 'default' => 'right', 'allowed' => array( 'right', 'left', 'disabled' ) ),
 	);
-	foreach ( $string_settings as $option => $config ) {
+
+	foreach ( $legacy_layout_settings as $option => $config ) {
 		register_setting(
-			'digipublish_caards',
+			'digipublish_legacy_layout',
 			$option,
 			array(
 				'type'              => 'string',
@@ -462,88 +468,65 @@ function digipublish_caards_register_settings() {
 		);
 	}
 }
-add_action( 'admin_init', 'digipublish_caards_register_settings' );
+add_action( 'admin_init', 'digipublish_register_publishing_settings' );
 
 /**
- * Route the default FSE header/footer template-parts to the selected Caards
- * variant while leaving explicitly selected variant parts untouched.
+ * Honor legacy non-default header/footer selections from earlier releases.
+ *
+ * New sites and the historical "one" default render the canonical Site Editor
+ * template parts directly. This keeps old selections 2–4 working without
+ * making a hidden option override the Site Editor on new installations.
  */
 function digipublish_caards_route_template_parts( $parsed_block ) {
 	if ( empty( $parsed_block['blockName'] ) || 'core/template-part' !== $parsed_block['blockName'] ) {
 		return $parsed_block;
 	}
+
 	$slug = isset( $parsed_block['attrs']['slug'] ) ? sanitize_key( (string) $parsed_block['attrs']['slug'] ) : '';
 	if ( 'header' === $slug ) {
-		$variant = sanitize_key( (string) get_option( 'digipublish_caards_header_variant', 'one' ) );
-		if ( ! in_array( $variant, array( 'one', 'two', 'three', 'four' ), true ) ) {
-			$variant = 'one';
+		$variant = sanitize_key( (string) get_option( 'digipublish_caards_header_variant', '' ) );
+		if ( in_array( $variant, array( 'two', 'three', 'four' ), true ) ) {
+			$parsed_block['attrs']['slug'] = 'header-' . $variant;
 		}
-		$parsed_block['attrs']['slug'] = 'header-' . $variant;
 	} elseif ( 'footer' === $slug ) {
-		$variant = sanitize_key( (string) get_option( 'digipublish_caards_footer_variant', 'one' ) );
-		if ( ! in_array( $variant, array( 'one', 'two', 'three', 'four' ), true ) ) {
-			$variant = 'one';
+		$variant = sanitize_key( (string) get_option( 'digipublish_caards_footer_variant', '' ) );
+		if ( in_array( $variant, array( 'two', 'three', 'four' ), true ) ) {
+			$parsed_block['attrs']['slug'] = 'footer-' . $variant;
 		}
-		$parsed_block['attrs']['slug'] = 'footer-' . $variant;
 	}
+
 	return $parsed_block;
 }
 add_filter( 'render_block_data', 'digipublish_caards_route_template_parts', 15 );
 
-function digipublish_caards_add_settings_page() {
+/**
+ * Non-visual publishing behavior page.
+ */
+function digipublish_add_publishing_settings_page() {
 	add_theme_page(
-		__( 'DigiPublish Caards', 'digipublish' ),
-		__( 'DigiPublish Caards', 'digipublish' ),
+		__( 'DigiPublish Publishing', 'digipublish' ),
+		__( 'DigiPublish Publishing', 'digipublish' ),
 		'edit_theme_options',
-		'digipublish-caards',
-		'digipublish_caards_render_settings_page'
+		'digipublish-publishing',
+		'digipublish_render_publishing_settings_page'
 	);
 }
-add_action( 'admin_menu', 'digipublish_caards_add_settings_page' );
+add_action( 'admin_menu', 'digipublish_add_publishing_settings_page' );
 
-function digipublish_caards_render_settings_page() {
+function digipublish_render_publishing_settings_page() {
 	if ( ! current_user_can( 'edit_theme_options' ) ) {
 		return;
 	}
 	?>
 	<div class="wrap">
-		<h1><?php esc_html_e( 'DigiPublish Caards', 'digipublish' ); ?></h1>
-		<p><?php esc_html_e( 'Header and footer variants are editable in Appearance → Editor → Design → Patterns. These settings control Caards-compatible article behavior.', 'digipublish' ); ?></p>
+		<h1><?php esc_html_e( 'DigiPublish Publishing', 'digipublish' ); ?></h1>
+		<p>
+			<?php esc_html_e( 'Visual design, headers, footers, templates, colors and typography are managed in the Site Editor. This page contains publishing behavior that is not a visual design setting.', 'digipublish' ); ?>
+			<a href="<?php echo esc_url( admin_url( 'site-editor.php' ) ); ?>"><?php esc_html_e( 'Open Site Editor', 'digipublish' ); ?></a>
+		</p>
 		<form method="post" action="options.php">
-			<?php settings_fields( 'digipublish_caards' ); ?>
+			<?php settings_fields( 'digipublish_publishing' ); ?>
 			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row"><label for="digipublish_caards_header_variant"><?php esc_html_e( 'Header layout', 'digipublish' ); ?></label></th>
-					<td><select id="digipublish_caards_header_variant" name="digipublish_caards_header_variant">
-						<?php foreach ( array( 'one' => 'Header 1', 'two' => 'Header 2', 'three' => 'Header 3', 'four' => 'Header 4' ) as $value => $label ) : ?>
-							<option value="<?php echo esc_attr( $value ); ?>" <?php selected( get_option( 'digipublish_caards_header_variant', 'one' ), $value ); ?>><?php echo esc_html( $label ); ?></option>
-						<?php endforeach; ?>
-					</select><p class="description"><?php esc_html_e( 'Maps the default header template-part to one of the four Caards layouts.', 'digipublish' ); ?></p></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="digipublish_caards_footer_variant"><?php esc_html_e( 'Footer layout', 'digipublish' ); ?></label></th>
-					<td><select id="digipublish_caards_footer_variant" name="digipublish_caards_footer_variant">
-						<?php foreach ( array( 'one' => 'Footer 1', 'two' => 'Footer 2', 'three' => 'Footer 3', 'four' => 'Footer 4' ) as $value => $label ) : ?>
-							<option value="<?php echo esc_attr( $value ); ?>" <?php selected( get_option( 'digipublish_caards_footer_variant', 'one' ), $value ); ?>><?php echo esc_html( $label ); ?></option>
-						<?php endforeach; ?>
-					</select></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="digipublish_caards_default_header"><?php esc_html_e( 'Default post/page header', 'digipublish' ); ?></label></th>
-					<td><select id="digipublish_caards_default_header" name="digipublish_caards_default_header">
-						<?php foreach ( array( 'standard' => 'Standard', 'large' => 'Large Hero', 'full' => 'Full Hero', 'title' => 'Title Only', 'none' => 'No Header' ) as $value => $label ) : ?>
-							<option value="<?php echo esc_attr( $value ); ?>" <?php selected( get_option( 'digipublish_caards_default_header', 'standard' ), $value ); ?>><?php echo esc_html( $label ); ?></option>
-						<?php endforeach; ?>
-					</select></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="digipublish_caards_default_sidebar"><?php esc_html_e( 'Default sidebar', 'digipublish' ); ?></label></th>
-					<td><select id="digipublish_caards_default_sidebar" name="digipublish_caards_default_sidebar">
-						<?php foreach ( array( 'right' => 'Right Sidebar', 'left' => 'Left Sidebar', 'disabled' => 'No Sidebar' ) as $value => $label ) : ?>
-							<option value="<?php echo esc_attr( $value ); ?>" <?php selected( get_option( 'digipublish_caards_default_sidebar', 'right' ), $value ); ?>><?php echo esc_html( $label ); ?></option>
-						<?php endforeach; ?>
-					</select></td>
-				</tr>
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Auto Load Next Post', 'digipublish' ); ?></th>
 					<td><input type="hidden" name="digipublish_caards_load_nextpost_enabled" value="0"><label><input type="checkbox" name="digipublish_caards_load_nextpost_enabled" value="1" <?php checked( get_option( 'digipublish_caards_load_nextpost_enabled', false ) ); ?>> <?php esc_html_e( 'Enable globally (individual posts can override this)', 'digipublish' ); ?></label></td>
