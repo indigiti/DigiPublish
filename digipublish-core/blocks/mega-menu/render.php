@@ -24,7 +24,7 @@ foreach ( $query->posts as $post ) {
 	$id = (int) $post->ID;
 	echo '<article class="dp-mega-menu__card">';
 	if ( $attributes['showImages'] ?? true ) {
-		echo '<a class="dp-mega-menu__image" href="' . esc_url( get_permalink( $id ) ) . '">' . digipublish_core_image_markup( $id, 'medium_large', false, '25vw' ) . '</a>';
+		echo '<a class="dp-mega-menu__image" href="' . esc_url( get_permalink( $id ) ) . '" aria-label="' . esc_attr( sprintf( __( 'Read %s', 'digipublish-core' ), get_the_title( $id ) ) ) . '">' . digipublish_core_image_markup( $id, 'medium_large', false, '25vw' ) . '</a>';
 	}
 	echo '<div class="dp-mega-menu__body">';
 	if ( $attributes['showCategory'] ?? true ) { echo digipublish_core_category_markup( $id ); }
