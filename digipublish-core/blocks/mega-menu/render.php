@@ -16,17 +16,17 @@ if ( 'category' === $mode && ! empty( $attributes['categoryId'] ) ) {
 $query = new WP_Query( $args );
 $label = trim( (string) ( $attributes['label'] ?? 'Explore' ) );
 $url = esc_url( $attributes['url'] ?? '#' );
-$wrapper = get_block_wrapper_attributes( array( 'class' => 'dp-caards-mega-menu' ) );
-echo '<details ' . $wrapper . '><summary><span>' . esc_html( $label ) . '</span><span aria-hidden="true">⌄</span></summary><div class="dp-caards-mega-menu__panel"><div class="dp-caards-mega-menu__head"><h2>' . esc_html( $label ) . '</h2>';
+$wrapper = get_block_wrapper_attributes( array( 'class' => 'dp-mega-menu' ) );
+echo '<details ' . $wrapper . '><summary><span>' . esc_html( $label ) . '</span><span aria-hidden="true">⌄</span></summary><div class="dp-mega-menu__panel"><div class="dp-mega-menu__head"><h2>' . esc_html( $label ) . '</h2>';
 if ( $url && '#' !== $url ) { echo '<a href="' . $url . '">' . esc_html__( 'View All', 'digipublish-core' ) . '</a>'; }
-echo '</div><div class="dp-caards-mega-menu__grid">';
+echo '</div><div class="dp-mega-menu__grid">';
 foreach ( $query->posts as $post ) {
 	$id = (int) $post->ID;
-	echo '<article class="dp-caards-mega-menu__card">';
+	echo '<article class="dp-mega-menu__card">';
 	if ( $attributes['showImages'] ?? true ) {
-		echo '<a class="dp-caards-mega-menu__image" href="' . esc_url( get_permalink( $id ) ) . '">' . digipublish_core_image_markup( $id, 'medium_large', false, '25vw' ) . '</a>';
+		echo '<a class="dp-mega-menu__image" href="' . esc_url( get_permalink( $id ) ) . '">' . digipublish_core_image_markup( $id, 'medium_large', false, '25vw' ) . '</a>';
 	}
-	echo '<div class="dp-caards-mega-menu__body">';
+	echo '<div class="dp-mega-menu__body">';
 	if ( $attributes['showCategory'] ?? true ) { echo digipublish_core_category_markup( $id ); }
 	echo '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>';
 	if ( $attributes['showDate'] ?? true ) { echo '<time datetime="' . esc_attr( get_the_date( DATE_W3C, $id ) ) . '">' . esc_html( get_the_date( '', $id ) ) . '</time>'; }

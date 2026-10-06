@@ -3,10 +3,19 @@
 var root=document.documentElement;
 var schemeKey='digipublish-scheme';
 var legacySchemeKey='digipublish-caards-scheme';
+var legacyClass={
+  header:'.dp-caards-header',
+  search:'.dp-caards-search',
+  fullscreen:'.dp-caards-fullscreen',
+  singular:'.dp-caards-singular',
+  dark:'dp-caards-dark',
+  menuOpen:'dp-caards-menu-open'
+};
+function compatSelector(canonical,legacy){return canonical+','+legacy;}
 function applyScheme(value){
   var dark=value==='dark';
   root.classList.toggle('dp-theme-dark',dark);
-  root.classList.toggle('dp-caards-dark',dark);
+  root.classList.toggle(legacyClass.dark,dark);
   root.setAttribute('data-dp-scheme',dark?'dark':'light');
   document.querySelectorAll('[data-dp-scheme-toggle]').forEach(function(btn){
     btn.setAttribute('aria-pressed',dark?'true':'false');
@@ -17,16 +26,16 @@ try{applyScheme(localStorage.getItem(schemeKey)||localStorage.getItem(legacySche
 document.addEventListener('click',function(event){
   var scheme=event.target.closest('[data-dp-scheme-toggle]');
   if(scheme){
-    var next=root.classList.contains('dp-theme-dark')||root.classList.contains('dp-caards-dark')?'light':'dark';
+    var next=root.classList.contains('dp-theme-dark')||root.classList.contains(legacyClass.dark)?'light':'dark';
     try{localStorage.setItem(schemeKey,next);}catch(e){}
     applyScheme(next);
     return;
   }
   var search=event.target.closest('[data-dp-search-toggle]');
   if(search){
-    var header=search.closest('.dp-caards-header');
+    var header=search.closest(compatSelector('.dp-header',legacyClass.header));
     if(header){
-      var panel=header.querySelector('.dp-caards-search');
+      var panel=header.querySelector(compatSelector('.dp-search',legacyClass.search));
       if(panel){
         var open=!panel.classList.contains('is-open');
         panel.classList.toggle('is-open',open);
@@ -38,28 +47,28 @@ document.addEventListener('click',function(event){
   }
   var menu=event.target.closest('[data-dp-fullscreen-toggle]');
   if(menu){
-    var overlay=document.querySelector('.dp-caards-fullscreen');
+    var overlay=document.querySelector(compatSelector('.dp-fullscreen',legacyClass.fullscreen));
     if(overlay){
       var open=!overlay.classList.contains('is-open');
       overlay.classList.toggle('is-open',open);
       document.body.classList.toggle('dp-menu-open',open);
-      document.body.classList.toggle('dp-caards-menu-open',open);
+      document.body.classList.toggle(legacyClass.menuOpen,open);
       menu.setAttribute('aria-expanded',open?'true':'false');
     }
     return;
   }
   var close=event.target.closest('[data-dp-overlay-close]');
   if(close){
-    document.querySelectorAll('.dp-caards-fullscreen.is-open,.dp-caards-search.is-open').forEach(function(el){el.classList.remove('is-open');});
+    document.querySelectorAll('.dp-fullscreen.is-open,.dp-search.is-open,'+legacyClass.fullscreen+'.is-open,'+legacyClass.search+'.is-open').forEach(function(el){el.classList.remove('is-open');});
     document.body.classList.remove('dp-menu-open');
-    document.body.classList.remove('dp-caards-menu-open');
+    document.body.classList.remove(legacyClass.menuOpen);
   }
 });
 document.addEventListener('keydown',function(event){
   if(event.key==='Escape'){
-    document.querySelectorAll('.dp-caards-fullscreen.is-open,.dp-caards-search.is-open').forEach(function(el){el.classList.remove('is-open');});
+    document.querySelectorAll('.dp-fullscreen.is-open,.dp-search.is-open,'+legacyClass.fullscreen+'.is-open,'+legacyClass.search+'.is-open').forEach(function(el){el.classList.remove('is-open');});
     document.body.classList.remove('dp-menu-open');
-    document.body.classList.remove('dp-caards-menu-open');
+    document.body.classList.remove(legacyClass.menuOpen);
   }
 });
 
@@ -67,17 +76,17 @@ function initLoadNextPost(){
   var runtime=window.digiPublishSite||window.digiPublishCaards||{};
   var cfg=runtime.loadNext;
   if(!cfg||!cfg.enabled||!cfg.postId||!cfg.restUrl||!('IntersectionObserver' in window)) return;
-  var first=document.querySelector('.dp-caards-singular');
+  var first=document.querySelector(compatSelector('.dp-singular',legacyClass.singular));
   if(!first||document.querySelector('[data-dp-nextpost-sentinel]')) return;
   var sentinel=document.createElement('div');
-  sentinel.className='dp-caards-nextpost-sentinel';
+  sentinel.className='dp-nextpost-sentinel';
   sentinel.setAttribute('data-dp-nextpost-sentinel','');
   first.parentNode.insertBefore(sentinel,first.nextSibling);
   var current=parseInt(cfg.postId,10)||0;
   var loaded=[current];
   var busy=false,ended=false;
   var status=document.createElement('div');
-  status.className='dp-caards-nextpost-status';
+  status.className='dp-nextpost-status';
   status.setAttribute('aria-live','polite');
   sentinel.parentNode.insertBefore(status,sentinel.nextSibling);
 
@@ -141,10 +150,10 @@ function initLoadNextPost(){
   observer.observe(sentinel);
 }
 
-var header=document.querySelector('.dp-caards-header');
+var header=document.querySelector(compatSelector('.dp-header',legacyClass.header));
 initLoadNextPost();
 if(header && 'IntersectionObserver' in window){
-  var marker=document.createElement('div'); marker.className='dp-caards-header-marker'; header.parentNode.insertBefore(marker,header);
+  var marker=document.createElement('div'); marker.className='dp-header-marker'; header.parentNode.insertBefore(marker,header);
   new IntersectionObserver(function(entries){entries.forEach(function(entry){header.classList.toggle('is-sticky',!entry.isIntersecting);});}).observe(marker);
 }
 })();

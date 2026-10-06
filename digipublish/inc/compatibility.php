@@ -97,3 +97,16 @@ if (
 	add_filter( 'render_block_data', 'digipublish_route_legacy_template_parts', 15 );
 }
 unset( $digipublish_legacy_header, $digipublish_legacy_footer );
+
+
+/**
+ * Preserve the historical shell body class for site-specific CSS written
+ * before the canonical dp-* namespace. Active theme code emits dp-shell.
+ */
+function digipublish_legacy_shell_body_class( $classes ) {
+	if ( in_array( 'dp-shell', $classes, true ) && ! in_array( 'dp-caards-shell', $classes, true ) ) {
+		$classes[] = 'dp-caards-shell';
+	}
+	return $classes;
+}
+add_filter( 'body_class', 'digipublish_legacy_shell_body_class', 100 );

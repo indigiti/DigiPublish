@@ -25,7 +25,7 @@ if ( ! in_array( $layout, array( 'standard', 'large', 'full', 'title', 'none' ),
 if ( 'none' === $layout ) { return; }
 
 $is_post = 'post' === get_post_type( $post_id );
-$classes = array( 'dp-caards-entry-hero', 'dp-caards-entry-hero--' . $layout );
+$classes = array( 'dp-entry-hero', 'dp-entry-hero--' . $layout );
 $wrapper = get_block_wrapper_attributes( array( 'class' => implode( ' ', $classes ) ) );
 $title = get_the_title( $post_id );
 $excerpt = trim( wp_strip_all_tags( get_the_excerpt( $post_id ) ) );
@@ -37,7 +37,7 @@ $can_video = in_array( $video_ext, array( 'mp4', 'webm', 'ogg' ), true );
 
 $breadcrumbs = '';
 if ( ! empty( $attributes['showBreadcrumbs'] ) ) {
-	$breadcrumbs .= '<div class="dp-caards-entry-hero__breadcrumbs"><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'Home', 'digipublish-core' ) . '</a><span>›</span>';
+	$breadcrumbs .= '<div class="dp-entry-hero__breadcrumbs"><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'Home', 'digipublish-core' ) . '</a><span>›</span>';
 	if ( $is_post ) {
 		$cats = get_the_category( $post_id );
 		if ( $cats ) {
@@ -49,7 +49,7 @@ if ( ! empty( $attributes['showBreadcrumbs'] ) ) {
 
 $category = '';
 if ( $is_post && ! empty( $attributes['showCategory'] ) && function_exists( 'digipublish_core_category_markup' ) ) {
-	$category = '<div class="dp-caards-entry-hero__category">' . digipublish_core_category_markup( $post_id ) . '</div>';
+	$category = '<div class="dp-entry-hero__category">' . digipublish_core_category_markup( $post_id ) . '</div>';
 }
 
 $meta = array();
@@ -75,24 +75,24 @@ if ( $is_post && ! empty( $attributes['showShares'] ) && function_exists( 'digip
 	$shares = digipublish_core_metric_value( $post_id, '_techpress_shares' );
 	if ( $shares ) { $meta[] = esc_html( number_format_i18n( $shares ) . ' ' . __( 'shares', 'digipublish-core' ) ); }
 }
-$meta_html = $meta ? '<div class="dp-caards-entry-hero__meta"><span>' . implode( '</span><span>', $meta ) . '</span></div>' : '';
-$subtitle = ! empty( $attributes['showSubtitle'] ) && $excerpt ? '<p class="dp-caards-entry-hero__subtitle">' . esc_html( $excerpt ) . '</p>' : '';
+$meta_html = $meta ? '<div class="dp-entry-hero__meta"><span>' . implode( '</span><span>', $meta ) . '</span></div>' : '';
+$subtitle = ! empty( $attributes['showSubtitle'] ) && $excerpt ? '<p class="dp-entry-hero__subtitle">' . esc_html( $excerpt ) . '</p>' : '';
 
-$info = $breadcrumbs . $category . '<h1 class="dp-caards-entry-hero__title">' . esc_html( $title ) . '</h1>' . $meta_html . $subtitle;
+$info = $breadcrumbs . $category . '<h1 class="dp-entry-hero__title">' . esc_html( $title ) . '</h1>' . $meta_html . $subtitle;
 
 echo '<section ' . $wrapper . '>';
 if ( in_array( $layout, array( 'large', 'full' ), true ) ) {
-	echo '<div class="dp-caards-entry-hero__background">';
+	echo '<div class="dp-entry-hero__background">';
 	if ( $can_video ) {
 		echo '<video autoplay muted loop playsinline preload="metadata" src="' . esc_url( $video_url ) . '"></video>';
 	} elseif ( has_post_thumbnail( $post_id ) ) {
 		echo get_the_post_thumbnail( $post_id, 'full', array( 'loading' => 'eager', 'fetchpriority' => 'high' ) );
 	}
-	echo '</div><div class="dp-caards-entry-hero__inner">' . $info . '</div>';
+	echo '</div><div class="dp-entry-hero__inner">' . $info . '</div>';
 } else {
-	echo '<div class="dp-caards-entry-hero__inner">' . $info . '</div>';
+	echo '<div class="dp-entry-hero__inner">' . $info . '</div>';
 	if ( 'standard' === $layout && has_post_thumbnail( $post_id ) ) {
-		echo '<figure class="dp-caards-entry-hero__media">' . get_the_post_thumbnail( $post_id, 'large', array( 'loading' => 'eager', 'fetchpriority' => 'high' ) );
+		echo '<figure class="dp-entry-hero__media">' . get_the_post_thumbnail( $post_id, 'large', array( 'loading' => 'eager', 'fetchpriority' => 'high' ) );
 		$caption = get_the_post_thumbnail_caption( $post_id );
 		if ( $caption ) { echo '<figcaption class="wp-caption-text">' . esc_html( $caption ) . '</figcaption>'; }
 		echo '</figure>';

@@ -245,7 +245,7 @@ add_action( 'init', 'digipublish_register_singular_meta', 15 );
  */
 function digipublish_singular_body_classes( $classes ) {
 	$classes[] = 'digipublish-shell';
-	$classes[] = 'dp-caards-shell';
+	$classes[] = 'dp-shell';
 	if ( is_singular( array( 'post', 'page' ) ) ) {
 		$post_id = get_queried_object_id();
 		$sidebar = sanitize_key( (string) get_post_meta( $post_id, 'digipublish_singular_sidebar', true ) );
@@ -354,7 +354,7 @@ function digipublish_render_next_article( $post_id ) {
 
 	$header = do_blocks( '<!-- wp:digipublish/entry-hero {"layout":"auto","showBreadcrumbs":true,"showSubtitle":true} /-->' );
 	$content = apply_filters( 'the_content', get_post_field( 'post_content', $post_id ) );
-	$tags = get_the_tag_list( '<div class="dp-caards-tags">' . esc_html__( 'Tags:', 'digipublish' ) . ' ', ' ', '</div>', $post_id );
+	$tags = get_the_tag_list( '<div class="dp-tags">' . esc_html__( 'Tags:', 'digipublish' ) . ' ', ' ', '</div>', $post_id );
 	$author = do_blocks( '<!-- wp:digipublish/post-author-card /-->' );
 	$related = do_blocks( '<!-- wp:digipublish/related-posts {"heading":"Read next","postsToShow":4,"layout":"read-next","relationMode":"category-tags","showExcerpt":true} /-->' );
 
@@ -372,10 +372,10 @@ function digipublish_render_next_article( $post_id ) {
 		$sidebar = ob_get_clean();
 	}
 
-	$classes = 'dp-caards-nextpost-section dp-sidebar-' . $sidebar_setting;
+	$classes = 'dp-nextpost-section dp-sidebar-' . $sidebar_setting;
 	$html = '<section class="' . esc_attr( $classes ) . '" data-dp-nextpost-section data-title="' . esc_attr( get_the_title( $post_id ) ) . '" data-url="' . esc_url( get_permalink( $post_id ) ) . '" data-post-id="' . $post_id . '">';
 	$html .= $header;
-	$html .= '<div class="dp-caards-article-layout alignwide"><div class="dp-caards-article-main"><div class="wp-block-post-content">' . $content . '</div>' . ( $tags ?: '' ) . $author . '</div>' . $sidebar . '</div>';
+	$html .= '<div class="dp-article-layout alignwide"><div class="dp-article-main"><div class="wp-block-post-content">' . $content . '</div>' . ( $tags ?: '' ) . $author . '</div>' . $sidebar . '</div>';
 	$html .= $related;
 	$html .= '</section>';
 

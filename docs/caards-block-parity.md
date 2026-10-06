@@ -69,3 +69,10 @@ Caards-style per-device hide attributes remain supported for existing saved bloc
 ## Design-system normalization
 
 Caards remains a documented GPL source reference, not the active product design namespace. DigiPublish now uses canonical `--dp-*` theme tokens, DigiPublish-native Global Styles/template labels, and the first-party `site-interactions.js` runtime. Historical `--dp-caards-*` CSS variables, layout option keys, dark-mode class/storage key and pattern slug remain only where required for saved-site compatibility.
+
+
+## Runtime namespace modernization
+
+Caards remains a GPL source/reference for preserved capabilities, but it is no longer the active frontend class namespace. Theme-owned templates, template parts, the canonical homepage and dynamic DigiPublish presentation blocks now emit `dp-*` classes.
+
+Historical `dp-caards-*` markup remains supported through paired stylesheet selectors and a small interaction compatibility map. The hidden legacy `digipublish/caards-home` pattern is intentionally unchanged so saved references continue to resolve without database rewriting.

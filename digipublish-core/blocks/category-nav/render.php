@@ -23,7 +23,7 @@ if ( $ids ) {
 $categories = get_terms( $args );
 if ( is_wp_error( $categories ) ) { $categories = array(); }
 $alignment = isset( $attributes['alignment'] ) && in_array( $attributes['alignment'], array( 'flex-start','flex-end','center' ), true ) ? $attributes['alignment'] : 'center';
-$classes = array_merge( array( 'tp-category-nav','dp-caards-category-navigation' ), digipublish_core_visibility_classes( $attributes ) );
+$classes = array_merge( array( 'tp-category-nav','dp-category-navigation' ), digipublish_core_visibility_classes( $attributes ) );
 $wrapper = get_block_wrapper_attributes( array( 'class'=>implode( ' ', $classes ), 'style'=>'--dp-category-alignment:' . $alignment . ';' ) );
 $dictionary = get_post_type_archive_link( 'tech_term' ) ?: home_url( '/dictionary/' );
 $gallery = get_post_type_archive_link( 'digipublish_gallery' ) ?: home_url( '/photo-gallery/' );

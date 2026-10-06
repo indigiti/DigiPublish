@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 $format = ! empty( $attributes['format'] ) ? (string) $attributes['format'] : 'F d, Y';
-$classes = array_merge( array( 'dp-caards-current-date' ), digipublish_core_visibility_classes( $attributes ) );
+$classes = array_merge( array( 'dp-current-date' ), digipublish_core_visibility_classes( $attributes ) );
 $styles = array();
 $align = isset( $attributes['textAlign'] ) && in_array( $attributes['textAlign'], array( 'left','right','center' ), true ) ? $attributes['textAlign'] : 'left';
 $styles[] = '--dp-current-date-align:' . $align;

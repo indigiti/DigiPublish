@@ -91,3 +91,10 @@ The Appearance → DigiPublish Publishing screen contains only non-visual behavi
 Older Caards-era Auto Load Next option names are migrated once to the canonical keys and retained only as historical data. The migration runs on `init` so frontend behavior is preserved before an administrator visits wp-admin.
 
 Visual options are not migrated into replacement theme settings. Existing non-default header/footer choices continue through the compatibility layer until the canonical template part is saved in the Site Editor.
+
+
+## Runtime class namespace
+
+Active theme/template/block presentation markup uses the canonical `dp-*` class namespace. Historical `dp-caards-*` class selectors remain paired in `assets/css/site.css` only for previously saved Site Editor/template markup. Interaction compatibility for old saved headers and singular layouts is explicit in `site-interactions.js`.
+
+See `docs/runtime-class-namespace.md`.

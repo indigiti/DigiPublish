@@ -326,6 +326,54 @@ jobs:
           ! grep -Fq "Caards Layout Options" digipublish-core/assets/editor.js || exit 1
 
 
+      - name: Guard canonical runtime class namespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          css="digipublish/assets/css/site.css"
+          js="digipublish/assets/js/site-interactions.js"
+          compat="digipublish/inc/compatibility.php"
+
+          # Active filesystem markup/renderers use only canonical dp-* classes.
+          if grep -R --line-number --fixed-strings 'dp-caards-'             digipublish/parts             digipublish/templates             digipublish-core/blocks/*/render.php             digipublish/functions.php             digipublish/patterns/editorial-home.php; then
+            echo "Historical Caards class returned to active theme/runtime markup."
+            exit 1
+          fi
+
+          for class in dp-header dp-footer dp-entry-hero dp-social-carousel dp-demo-mosaic dp-article-layout dp-newsletter; do
+            grep -R -Fq "$class" digipublish digipublish-core || {
+              echo "Missing canonical runtime class: $class"
+              exit 1
+            }
+          done
+
+          # CSS pairs canonical selectors with legacy aliases for saved Site Editor markup.
+          for pair in             ':is(.dp-header,.dp-caards-header)'             ':is(.dp-footer,.dp-caards-footer)'             ':is(.dp-entry-hero,.dp-caards-entry-hero)'             ':is(.dp-social-carousel,.dp-caards-social-carousel)'             ':is(.dp-demo-mosaic,.dp-caards-demo-mosaic)'             ':is(.dp-article-layout,.dp-caards-article-layout)'; do
+            grep -Fq "$pair" "$css" || {
+              echo "Missing runtime class compatibility pair: $pair"
+              exit 1
+            }
+          done
+
+          # The interaction controller targets canonical selectors first and
+          # retains a small explicit map for previously saved template parts.
+          grep -Fq "compatSelector('.dp-header',legacyClass.header)" "$js" || exit 1
+          grep -Fq "compatSelector('.dp-singular',legacyClass.singular)" "$js" || exit 1
+          grep -Fq "sentinel.className='dp-nextpost-sentinel'" "$js" || exit 1
+          grep -Fq "marker.className='dp-header-marker'" "$js" || exit 1
+          grep -Fq "header:'.dp-caards-header'" "$js" || exit 1
+
+          # Historical shell class is emitted only through compatibility code.
+          ! grep -Fq "dp-caards-shell" digipublish/functions.php || exit 1
+          grep -Fq "function digipublish_legacy_shell_body_class" "$compat" || exit 1
+          grep -Fq "dp-caards-shell" "$compat" || exit 1
+
+          # The hidden historical homepage pattern remains a compatibility fixture.
+          grep -Fq 'Inserter: false' digipublish/patterns/caards-home.php || exit 1
+          grep -Fq 'dp-caards-demo-mosaic' digipublish/patterns/caards-home.php || exit 1
+          ! grep -Fq 'dp-caards-demo-mosaic' digipublish/patterns/editorial-home.php || exit 1
+
+
       - name: Guard Site Editor header/footer ownership
         shell: bash
         run: |
@@ -607,10 +655,10 @@ jobs:
           grep -Fq 'render_block_data' digipublish/inc/compatibility.php || exit 1
           grep -Fq 'digipublish/v1/load-next-post' digipublish/functions.php || exit 1
 
-          grep -Fq '.dp-caards-header' digipublish/assets/css/site.css || exit 1
-          grep -Fq '.dp-caards-footer' digipublish/assets/css/site.css || exit 1
-          grep -Fq '.dp-caards-entry-hero--full' digipublish/assets/css/site.css || exit 1
-          grep -Fq '.dp-caards-social-carousel' digipublish/assets/css/site.css || exit 1
+          grep -Fq ':is(.dp-header,.dp-caards-header)' digipublish/assets/css/site.css || exit 1
+          grep -Fq ':is(.dp-footer,.dp-caards-footer)' digipublish/assets/css/site.css || exit 1
+          grep -Fq ':is(.dp-entry-hero--full,.dp-caards-entry-hero--full)' digipublish/assets/css/site.css || exit 1
+          grep -Fq ':is(.dp-social-carousel,.dp-caards-social-carousel)' digipublish/assets/css/site.css || exit 1
           grep -Fq 'data-dp-fullscreen-toggle' digipublish/assets/js/site-interactions.js || exit 1
           grep -Fq 'IntersectionObserver' digipublish/assets/js/site-interactions.js || exit 1
           grep -Fq 'Caards 1.0.4' THIRD_PARTY_NOTICES.md || exit 1
@@ -634,20 +682,20 @@ jobs:
             exit 1
           }
 
-          for class in dp-caards-demo-mosaic dp-caards-mosaic-card--feature dp-caards-mosaic-card--social dp-caards-mosaic-card--dark dp-caards-mosaic-card--portrait dp-caards-mosaic-card--mini dp-caards-mosaic-card--rail-feature; do
+          for class in dp-demo-mosaic dp-mosaic-card--feature dp-mosaic-card--social dp-mosaic-card--dark dp-mosaic-card--portrait dp-mosaic-card--mini dp-mosaic-card--rail-feature; do
             grep -Fq "$class" "$home" || {
-              echo "Missing Caards homepage mosaic element: $class"
+              echo "Missing canonical DigiPublish homepage mosaic element: $class"
               exit 1
             }
-            grep -Fq "$class" "$css" || {
-              echo "Missing Caards homepage mosaic styling: $class"
+            grep -Fq ".$class" "$css" || {
+              echo "Missing canonical DigiPublish homepage mosaic styling: $class"
               exit 1
             }
           done
 
           grep -Fq 'border-radius:var(--dp-radius-card)' "$css" || exit 1
           grep -Fq 'max-width:var(--dp-layout-wide)' "$css" || exit 1
-          grep -Fq 'dp-caards-nav-more' "$header" || exit 1
+          grep -Fq 'dp-nav-more' "$header" || exit 1
           grep -Fq '⚡ Features' "$header" || exit 1
           ! grep -Fq 'digipublish/current-date' "$header" || {
             echo "Header 1 still contains the non-Caards date control."
