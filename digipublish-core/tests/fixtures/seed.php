@@ -1,7 +1,7 @@
 <?php
 update_option( 'blogname', 'DigiPublish Test' );
 update_option( 'blogdescription', 'Automated release test site' );
-update_option( 'digipublish_load_next_enabled', false );
+update_option( 'digipublish_load_next_enabled', true );
 
 $category_names = array( 'Technology', 'Business', 'Science', 'Travel', 'Wearables' );
 $category_ids   = array();
@@ -72,3 +72,25 @@ if ( ! $carousel_page ) {
 }
 
 flush_rewrite_rules( false );
+
+
+$auto_next_posts = array(
+	array( 'slug' => 'digipublish-auto-next-a', 'title' => 'DigiPublish Auto Next A', 'date' => '2026-01-01 10:00:00' ),
+	array( 'slug' => 'digipublish-auto-next-b', 'title' => 'DigiPublish Auto Next B', 'date' => '2026-01-02 10:00:00' ),
+	array( 'slug' => 'digipublish-auto-next-c', 'title' => 'DigiPublish Auto Next C', 'date' => '2026-01-03 10:00:00' ),
+);
+foreach ( $auto_next_posts as $fixture ) {
+	if ( get_page_by_path( $fixture['slug'], OBJECT, 'post' ) ) {
+		continue;
+	}
+	wp_insert_post(
+		array(
+			'post_title'   => $fixture['title'],
+			'post_name'    => $fixture['slug'],
+			'post_status'  => 'publish',
+			'post_type'    => 'post',
+			'post_date'    => $fixture['date'],
+			'post_content' => '<!-- wp:paragraph --><p>Auto Load Next deterministic runtime fixture.</p><!-- /wp:paragraph -->',
+		)
+	);
+}
