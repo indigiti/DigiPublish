@@ -169,18 +169,18 @@ add_filter( 'body_class', 'techpress_theme_body_classes' );
  */
 
 /**
- * Caards-derived theme shell.
+ * DigiPublish site interaction controller.
  *
- * Header/footer/template concepts are adapted from Caards 1.0.4 by Code Supply
- * Co. (GPL-3.0) and implemented as native DigiPublish block-theme structures.
+ * Some interaction semantics originate from the earlier Caards parity phase;
+ * the runtime is first-party, dependency-free and owned by DigiPublish.
  */
-function digipublish_caards_enqueue_shell_script() {
-	$path = get_theme_file_path( 'assets/js/caards-shell.js' );
+function digipublish_enqueue_site_interactions() {
+	$path = get_theme_file_path( 'assets/js/site-interactions.js' );
 	if ( ! file_exists( $path ) ) {
 		return;
 	}
 	wp_enqueue_script(
-		'digipublish-caards-shell',
+		'digipublish-site-interactions',
 		get_theme_file_uri( 'assets/js/caards-shell.js' ),
 		array(),
 		(string) filemtime( $path ),
@@ -200,9 +200,9 @@ function digipublish_caards_enqueue_shell_script() {
 			'restUrl' => esc_url_raw( rest_url( 'digipublish/v1/load-next-post' ) ),
 		);
 	}
-	wp_localize_script( 'digipublish-caards-shell', 'digiPublishCaards', $config );
+	wp_localize_script( 'digipublish-caards-shell', 'digiPublishSite', $config );
 }
-add_action( 'wp_enqueue_scripts', 'digipublish_caards_enqueue_shell_script', 30 );
+add_action( 'wp_enqueue_scripts', 'digipublish_enqueue_site_interactions', 30 );
 
 /**
  * Per-post/page layout settings equivalent to the Caards editor layout panel.
