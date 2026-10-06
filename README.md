@@ -135,3 +135,10 @@ See `docs/modernization-status.md`.
 ## Publishing configuration
 
 Only non-visual publishing behavior remains under Appearance → DigiPublish Publishing. Header/footer composition, templates, colors, typography, spacing and style presets are owned by the Site Editor and Global Styles. Legacy visual option keys are isolated in the compatibility layer and are not active design settings.
+
+
+## Runtime class namespace
+
+Active DigiPublish templates, dynamic presentation blocks and browser-created UI now use the canonical `dp-*` class namespace. Historical `dp-caards-*` selectors remain only as saved-content/runtime compatibility aliases; no database rewrite is performed.
+
+See `docs/runtime-class-namespace.md`.
