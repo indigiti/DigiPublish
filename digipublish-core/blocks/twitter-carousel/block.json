@@ -6,7 +6,7 @@
   "title": "X / Twitter Carousel",
   "category": "digipublish-editorial",
   "icon": "twitter",
-  "description": "Caards-compatible X/Twitter carousel with manual or filter-provided feed items.",
+  "description": "X/Twitter presentation block for manually supplied or provider-filtered feed items.",
   "textdomain": "digipublish-core",
   "attributes": {
     "heading": {
