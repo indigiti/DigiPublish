@@ -53,7 +53,7 @@ if ( 'magazine' === $layout ) {
     $side = array_shift( $posts );
     echo '<div class="tp-featured__magazine">';
     echo '<div class="tp-featured__top">';
-    echo '<a class="tp-featured__hero-image" href="' . esc_url( get_permalink( $lead->ID ) ) . '">' . digipublish_core_image_markup( $lead->ID, digipublish_core_image_size( $attributes, 'large' ), is_front_page() || is_home(), '(max-width: 720px) 100vw, 52vw' ) . '</a>';
+    echo '<a class="tp-featured__hero-image" href="' . esc_url( get_permalink( $lead->ID ) ) . '" aria-label="' . esc_attr( sprintf( __( 'Read %s', 'digipublish-core' ), get_the_title( $lead->ID ) ) ) . '">' . digipublish_core_image_markup( $lead->ID, digipublish_core_image_size( $attributes, 'large' ), is_front_page() || is_home(), '(max-width: 720px) 100vw, 52vw' ) . '</a>';
     echo '<article class="tp-featured__hero-copy">';
     echo '<div class="tp-featured__badge"><span aria-hidden="true">◆</span> ' . esc_html__( 'Top Story', 'digipublish-core' ) . '</div>';
     if ( $attributes['showCategory'] ?? true ) { echo digipublish_core_category_markup( $lead->ID ); }
