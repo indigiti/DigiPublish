@@ -100,3 +100,10 @@ Archive and related-content ranking remain specialist layers where their semanti
 DigiPublish registers its custom blocks through WordPress' native block metadata collection API. `digipublish-core/blocks-manifest.php` is the registration source of truth and CI verifies that every manifest entry exactly matches its corresponding `block.json`.
 
 This removes the previous hand-maintained 32-block PHP registration list and lets WordPress serve block metadata from opcode-cache-friendly PHP rather than repeatedly decoding individual JSON files.
+
+
+## Core-first layout composition
+
+New structural layouts use WordPress Core Group, Columns, Column and Heading blocks with DigiPublish styles and patterns. The old DigiPublish Section block family remains registered only for saved-content compatibility and is hidden from the inserter.
+
+See `docs/core-layout-architecture.md`.
