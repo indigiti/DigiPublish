@@ -123,3 +123,32 @@ test('Post Feed Load More uses the WordPress Interactivity API', async ({ page }
   await expect(feed).toHaveAttribute('aria-busy', 'false');
   await expect(feed.locator('[data-dp-load-status]')).toHaveText('');
 });
+
+
+test('Auto Load Next is owned by the WordPress Interactivity API', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+
+  await page.goto('/digipublish-auto-next-a/');
+  const runtime = page.locator('.dp-nextpost-runtime[data-wp-interactive="digipublish/site"]').first();
+  const sentinel = runtime.locator('[data-dp-nextpost-sentinel]');
+  const status = runtime.locator('[data-dp-nextpost-status]');
+
+  await expect(runtime).toBeVisible();
+  await expect(sentinel).toHaveAttribute('data-wp-init', 'callbacks.initLoadNext');
+
+  await sentinel.scrollIntoViewIfNeeded();
+  await expect(runtime.locator('[data-dp-nextpost-section]')).toHaveCount(1);
+  await expect(runtime.locator('[data-post-id]')).toHaveCount(1);
+  await expect(status).toHaveText('');
+
+  const loaded = runtime.locator('[data-dp-nextpost-section]').first();
+  await loaded.scrollIntoViewIfNeeded();
+  await expect(page).toHaveURL(/digipublish-auto-next-b/);
+  await expect(page).toHaveTitle(/DigiPublish Auto Next B/);
+
+  await sentinel.scrollIntoViewIfNeeded();
+  await expect(runtime.locator('[data-dp-nextpost-section]')).toHaveCount(2);
+
+  expect(errors).toEqual([]);
+});
