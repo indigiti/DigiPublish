@@ -59,3 +59,16 @@ test('editor loads DigiPublish block registrations and modular editor APIs', asy
 
   expect(state).toEqual({ postFeed: true, queryModule: true, designModule: true });
 });
+
+
+test('Post Feed carousel next control advances the current slide', async ({ page }) => {
+  await page.goto('/digipublish-carousel-test/');
+  const carousel = page.locator('.tp-post-feed--carousel').first();
+  await expect(carousel).toBeVisible();
+
+  const counter = carousel.locator('[data-dp-carousel-current]');
+  const next = carousel.locator('[data-dp-carousel-next]');
+  await expect(counter).toHaveText('1');
+  await next.click();
+  await expect(counter).toHaveText('2');
+});
