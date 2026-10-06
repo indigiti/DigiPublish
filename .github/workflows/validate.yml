@@ -762,7 +762,7 @@ jobs:
           grep -Fq 'border-radius:var(--dp-radius-card)' "$css" || exit 1
           grep -Fq 'max-width:var(--dp-layout-wide)' "$css" || exit 1
           grep -Fq 'dp-nav-more' "$header" || exit 1
-          grep -Fq '⚡ Features' "$header" || exit 1
+          grep -Fq '"label":"Features"' "$header" || exit 1
           ! grep -Fq 'digipublish/current-date' "$header" || {
             echo "Header 1 still contains the non-Caards date control."
             exit 1

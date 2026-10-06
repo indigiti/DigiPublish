@@ -1,0 +1,25 @@
+{
+  "name": "digipublish-quality-gates",
+  "private": true,
+  "version": "0.11.1",
+  "description": "Development-only quality gates for DigiPublish.",
+  "scripts": {
+    "env:start": "wp-env start",
+    "env:stop": "wp-env stop",
+    "env:clean": "wp-env clean all",
+    "env:seed": "node tests/e2e/seed.mjs",
+    "test:e2e": "playwright test",
+    "test:a11y": "playwright test tests/e2e/accessibility.spec.mjs",
+    "test:performance": "playwright test tests/e2e/performance.spec.mjs",
+    "lint:js": "eslint digipublish/assets/js digipublish-core/assets tests/e2e --ext .js,.mjs",
+    "lint:css": "stylelint \"digipublish/**/*.css\" \"digipublish-core/**/*.css\""
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "@playwright/test": "^1.55.0",
+    "@wordpress/env": "^10.28.0",
+    "eslint": "^9.36.0",
+    "stylelint": "^16.24.0",
+    "stylelint-config-standard": "^39.0.0"
+  }
+}

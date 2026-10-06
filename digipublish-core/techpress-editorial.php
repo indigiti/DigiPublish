@@ -577,11 +577,14 @@ function digipublish_core_meta_markup( $post_id, $show_author, $show_date ) {
 	$parts = array();
 	if ( $show_author ) {
 		$author_id = (int) get_post_field( 'post_author', $post_id );
-		$parts[]   = sprintf(
-			'<a href="%1$s">%2$s</a>',
-			esc_url( get_author_posts_url( $author_id ) ),
-			esc_html( get_the_author_meta( 'display_name', $author_id ) )
-		);
+		$author    = $author_id ? get_userdata( $author_id ) : false;
+		if ( $author instanceof WP_User && '' !== trim( (string) $author->display_name ) ) {
+			$parts[] = sprintf(
+				'<a href="%1$s">%2$s</a>',
+				esc_url( get_author_posts_url( $author_id ) ),
+				esc_html( $author->display_name )
+			);
+		}
 	}
 	if ( $show_date ) {
 		$published = (int) get_post_time( 'U', true, $post_id );
@@ -627,7 +630,7 @@ function digipublish_core_card_markup( $post_id, $attributes = array() ) {
 		$html .= '<span class="tp-card__top-count" aria-hidden="true">' . esc_html( str_pad( (string) $card_index, 2, '0', STR_PAD_LEFT ) ) . '</span>';
 	}
 	if ( $show_image ) {
-		$html .= '<a class="tp-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' . digipublish_core_image_markup( $post_id, $image_size, false, '(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw' ) . '</a>';
+		$html .= '<a class="tp-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '" aria-label="' . esc_attr( get_the_title( $post_id ) ) . '">' . digipublish_core_image_markup( $post_id, $image_size, false, '(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw' ) . '</a>';
 	}
 	$html .= '<div class="tp-card__body">';
 	if ( $show_category ) {
@@ -844,7 +847,7 @@ function digipublish_core_post_feed_card_markup( $post_id, $attributes = array()
 				( $controls ? 'controls ' : 'autoplay muted loop ' ) .
 				'playsinline preload="metadata" src="' . esc_url( $video_url ) . '"></video></div>';
 		} else {
-			$media = '<a class="tp-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' .
+			$media = '<a class="tp-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '" aria-label="' . esc_attr( get_the_title( $post_id ) ) . '">' .
 				digipublish_core_image_markup( $post_id, $image_size, false, '(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw' ) .
 				'</a>';
 		}
