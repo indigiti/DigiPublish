@@ -23,6 +23,15 @@ function applyScheme(value){
   });
 }
 try{applyScheme(localStorage.getItem(schemeKey)||localStorage.getItem(legacySchemeKey)||'light');}catch(e){applyScheme('light');}
+function closeOverlays(){
+  document.querySelectorAll('.dp-fullscreen.is-open,.dp-search.is-open,'+legacyClass.fullscreen+'.is-open,'+legacyClass.search+'.is-open').forEach(function(el){el.classList.remove('is-open');});
+  document.body.classList.remove('dp-menu-open');
+  document.body.classList.remove(legacyClass.menuOpen);
+  document.querySelectorAll('[data-dp-fullscreen-toggle],[data-dp-search-toggle]').forEach(function(btn){
+    btn.setAttribute('aria-expanded','false');
+  });
+}
+
 document.addEventListener('click',function(event){
   var scheme=event.target.closest('[data-dp-scheme-toggle]');
   if(scheme){
@@ -59,16 +68,12 @@ document.addEventListener('click',function(event){
   }
   var close=event.target.closest('[data-dp-overlay-close]');
   if(close){
-    document.querySelectorAll('.dp-fullscreen.is-open,.dp-search.is-open,'+legacyClass.fullscreen+'.is-open,'+legacyClass.search+'.is-open').forEach(function(el){el.classList.remove('is-open');});
-    document.body.classList.remove('dp-menu-open');
-    document.body.classList.remove(legacyClass.menuOpen);
+    closeOverlays();
   }
 });
 document.addEventListener('keydown',function(event){
   if(event.key==='Escape'){
-    document.querySelectorAll('.dp-fullscreen.is-open,.dp-search.is-open,'+legacyClass.fullscreen+'.is-open,'+legacyClass.search+'.is-open').forEach(function(el){el.classList.remove('is-open');});
-    document.body.classList.remove('dp-menu-open');
-    document.body.classList.remove(legacyClass.menuOpen);
+    closeOverlays();
   }
 });
 
