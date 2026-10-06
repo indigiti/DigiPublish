@@ -872,11 +872,13 @@ return array(
 			),
 			'customClassName' => true,
 			'visibility' => true,
+			'interactivity' => true,
 		),
 		'editorScript' => 'digipublish-core-editor',
 		'style' => 'file:./style.css',
 		'render' => 'file:./render.php',
 		'viewScript' => 'file:./view.js',
+		'viewScriptModule' => 'digipublish-core-post-feed-interactivity',
 	),
 	'related-posts' => array(
 		'$schema' => 'https://schemas.wp.org/trunk/block.json',
