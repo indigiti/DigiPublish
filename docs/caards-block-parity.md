@@ -64,3 +64,8 @@ Replacement patterns are available as `digipublish/editorial-section-right`, `di
 ## Responsive visibility modernization
 
 Caards-style per-device hide attributes remain supported for existing saved blocks, but new visibility choices use WordPress Core block visibility. Legacy viewport toggles appear only when an existing block already has one of those historical rules enabled. This preserves Caards behavior while removing the parallel DigiPublish visibility UI for new content.
+
+
+## Design-system normalization
+
+Caards remains a documented GPL source reference, not the active product design namespace. DigiPublish now uses canonical `--dp-*` theme tokens, DigiPublish-native Global Styles/template labels, and the first-party `site-interactions.js` runtime. Historical `--dp-caards-*` CSS variables, layout option keys, dark-mode class/storage key and pattern slug remain only where required for saved-site compatibility.
