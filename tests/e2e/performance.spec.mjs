@@ -27,6 +27,7 @@ test('frontend respects initial asset and dependency budget', async ({ page }) =
   expect(metrics.domContentLoaded).toBeLessThan(5_000);
 
   const external = requests.filter((url) => {
+    if (url.startsWith('blob:') || url.startsWith('data:')) return false;
     const parsed = new URL(url);
     return !['localhost', '127.0.0.1'].includes(parsed.hostname);
   });
