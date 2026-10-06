@@ -877,7 +877,6 @@ return array(
 		'editorScript' => 'digipublish-core-editor',
 		'style' => 'file:./style.css',
 		'render' => 'file:./render.php',
-		'viewScript' => 'file:./view.js',
 		'viewScriptModule' => 'file:./view-interactivity.js',
 	),
 	'related-posts' => array(
