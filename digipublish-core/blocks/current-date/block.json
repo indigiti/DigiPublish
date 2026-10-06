@@ -6,7 +6,7 @@
   "title": "Current Date",
   "category": "digipublish-editorial",
   "icon": "calendar-alt",
-  "description": "Caards-style current date utility block.",
+  "description": "Current date utility block with alignment and responsive typography controls.",
   "textdomain": "digipublish-core",
   "attributes": {
     "format": {
