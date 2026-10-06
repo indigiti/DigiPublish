@@ -322,7 +322,7 @@ body.digipublish-shell :where(h1,h2,h3,h4,h5,h6,.wp-block-post-title){letter-spa
 	padding:32px 20px;
 }
 :is(.dp-fullscreen,.dp-caards-fullscreen).is-open{display:block}
-.dp-menu-open,:is(.dp-menu-open,.dp-caards-menu-open){overflow:hidden}
+:is(.dp-menu-open,.dp-caards-menu-open){overflow:hidden}
 :is(.dp-fullscreen__inner,.dp-caards-fullscreen__inner){max-width:var(--dp-layout-wide)!important}
 :is(.dp-fullscreen__head,.dp-caards-fullscreen__head){padding-bottom:26px;border-bottom:1px solid var(--dp-border)}
 :is(.dp-fullscreen__columns,.dp-caards-fullscreen__columns){gap:72px!important;padding-top:50px}
