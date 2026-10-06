@@ -1629,7 +1629,7 @@
   registerPlugin('digipublish-editorial-attribution', { render: EditorialAttributionPanel, icon: 'admin-users' });
 
 
-  function CaardsLayoutPanel() {
+  function DigiPublishLayoutPanel() {
     const state = useSelect(function(select){
       const editor=select('core/editor');
       return {postType:editor.getCurrentPostType(),meta:editor.getEditedPostAttribute('meta')||{}};
@@ -1639,7 +1639,7 @@
     const header=state.meta.digipublish_page_header_type||'default';
     const sidebar=state.meta.digipublish_singular_sidebar||'default';
     const loadNext=state.meta.digipublish_load_nextpost||'default';
-    return el(PluginDocumentSettingPanel,{name:'digipublish-caards-layout',title:__('Caards Layout Options','digipublish-core'),className:'digipublish-caards-layout'},
+    return el(PluginDocumentSettingPanel,{name:'digipublish-caards-layout',title:__('DigiPublish Layout Options','digipublish-core'),className:'digipublish-layout'},
       el(SelectControl,{label:__('Page Header Type','digipublish-core'),value:header,options:[
         {label:__('Default','digipublish-core'),value:'default'},{label:__('Standard','digipublish-core'),value:'standard'},
         {label:__('Large','digipublish-core'),value:'large'},{label:__('Full','digipublish-core'),value:'full'},
@@ -1655,5 +1655,5 @@
       el(TextControl,{label:__('Hero Video URL','digipublish-core'),help:__('Direct MP4, WebM or OGG URL for Large/Full headers.','digipublish-core'),value:state.meta.digipublish_post_video_url||'',onChange:function(v){updateMeta({digipublish_post_video_url:v});}})
     );
   }
-  registerPlugin('digipublish-caards-layout',{render:CaardsLayoutPanel,icon:'layout'});
+  registerPlugin('digipublish-caards-layout',{render:DigiPublishLayoutPanel,icon:'layout'});
 })(window.wp);
