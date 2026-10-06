@@ -6,7 +6,7 @@
   "title": "Opt-In Form",
   "category": "digipublish-editorial",
   "icon": "email",
-  "description": "Caards-compatible opt-in form with source color controls and integration hook.",
+  "description": "Editorial opt-in form with first-party color controls and integration hooks.",
   "textdomain": "digipublish-core",
   "attributes": {
     "heading": {
