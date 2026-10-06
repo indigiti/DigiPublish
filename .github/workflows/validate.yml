@@ -755,6 +755,7 @@ jobs:
           render="digipublish-core/blocks/post-feed/render.php"
           css="digipublish-core/blocks/post-feed/style.css"
           view="digipublish-core/blocks/post-feed/view.js"
+          interactivity="digipublish-core/assets/post-feed-interactivity.js"
           core="digipublish-core/techpress-editorial.php"
 
           jq -e '
@@ -801,7 +802,7 @@ jobs:
           grep -Fq 'data-dp-infinite-sentinel' "$render" || exit 1
           grep -Fq '.tp-feed--masonry-1' "$css" || exit 1
           grep -Fq '.tp-feed--carousel-1' "$css" || exit 1
-          grep -Fq 'IntersectionObserver' "$view" || exit 1
+          grep -Fq 'IntersectionObserver' "$interactivity" || exit 1
           grep -Fq 'digipublish/v1' "$core" || exit 1
           grep -Fq 'GPL-3.0 Caards theme by Code Supply Co.' "$core" || exit 1
           grep -Fq 'Caards 1.0.4' THIRD_PARTY_NOTICES.md || exit 1
