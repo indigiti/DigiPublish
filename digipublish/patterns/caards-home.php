@@ -3,7 +3,7 @@
  * Title: DigiPublish Editorial Homepage
  * Slug: digipublish/caards-home
  * Categories: digipublish
- * Inserter: true
+ * Inserter: false
  *
  * DigiPublish editorial homepage composition.
  * The legacy slug is retained for saved pattern compatibility.
