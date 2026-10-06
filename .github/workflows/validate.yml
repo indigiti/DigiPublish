@@ -714,6 +714,8 @@ jobs:
           render="digipublish-core/blocks/post-feed/render.php"
           css="digipublish-core/blocks/post-feed/style.css"
           view="digipublish-core/blocks/post-feed/view.js"
+          module="digipublish-core/blocks/post-feed/view-interactivity.js"
+          module_asset="digipublish-core/blocks/post-feed/view-interactivity.asset.php"
           core="digipublish-core/techpress-editorial.php"
 
           jq -e '
@@ -733,7 +735,10 @@ jobs:
             .attributes.carouselWrap.default == true and
             .attributes.customCss.type == "string" and
             .supports.anchor == true and
-            .supports.customClassName == true
+            .supports.customClassName == true and
+            .supports.interactivity == true and
+            .viewScript == "file:./view.js" and
+            .viewScriptModule == "file:./view-interactivity.js"
           ' "$block" >/dev/null
 
           for layout in standard-1 standard-2 standard-3 standard-4 masonry-1 horizontal-1 horizontal-2 horizontal-3 horizontal-4 horizontal-5 tile-1 tile-2 tile-3 tile-4 carousel-1 carousel-2; do
@@ -756,11 +761,26 @@ jobs:
 
           grep -Fq 'safecss_filter_attr' "$render" || exit 1
           grep -Fq 'data-dp-post-carousel-track' "$render" || exit 1
+          grep -Fq 'data-wp-interactive' "$render" || exit 1
+          grep -Fq 'data-wp-init' "$render" || exit 1
+          grep -Fq 'data-wp-on--click="actions.next"' "$render" || exit 1
+          grep -Fq 'data-wp-on--scroll="callbacks.syncFromScroll"' "$render" || exit 1
+          grep -Fq 'data-wp-text="state.currentDisplay"' "$render" || exit 1
           grep -Fq 'data-dp-load-more' "$render" || exit 1
           grep -Fq 'data-dp-infinite-sentinel' "$render" || exit 1
           grep -Fq '.tp-feed--masonry-1' "$css" || exit 1
           grep -Fq '.tp-feed--carousel-1' "$css" || exit 1
           grep -Fq 'IntersectionObserver' "$view" || exit 1
+          ! grep -Fq 'initCarousel' "$view" || {
+            echo "Classic Posts view script regained carousel ownership."
+            exit 1
+          }
+          test -f "$module"
+          test -f "$module_asset"
+          grep -Fq "@wordpress/interactivity" "$module" || exit 1
+          grep -Fq "store( 'digipublish/post-feed'" "$module" || exit 1
+          grep -Fq "withScope" "$module" || exit 1
+          grep -Fq "@wordpress/interactivity" "$module_asset" || exit 1
           grep -Fq 'digipublish/v1' "$core" || exit 1
           grep -Fq 'GPL-3.0 Caards theme by Code Supply Co.' "$core" || exit 1
           grep -Fq 'Caards 1.0.4' THIRD_PARTY_NOTICES.md || exit 1
