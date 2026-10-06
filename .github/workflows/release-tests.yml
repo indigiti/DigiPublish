@@ -44,7 +44,7 @@ jobs:
         run: npx wp-env start
 
       - name: Run WordPress PHPUnit suite
-        run: npx wp-env run tests-cli --env-cwd=wp-content/plugins/digipublish-core phpunit -c phpunit.xml.dist
+        run: npx wp-env run tests-cli --env-cwd=wp-content/plugins/digipublish-core ./vendor/bin/phpunit -c phpunit.xml.dist
 
       - name: Activate DigiPublish theme
         run: npx wp-env run cli wp theme activate digipublish
