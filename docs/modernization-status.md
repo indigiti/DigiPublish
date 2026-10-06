@@ -32,9 +32,9 @@ This document distinguishes **Caards feature parity** from the separate **DigiPu
 | Area | Required work |
 | --- | --- |
 | WordPress Interactivity API | Current interactions are first-party/browser-native but not yet implemented through the WordPress Interactivity API. |
-| Real automated test harness | CI has extensive syntax/static regression guards, but there is no PHPUnit/WP integration, Playwright browser/editor, accessibility, WPCS/PHPCS, ESLint/Stylelint or visual-regression harness yet. |
-| Accessibility certification | Existing code includes accessibility considerations, but there is no automated/manual release gate proving WCAG behavior across editor/frontend interactions. |
-| Core Web Vitals/performance budget | Architecture is performance-oriented, but there is no repeatable Lighthouse/CWV release budget in CI. |
+| Real automated test harness | WordPress integration assertions plus Playwright frontend/editor/accessibility/performance gates are now present. PHPUnit/WP_UnitTestCase, PHPCS/WPCS and visual-regression baselines remain follow-up work. |
+| Accessibility certification | Automated Axe serious/critical checks now gate representative homepage/article routes. Manual keyboard/screen-reader certification and broader template coverage remain follow-up work. |
+| Core Web Vitals/performance budget | CI now enforces repeatable frontend asset/request/DOMContentLoaded budgets and zero unexpected third-party requests. Lighthouse field-style CWV thresholds remain follow-up work. |
 | Dictionary identifier migration | `tech_term` and `tech_topic` remain stored database identifiers and need a dedicated post-type/taxonomy/rewrite migration with rollback tests. |
 | Full compatibility retirement | Historical meta keys, `dp-caards-*` selector aliases, callable aliases and option fallbacks remain supported during the 1.x compatibility window even though active code uses canonical identifiers. |
 
