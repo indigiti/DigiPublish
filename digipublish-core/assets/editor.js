@@ -32,6 +32,21 @@
   }
 
 
+  function useSyncedPatternOptions() {
+    const patterns = useSelect(function (select) {
+      return select('core').getEntityRecords('postType', 'wp_block', { per_page: 100, orderby: 'title', order: 'asc', status: 'publish' });
+    }, []);
+    const options = [{ label: __('Select a synced pattern', 'digipublish-core'), value: 0 }];
+    if (Array.isArray(patterns)) {
+      patterns.forEach(function (pattern) {
+        const title = pattern && pattern.title && pattern.title.rendered ? pattern.title.rendered : __('Untitled pattern', 'digipublish-core');
+        options.push({ label: title, value: pattern.id });
+      });
+    }
+    return options;
+  }
+
+
   function useTagOptions() {
     const tags = useSelect(function (select) {
       return select('core').getEntityRecords('taxonomy', 'post_tag', { per_page: 100, orderby: 'name', order: 'asc' });
@@ -628,6 +643,7 @@
 
   function postFeedInspectorControls(props) {
     const a = props.attributes, set = props.setAttributes;
+    const syncedPatterns = useSyncedPatternOptions();
     const layout = normalizedPostLayout(a.layout);
     const d = postSourceDefaults(layout);
     const hasCarousel = /^carousel-/.test(layout);
@@ -751,11 +767,12 @@
       el(PanelBody,{title:__('Typography Settings','digipublish-core'),initialOpen:false},typography),
       el(PanelBody,{title:__('Thumbnail Settings','digipublish-core'),initialOpen:false},thumbnail),
       d.hasColorSettings?el(PanelBody,{title:__('Color Settings','digipublish-core'),initialOpen:false},color):null,
-      layout==='masonry-1'?el(PanelBody,{title:__('Masonry Widgets','digipublish-core'),initialOpen:false},
-        el(ToggleControl,{label:__('Display widgets in archive','digipublish-core'),checked:!!a.masonryWidgets,onChange:function(v){set({masonryWidgets:v});}}),
-        a.masonryWidgets?el(TextControl,{label:__('Widget Area','digipublish-core'),value:a.masonryWidgetArea||'sidebar-archive',onChange:function(v){set({masonryWidgetArea:v});}}):null,
-        a.masonryWidgets?el(RangeControl,{label:__('Display widgets after N-th post','digipublish-core'),value:a.masonryWidgetsAfter||3,min:1,max:1000,onChange:function(v){set({masonryWidgetsAfter:v||1});}}):null,
-        a.masonryWidgets?el(ToggleControl,{label:__('Repeat widgets','digipublish-core'),checked:a.masonryWidgetsRepeat!==false,onChange:function(v){set({masonryWidgetsRepeat:v});}}):null
+      layout==='masonry-1'?el(PanelBody,{title:__('Masonry Pattern','digipublish-core'),initialOpen:false},
+        el(ToggleControl,{label:__('Insert a synced pattern between posts','digipublish-core'),checked:!!a.masonryWidgets,onChange:function(v){set({masonryWidgets:v});}}),
+        a.masonryWidgets?el(SelectControl,{label:__('Synced pattern','digipublish-core'),value:a.masonryPatternId||0,options:syncedPatterns,onChange:function(v){set({masonryPatternId:parseInt(v,10)||0});}}):null,
+        a.masonryWidgets?el(RangeControl,{label:__('Insert after every N-th post','digipublish-core'),value:a.masonryWidgetsAfter||3,min:1,max:1000,onChange:function(v){set({masonryWidgetsAfter:v||1});}}):null,
+        a.masonryWidgets?el(ToggleControl,{label:__('Repeat pattern','digipublish-core'),checked:a.masonryWidgetsRepeat!==false,onChange:function(v){set({masonryWidgetsRepeat:v});}}):null,
+        a.masonryWidgets&&!a.masonryPatternId?el(Notice,{status:'warning',isDismissible:false},__('Choose a synced pattern to insert. Create one from Patterns → Manage my patterns if needed.','digipublish-core')):null
       ):null,
       el(PanelBody,{title:__('Query Settings','digipublish-core'),initialOpen:false},postQueryPanelChildren(props)),
       el(PanelBody,{title:__('Spacings','digipublish-core'),initialOpen:false},
@@ -912,7 +929,7 @@
       contentGap:{type:'string',default:''},contentAlign:{type:'string',default:''},imageAlign:{type:'string',default:''},imageWidth:{type:'string',default:''},
       showPostFormat:{type:'boolean',default:true},enableVideoBackgrounds:{type:'boolean',default:false},enableVideoControls:{type:'boolean',default:false},
       headingColor:{type:'string',default:''},headingHoverColor:{type:'string',default:''},excerptColor:{type:'string',default:''},metaColor:{type:'string',default:''},metaLinksColor:{type:'string',default:''},metaLinksHoverColor:{type:'string',default:''},categoryColor:{type:'string',default:''},categoryHoverColor:{type:'string',default:''},readMoreColor:{type:'string',default:''},readMoreHoverColor:{type:'string',default:''},borderColor:{type:'string',default:''},
-      masonryWidgets:{type:'boolean',default:false},masonryWidgetArea:{type:'string',default:'sidebar-archive'},masonryWidgetsAfter:{type:'integer',default:3},masonryWidgetsRepeat:{type:'boolean',default:true},
+      masonryWidgets:{type:'boolean',default:false},masonryPatternId:{type:'integer',default:0},masonryWidgetArea:{type:'string',default:'sidebar-archive'},masonryWidgetsAfter:{type:'integer',default:3},masonryWidgetsRepeat:{type:'boolean',default:true},
       marginTop:{type:'string',default:''}, marginBottom:{type:'string',default:''}, marginLeft:{type:'string',default:''}, marginRight:{type:'string',default:''},
       paddingTop:{type:'string',default:''}, paddingBottom:{type:'string',default:''}, paddingLeft:{type:'string',default:''}, paddingRight:{type:'string',default:''},
       blockBorderRadius:{type:'string',default:''}, blockBorderStyle:{type:'string',default:'none'}, blockBorderWidth:{type:'string',default:''},
