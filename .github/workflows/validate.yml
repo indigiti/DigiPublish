@@ -589,12 +589,51 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq 'function closeOverlays' digipublish/assets/js/site-interactions.js || exit 1
-          grep -Fq "btn.setAttribute('aria-expanded','false')" digipublish/assets/js/site-interactions.js || exit 1
+          grep -Fq "closeOverlays()" digipublish/assets/js/site-interactivity.js || exit 1
+          grep -Fq "data-wp-bind--aria-expanded" digipublish/functions.php || exit 1
+          grep -Fq "data-wp-bind--aria-pressed" digipublish/functions.php || exit 1
+          grep -Fq "callbacks.handleKeydown" digipublish/functions.php || exit 1
           grep -Fq 'function digipublish_navigation_fallback_blocks' digipublish/functions.php || exit 1
           grep -Fq "'core/navigation-link'" digipublish/functions.php || exit 1
           grep -Fq "'core/home-link'" digipublish/functions.php || exit 1
           grep -Fq "'block_core_navigation_render_fallback'" digipublish/functions.php || exit 1
+
+
+      - name: Guard site shell Interactivity API
+        shell: bash
+        run: |
+          set -euo pipefail
+          module="digipublish/assets/js/site-interactivity.js"
+          fallback="digipublish/assets/js/site-interactions.js"
+          funcs="digipublish/functions.php"
+          browser="tests/e2e/shell.spec.js"
+
+          test -f "$module"
+          grep -Fq "from '@wordpress/interactivity'" "$module" || exit 1
+          grep -Fq "store( 'digipublish/site'" "$module" || exit 1
+          grep -Fq "watch( () =>" "$module" || exit 1
+
+          grep -Fq "wp_register_script_module" "$funcs" || exit 1
+          grep -Fq "'@wordpress/interactivity'" "$funcs" || exit 1
+          grep -Fq "digipublish_template_part_interactivity_support" "$funcs" || exit 1
+          grep -Fq "render_block_core/template-part" "$funcs" || exit 1
+          grep -Fq "data-wp-class--is-open" "$funcs" || exit 1
+          grep -Fq "data-wp-on-document--keydown" "$funcs" || exit 1
+          grep -Fq "data-wp-on-window--scroll" "$funcs" || exit 1
+
+          ! grep -Fq "wp_interactivity_process_directives" "$funcs" || {
+            echo "Header directives must use Core root-block processing, not manual double processing."
+            exit 1
+          }
+
+          grep -Fq "initLoadNextPost" "$fallback" || exit 1
+          ! grep -Fq "data-dp-search-toggle" "$fallback" || exit 1
+          ! grep -Fq "data-dp-fullscreen-toggle" "$fallback" || exit 1
+          ! grep -Fq "data-dp-scheme-toggle" "$fallback" || exit 1
+
+          grep -Fq "data-wp-interactive', 'digipublish/site'" "$browser" || exit 1
+          grep -Fq "actions.toggleSearch" "$browser" || exit 1
+          grep -Fq "actions.toggleMenu" "$browser" || exit 1
 
 
       - name: Guard dependency-free runtime
