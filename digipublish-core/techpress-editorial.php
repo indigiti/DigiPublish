@@ -148,10 +148,10 @@ function techpress_editorial_register_blocks() {
 		true
 	);
 
-	$blocks = array( 'featured-posts', 'post-feed', 'editorial-feed', 'ad-slot', 'term-index', 'category-nav', 'archive-hero', 'archive-feed', 'author-profile', 'popular-categories', 'category-experts', 'related-posts', 'post-author-card', 'article-toc', 'article-byline', 'sidebar-feed', 'gallery', 'gallery-slide', 'gallery-archive', 'entry-hero', 'current-date', 'custom-link', 'instagram-carousel', 'twitter-carousel', 'team-grid', 'mega-menu', 'section-heading', 'section', 'section-content', 'section-sidebar', 'opt-in-form', 'featured-categories' );
-	foreach ( $blocks as $block ) {
-		register_block_type( TECHPRESS_EDITORIAL_DIR . 'blocks/' . $block );
-	}
+	wp_register_block_types_from_metadata_collection(
+		DIGIPUBLISH_CORE_DIR . 'blocks',
+		DIGIPUBLISH_CORE_DIR . 'blocks-manifest.php'
+	);
 }
 add_action( 'init', 'techpress_editorial_register_blocks', 20 );
 
