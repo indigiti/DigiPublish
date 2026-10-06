@@ -44,4 +44,18 @@ if ( ! $existing ) {
 	}
 }
 
+
+$carousel_page = get_page_by_path( 'digipublish-carousel-test' );
+if ( ! $carousel_page ) {
+	wp_insert_post(
+		array(
+			'post_title'   => 'DigiPublish Carousel Test',
+			'post_name'    => 'digipublish-carousel-test',
+			'post_status'  => 'publish',
+			'post_type'    => 'page',
+			'post_content' => '<!-- wp:digipublish/post-feed {"heading":"Carousel Test","postsToShow":4,"layout":"carousel-1","carouselAutoplay":false,"carouselDots":true,"carouselWrap":true} /-->',
+		)
+	);
+}
+
 flush_rewrite_rules( false );
