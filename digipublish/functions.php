@@ -230,16 +230,170 @@ add_filter( 'body_class', 'digipublish_theme_body_classes' );
  */
 
 /**
- * DigiPublish site interaction controller.
+ * Register the WordPress Interactivity API module used by the theme shell.
+ */
+function digipublish_register_site_interactivity_module() {
+	$path = get_theme_file_path( 'assets/js/site-interactivity.js' );
+	if ( ! file_exists( $path ) || ! function_exists( 'wp_register_script_module' ) ) {
+		return;
+	}
+
+	wp_register_script_module(
+		'digipublish-site-interactivity',
+		get_theme_file_uri( 'assets/js/site-interactivity.js' ),
+		array( '@wordpress/interactivity' ),
+		(string) filemtime( $path )
+	);
+}
+add_action( 'init', 'digipublish_register_site_interactivity_module', 30 );
+
+/**
+ * Let Core treat template parts as Interactivity API roots without declaring
+ * client-side navigation compatibility for every template part.
+ */
+function digipublish_template_part_interactivity_support( $args, $block_type ) {
+	if ( 'core/template-part' !== $block_type ) {
+		return $args;
+	}
+
+	if ( empty( $args['supports'] ) || ! is_array( $args['supports'] ) ) {
+		$args['supports'] = array();
+	}
+	if ( empty( $args['supports']['interactivity'] ) || ! is_array( $args['supports']['interactivity'] ) ) {
+		$args['supports']['interactivity'] = array();
+	}
+	$args['supports']['interactivity']['interactive'] = true;
+
+	return $args;
+}
+add_filter( 'register_block_type_args', 'digipublish_template_part_interactivity_support', 20, 2 );
+
+/**
+ * Initialize server state used by header directives before WordPress processes
+ * the interactive template-part markup.
+ */
+function digipublish_site_interactivity_state() {
+	if ( ! function_exists( 'wp_interactivity_state' ) ) {
+		return;
+	}
+
+	wp_interactivity_state(
+		'digipublish/site',
+		array(
+			'searchOpen'  => false,
+			'menuOpen'    => false,
+			'dark'        => false,
+			'schemeReady' => false,
+			'schemeLabel' => __( 'Use dark mode', 'digipublish' ),
+			'sticky'      => false,
+		)
+	);
+}
+
+/**
+ * Inject Interactivity API directives into filesystem or Site-Editor-saved
+ * header template parts without replacing the Core template-part architecture.
+ */
+function digipublish_interactive_header_template_part( $block_content, $block ) {
+	if (
+		is_admin() ||
+		! class_exists( 'WP_HTML_Tag_Processor' )
+	) {
+		return $block_content;
+	}
+
+	$slug = isset( $block['attrs']['slug'] ) ? sanitize_key( (string) $block['attrs']['slug'] ) : '';
+	if ( ! str_starts_with( $slug, 'header' ) ) {
+		return $block_content;
+	}
+
+	digipublish_site_interactivity_state();
+	if ( function_exists( 'wp_enqueue_script_module' ) ) {
+		wp_enqueue_script_module( 'digipublish-site-interactivity' );
+	}
+
+	$processor = new WP_HTML_Tag_Processor( $block_content );
+
+	while ( $processor->next_tag() ) {
+		$class = (string) $processor->get_attribute( 'class' );
+		$is_header = digipublish_runtime_class_matches( $class, 'dp-header' );
+		$is_search = digipublish_runtime_class_matches( $class, 'dp-search' );
+		$is_fullscreen = digipublish_runtime_class_matches( $class, 'dp-fullscreen' );
+
+		if ( $is_header ) {
+			$processor->set_attribute( 'data-wp-interactive', 'digipublish/site' );
+			$processor->set_attribute( 'data-wp-class--is-sticky', 'state.sticky' );
+			$processor->set_attribute( 'data-wp-init', 'callbacks.initShell' );
+			$processor->set_attribute( 'data-wp-on-document--keydown', 'callbacks.handleKeydown' );
+			$processor->set_attribute( 'data-wp-on-window--scroll', 'callbacks.syncSticky' );
+		}
+
+		if ( $is_search ) {
+			$processor->set_attribute( 'data-wp-interactive', 'digipublish/site' );
+			$processor->set_attribute( 'data-wp-class--is-open', 'state.searchOpen' );
+			$processor->set_attribute( 'data-wp-watch', 'callbacks.focusSearch' );
+		}
+
+		if ( $is_fullscreen ) {
+			$processor->set_attribute( 'data-wp-interactive', 'digipublish/site' );
+			$processor->set_attribute( 'data-wp-class--is-open', 'state.menuOpen' );
+		}
+
+		if ( null !== $processor->get_attribute( 'data-dp-search-toggle' ) ) {
+			$processor->set_attribute( 'data-wp-interactive', 'digipublish/site' );
+			$processor->set_attribute( 'data-wp-on--click', 'actions.toggleSearch' );
+			$processor->set_attribute( 'data-wp-bind--aria-expanded', 'state.searchOpen' );
+		}
+
+		if ( null !== $processor->get_attribute( 'data-dp-fullscreen-toggle' ) ) {
+			$processor->set_attribute( 'data-wp-interactive', 'digipublish/site' );
+			$processor->set_attribute( 'data-wp-on--click', 'actions.toggleMenu' );
+			$processor->set_attribute( 'data-wp-bind--aria-expanded', 'state.menuOpen' );
+		}
+
+		if ( null !== $processor->get_attribute( 'data-dp-overlay-close' ) ) {
+			$processor->set_attribute( 'data-wp-interactive', 'digipublish/site' );
+			$processor->set_attribute( 'data-wp-on--click', 'actions.closeOverlays' );
+		}
+
+		if ( null !== $processor->get_attribute( 'data-dp-scheme-toggle' ) ) {
+			$processor->set_attribute( 'data-wp-interactive', 'digipublish/site' );
+			$processor->set_attribute( 'data-wp-init', 'callbacks.initShell' );
+			$processor->set_attribute( 'data-wp-on--click', 'actions.toggleScheme' );
+			$processor->set_attribute( 'data-wp-bind--aria-pressed', 'state.dark' );
+			$processor->set_attribute( 'data-wp-bind--aria-label', 'state.schemeLabel' );
+		}
+	}
+
+	return $processor->get_updated_html();
+}
+add_filter( 'render_block_core/template-part', 'digipublish_interactive_header_template_part', 20, 2 );
+
+/**
+ * Enqueue the Core Interactivity API shell module on every frontend request.
  *
- * Some interaction semantics originate from the earlier Caards parity phase;
- * the runtime is first-party, dependency-free and owned by DigiPublish.
+ * The legacy classic script is now restricted to Auto Load Next Post while
+ * that flow completes its separate migration.
  */
 function digipublish_enqueue_site_interactions() {
+	if ( function_exists( 'wp_enqueue_script_module' ) ) {
+		wp_enqueue_script_module( 'digipublish-site-interactivity' );
+	}
+
+	if ( ! is_singular( 'post' ) ) {
+		return;
+	}
+
+	$post_id = get_queried_object_id();
+	if ( ! digipublish_load_next_enabled( $post_id ) ) {
+		return;
+	}
+
 	$path = get_theme_file_path( 'assets/js/site-interactions.js' );
 	if ( ! file_exists( $path ) ) {
 		return;
 	}
+
 	wp_enqueue_script(
 		'digipublish-site-interactions',
 		get_theme_file_uri( 'assets/js/site-interactions.js' ),
@@ -248,20 +402,17 @@ function digipublish_enqueue_site_interactions() {
 		true
 	);
 
-	$config = array(
-		'loadNext' => array(
-			'enabled' => false,
-		),
+	wp_localize_script(
+		'digipublish-site-interactions',
+		'digiPublishSite',
+		array(
+			'loadNext' => array(
+				'enabled' => true,
+				'postId'  => $post_id,
+				'restUrl' => esc_url_raw( rest_url( 'digipublish/v1/load-next-post' ) ),
+			),
+		)
 	);
-	if ( is_singular( 'post' ) ) {
-		$post_id = get_queried_object_id();
-		$config['loadNext'] = array(
-			'enabled' => digipublish_load_next_enabled( $post_id ),
-			'postId'  => $post_id,
-			'restUrl' => esc_url_raw( rest_url( 'digipublish/v1/load-next-post' ) ),
-		);
-	}
-	wp_localize_script( 'digipublish-site-interactions', 'digiPublishSite', $config );
 }
 add_action( 'wp_enqueue_scripts', 'digipublish_enqueue_site_interactions', 30 );
 

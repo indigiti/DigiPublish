@@ -291,7 +291,8 @@ jobs:
           css="digipublish/assets/css/site.css"
           funcs="digipublish/functions.php"
           compat="digipublish/inc/compatibility.php"
-          interactions="digipublish/assets/js/site-interactions.js"
+          interactions="digipublish/assets/js/site-interactivity.js"
+          load_next="digipublish/assets/js/site-interactions.js"
 
           jq empty "$theme"
           jq empty digipublish/styles/dark.json
@@ -357,14 +358,16 @@ jobs:
           ! grep -Fq '"slug":"digipublish/caards-home"' digipublish/templates/front-page.html || exit 1
           ! grep -Fq '"slug":"digipublish/caards-home"' digipublish/templates/home.html || exit 1
 
-          # Canonical interaction controller is active; the old asset is gone.
+          # Canonical shell interactions use the WordPress Interactivity API.
           test -f "$interactions"
+          test -f "$load_next"
           test ! -f digipublish/assets/js/caards-shell.js
+          grep -Fq "assets/js/site-interactivity.js" "$funcs" || exit 1
+          grep -Fq "'digipublish-site-interactivity'" "$funcs" || exit 1
           grep -Fq "assets/js/site-interactions.js" "$funcs" || exit 1
-          grep -Fq "'digipublish-site-interactions'" "$funcs" || exit 1
           grep -Fq "'digiPublishSite'" "$funcs" || exit 1
           grep -Fq "digipublish-scheme" "$interactions" || exit 1
-          grep -Fq "legacySchemeKey='digipublish-caards-scheme'" "$interactions" || exit 1
+          grep -Fq "legacySchemeKey = 'digipublish-caards-scheme'" "$interactions" || exit 1
 
           # Site Editor owns visual configuration; admin page is behavior-only.
           grep -Fq "DigiPublish Publishing" "$funcs" || exit 1
@@ -397,7 +400,8 @@ jobs:
         run: |
           set -euo pipefail
           css="digipublish/assets/css/site.css"
-          js="digipublish/assets/js/site-interactions.js"
+          shell_js="digipublish/assets/js/site-interactivity.js"
+          load_next_js="digipublish/assets/js/site-interactions.js"
           compat="digipublish/inc/compatibility.php"
 
           # Active filesystem markup/renderers use only canonical dp-* classes.
@@ -421,13 +425,20 @@ jobs:
             }
           done
 
-          # The interaction controller targets canonical selectors first and
-          # retains a small explicit map for previously saved template parts.
-          grep -Fq "compatSelector('.dp-header',legacyClass.header)" "$js" || exit 1
-          grep -Fq "compatSelector('.dp-singular',legacyClass.singular)" "$js" || exit 1
-          grep -Fq "sentinel.className='dp-nextpost-sentinel'" "$js" || exit 1
-          grep -Fq "marker.className='dp-header-marker'" "$js" || exit 1
-          grep -Fq "header:'.dp-caards-header'" "$js" || exit 1
+          # Shell behavior is canonical; historical saved-header class matching
+          # is isolated in the PHP compatibility layer.
+          grep -Fq "store( 'digipublish/site'" "$shell_js" || exit 1
+          grep -Fq "dp-theme-dark" "$shell_js" || exit 1
+          grep -Fq "dp-menu-open" "$shell_js" || exit 1
+          grep -Fq "function digipublish_runtime_class_matches" "$compat" || exit 1
+          grep -Fq "dp-caards-header" "$compat" || exit 1
+          grep -Fq "dp-caards-search" "$compat" || exit 1
+          grep -Fq "dp-caards-fullscreen" "$compat" || exit 1
+
+          # Load Next keeps only its singular saved-markup compatibility hook.
+          grep -Fq "legacySingular='.dp-caards-singular'" "$load_next_js" || exit 1
+          grep -Fq "sentinel.className='dp-nextpost-sentinel'" "$load_next_js" || exit 1
+          ! grep -Fq "dp-caards-header" "$load_next_js" || exit 1
 
           # Historical shell class is emitted only through compatibility code.
           ! grep -Fq "dp-caards-shell" digipublish/functions.php || exit 1
@@ -589,12 +600,51 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq 'function closeOverlays' digipublish/assets/js/site-interactions.js || exit 1
-          grep -Fq "btn.setAttribute('aria-expanded','false')" digipublish/assets/js/site-interactions.js || exit 1
+          grep -Fq "closeOverlays()" digipublish/assets/js/site-interactivity.js || exit 1
+          grep -Fq "data-wp-bind--aria-expanded" digipublish/functions.php || exit 1
+          grep -Fq "data-wp-bind--aria-pressed" digipublish/functions.php || exit 1
+          grep -Fq "callbacks.handleKeydown" digipublish/functions.php || exit 1
           grep -Fq 'function digipublish_navigation_fallback_blocks' digipublish/functions.php || exit 1
           grep -Fq "'core/navigation-link'" digipublish/functions.php || exit 1
           grep -Fq "'core/home-link'" digipublish/functions.php || exit 1
           grep -Fq "'block_core_navigation_render_fallback'" digipublish/functions.php || exit 1
+
+
+      - name: Guard site shell Interactivity API
+        shell: bash
+        run: |
+          set -euo pipefail
+          module="digipublish/assets/js/site-interactivity.js"
+          fallback="digipublish/assets/js/site-interactions.js"
+          funcs="digipublish/functions.php"
+          browser="tests/e2e/shell.spec.js"
+
+          test -f "$module"
+          grep -Fq "from '@wordpress/interactivity'" "$module" || exit 1
+          grep -Fq "store( 'digipublish/site'" "$module" || exit 1
+          grep -Fq "watch( () =>" "$module" || exit 1
+
+          grep -Fq "wp_register_script_module" "$funcs" || exit 1
+          grep -Fq "'@wordpress/interactivity'" "$funcs" || exit 1
+          grep -Fq "digipublish_template_part_interactivity_support" "$funcs" || exit 1
+          grep -Fq "render_block_core/template-part" "$funcs" || exit 1
+          grep -Fq "data-wp-class--is-open" "$funcs" || exit 1
+          grep -Fq "data-wp-on-document--keydown" "$funcs" || exit 1
+          grep -Fq "data-wp-on-window--scroll" "$funcs" || exit 1
+
+          ! grep -Fq "wp_interactivity_process_directives" "$funcs" || {
+            echo "Header directives must use Core root-block processing, not manual double processing."
+            exit 1
+          }
+
+          grep -Fq "initLoadNextPost" "$fallback" || exit 1
+          ! grep -Fq "data-dp-search-toggle" "$fallback" || exit 1
+          ! grep -Fq "data-dp-fullscreen-toggle" "$fallback" || exit 1
+          ! grep -Fq "data-dp-scheme-toggle" "$fallback" || exit 1
+
+          grep -Fq "data-wp-interactive', 'digipublish/site'" "$browser" || exit 1
+          grep -Fq "actions.toggleSearch" "$browser" || exit 1
+          grep -Fq "actions.toggleMenu" "$browser" || exit 1
 
 
       - name: Guard dependency-free runtime
@@ -831,7 +881,9 @@ jobs:
           grep -Fq ':is(.dp-footer,.dp-caards-footer)' digipublish/assets/css/site.css || exit 1
           grep -Fq ':is(.dp-entry-hero--full,.dp-caards-entry-hero--full)' digipublish/assets/css/site.css || exit 1
           grep -Fq ':is(.dp-social-carousel,.dp-caards-social-carousel)' digipublish/assets/css/site.css || exit 1
-          grep -Fq 'data-dp-fullscreen-toggle' digipublish/assets/js/site-interactions.js || exit 1
+          grep -R -Fq 'data-dp-fullscreen-toggle' digipublish/parts/header*.html || exit 1
+          grep -Fq 'toggleMenu()' digipublish/assets/js/site-interactivity.js || exit 1
+          grep -Fq "data-wp-on--click', 'actions.toggleMenu'" digipublish/functions.php || exit 1
           grep -Fq 'IntersectionObserver' digipublish/assets/js/site-interactions.js || exit 1
           grep -Fq 'Caards 1.0.4' THIRD_PARTY_NOTICES.md || exit 1
 
