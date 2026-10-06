@@ -62,41 +62,6 @@
           "slug": "dark-site",
           "name": "Canvas Dark",
           "color": "#30323E"
-        },
-        {
-          "slug": "ink",
-          "name": "Ink (Compatibility)",
-          "color": "#2F323D"
-        },
-        {
-          "slug": "body",
-          "name": "Body (Compatibility)",
-          "color": "#2F323D"
-        },
-        {
-          "slug": "muted",
-          "name": "Muted (Compatibility)",
-          "color": "#78848F"
-        },
-        {
-          "slug": "brand",
-          "name": "Brand (Compatibility)",
-          "color": "#2D5DE0"
-        },
-        {
-          "slug": "brand-dark",
-          "name": "Brand Dark (Compatibility)",
-          "color": "#1048DE"
-        },
-        {
-          "slug": "surface-soft",
-          "name": "Surface Soft (Compatibility)",
-          "color": "#F6F7F8"
-        },
-        {
-          "slug": "footer",
-          "name": "Footer (Compatibility)",
-          "color": "#1B1C1F"
         }
       ],
       "custom": true,
