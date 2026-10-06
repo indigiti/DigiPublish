@@ -1115,10 +1115,10 @@ function digipublish_core_metric_value( $post_id, $key ) {
 
 	if ( '_digipublish_views' === $key ) {
 		$value = apply_filters( 'digipublish_post_views', $value, $post_id, $key );
-		$value = apply_filters( 'techpress_post_views', $value, $post_id, '_techpress_views' );
+		$value = apply_filters( 'techpress_post_views', $value, $post_id, digipublish_core_meta_legacy_key( $key, 'post' ) );
 	} elseif ( '_digipublish_shares' === $key ) {
 		$value = apply_filters( 'digipublish_post_shares', $value, $post_id, $key );
-		$value = apply_filters( 'techpress_post_shares', $value, $post_id, '_techpress_shares' );
+		$value = apply_filters( 'techpress_post_shares', $value, $post_id, digipublish_core_meta_legacy_key( $key, 'post' ) );
 	} else {
 		$value = apply_filters( 'digipublish_post_metric', $value, $post_id, $key );
 		$value = apply_filters( 'techpress_post_metric', $value, $post_id, $key );
