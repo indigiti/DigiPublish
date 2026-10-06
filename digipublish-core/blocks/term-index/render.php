@@ -56,7 +56,7 @@ if ( $terms ) {
         echo '</div>';
     }
 } else {
-    $cats = techpress_editorial_get_top_categories( 12, false );
+    $cats = digipublish_core_get_top_categories( 12, false );
     if ( ! $cats ) {
         $cats = get_categories(
             array(
