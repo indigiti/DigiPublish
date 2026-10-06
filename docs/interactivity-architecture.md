@@ -75,11 +75,9 @@ The filesystem/Site Editor header remains a Core template part. DigiPublish inje
 
 The header template part is marked as an interactive root through `register_block_type_args`. Core then processes the complete template-part tree exactly once, including any nested interactive blocks. DigiPublish intentionally does not call `wp_interactivity_process_directives()` manually.
 
-### Classic compatibility boundary
+### Unified site interaction runtime
 
-`digipublish/assets/js/site-interactions.js` is restricted to Auto Load Next Post and is enqueued only when Auto Load Next is active on a singular post.
-
-Search, menu, scheme, Escape handling and sticky-header behavior must not return to that classic controller.
+`digipublish/assets/js/site-interactivity.js` now owns both shell behavior and Auto Load Next. The former classic `site-interactions.js` controller is retired; no separate frontend script is required for singular-post loading.
 
 ## Phase 3: Posts async pagination
 
@@ -87,8 +85,13 @@ The existing `digipublish/post-feed` store now also owns Load More and Infinite 
 
 The historical `data-dp-*` pagination hooks remain in markup during the 1.x compatibility window, but no classic Posts frontend controller is registered.
 
+## Phase 4: Auto Load Next
+
+Auto Load Next now uses the existing `digipublish/site` Interactivity store. A server-rendered runtime root carries the current post ID, loaded IDs, REST endpoint, loading/end state and accessible status. An Interactivity callback owns the near-viewport observer; the generator action fetches and inserts the next article fragment and preserves the existing URL/title history behavior.
+
+The REST route, adjacent-post semantics and per-post/global publishing settings are unchanged.
+
 ## Remaining migration slices
 
-1. Auto Load Next Post with history/REST lifecycle coverage.
-2. Social/gallery interactions where classic DOM lifecycle code still exists.
-3. Client-navigation compatibility declarations only after each migrated flow passes runtime tests.
+1. Social/gallery interactions where classic DOM lifecycle code still exists.
+2. Client-navigation compatibility declarations only after each migrated flow passes runtime tests.
