@@ -3,18 +3,11 @@
 
   if (!wp || !wp.hooks) return;
 
-  const legacyStructuralBlocks = new Set([
-    'digipublish/section',
-    'digipublish/section-content',
-    'digipublish/section-sidebar',
-    'digipublish/section-heading'
-  ]);
-
   wp.hooks.addFilter(
     'blocks.registerBlockType',
     'digipublish/native-visibility-support',
     function (settings, name) {
-      if (!name || name.indexOf('digipublish/') !== 0 || legacyStructuralBlocks.has(name)) {
+      if (!name || name.indexOf('digipublish/') !== 0) {
         return settings;
       }
 
