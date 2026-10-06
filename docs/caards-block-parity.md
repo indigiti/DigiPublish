@@ -59,3 +59,8 @@ New editorial composition uses:
 - WordPress Core spacing, color, border and visibility controls instead of parallel DigiPublish structural attributes.
 
 Replacement patterns are available as `digipublish/editorial-section-right`, `digipublish/editorial-section-left`, `digipublish/editorial-section-full`, `digipublish/section-heading-accent` and `digipublish/section-heading-accent-box`.
+
+
+## Responsive visibility modernization
+
+Caards-style per-device hide attributes remain supported for existing saved blocks, but new visibility choices use WordPress Core block visibility. Legacy viewport toggles appear only when an existing block already has one of those historical rules enabled. This preserves Caards behavior while removing the parallel DigiPublish visibility UI for new content.
