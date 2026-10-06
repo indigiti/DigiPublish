@@ -134,7 +134,7 @@ if ( 'read-next' === $layout ) {
 		}
 		echo '</div>';
 
-		echo '<a class="tp-read-next-card__image" href="' . esc_url( get_permalink( $id ) ) . '">';
+		echo '<a class="tp-read-next-card__image" href="' . esc_url( get_permalink( $id ) ) . '" aria-label="' . esc_attr( sprintf( __( 'Read %s', 'digipublish-core' ), get_the_title( $id ) ) ) . '">';
 		echo digipublish_core_image_markup( $id, digipublish_core_image_size( $attributes, 'medium_large' ), false, '(max-width: 680px) 82vw, (max-width: 1120px) 50vw, 25vw' );
 		echo '</a>';
 
