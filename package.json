@@ -2,7 +2,7 @@
   "name": "digipublish-development",
   "private": true,
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
     "wp-env": "wp-env",
