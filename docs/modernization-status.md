@@ -31,7 +31,7 @@ This document distinguishes **Caards feature parity** from the separate **DigiPu
 
 | Area | Required work |
 | --- | --- |
-| WordPress Interactivity API | Current interactions are first-party/browser-native but not yet implemented through the WordPress Interactivity API. |
+| WordPress Interactivity API | Migration started. The Posts carousel now uses WordPress Interactivity API directives/store/module with browser regression coverage. Load More/infinite pagination, social carousels, shell overlays and Auto Load Next still use first-party controllers pending staged migration. |
 | Real automated test harness | WordPress 7.1 PHPUnit integration, Playwright frontend/editor smoke tests, Axe accessibility checks and Lighthouse performance budgets are release workflows. WPCS/PHPCS, ESLint/Stylelint and visual-regression screenshots remain to be added. |
 | Accessibility certification | Axe now blocks serious/critical homepage violations in the browser release workflow. Broader template/editor/manual WCAG certification is still required. |
 | Core Web Vitals/performance budget | Lighthouse now enforces baseline performance (0.80), accessibility (0.90) and best-practices (0.90) scores against a deterministic WordPress fixture. Per-template/CWV trend budgets remain future work. |

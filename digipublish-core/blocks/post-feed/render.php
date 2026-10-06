@@ -264,9 +264,26 @@ if ( $async_pagination && $query->max_num_pages > 1 ) {
 }
 
 if ( $is_carousel ) {
+	$total = count( $query->posts );
 	$extra['data-dp-carousel-autoplay'] = ! empty( $attributes['carouselAutoplay'] ) ? '1' : '0';
 	$extra['data-dp-carousel-dots'] = ! empty( $attributes['carouselDots'] ) ? '1' : '0';
 	$extra['data-dp-carousel-wrap'] = ! empty( $attributes['carouselWrap'] ) ? '1' : '0';
+
+	// WordPress Interactivity API owns the carousel lifecycle.
+	$extra['data-wp-interactive'] = 'digipublish/post-feed';
+	$extra['data-wp-context'] = wp_json_encode(
+		array(
+			'current'  => 0,
+			'total'    => $total,
+			'wrap'     => ! empty( $attributes['carouselWrap'] ),
+			'autoplay' => ! empty( $attributes['carouselAutoplay'] ),
+		)
+	);
+	$extra['data-wp-init'] = 'callbacks.init';
+	$extra['data-wp-on--pointerenter'] = 'actions.pauseAutoplay';
+	$extra['data-wp-on--pointerleave'] = 'actions.resumeAutoplay';
+	$extra['data-wp-on--focusin'] = 'actions.pauseAutoplay';
+	$extra['data-wp-on--focusout'] = 'actions.resumeAutoplay';
 }
 
 $wrapper = get_block_wrapper_attributes( $extra );
@@ -283,7 +300,7 @@ if ( $is_carousel ) {
 
 echo '<div class="tp-feed tp-feed--' . esc_attr( $layout ) . '"';
 if ( $is_carousel ) {
-	echo ' data-dp-post-carousel-track';
+	echo ' data-dp-post-carousel-track data-wp-on--scroll="callbacks.syncFromScroll"';
 }
 echo '>';
 
@@ -310,19 +327,18 @@ foreach ( $query->posts as $index => $post ) {
 echo '</div>';
 
 if ( $is_carousel ) {
-	$total = count( $query->posts );
 	echo '<div class="tp-post-feed__carousel-organizer">';
-	echo '<div class="tp-post-feed__carousel-counter" aria-live="polite"><span data-dp-carousel-current>1</span><span aria-hidden="true"> / </span><span>' . esc_html( $total ) . '</span></div>';
+	echo '<div class="tp-post-feed__carousel-counter" aria-live="polite"><span data-dp-carousel-current data-wp-text="state.currentDisplay">1</span><span aria-hidden="true"> / </span><span>' . esc_html( $total ) . '</span></div>';
 	if ( ! empty( $attributes['carouselDots'] ) ) {
 		echo '<div class="tp-post-feed__carousel-dots" role="tablist" aria-label="' . esc_attr__( 'Carousel slides', 'digipublish-core' ) . '">';
 		for ( $i = 0; $i < $total; $i++ ) {
-			echo '<button type="button" class="tp-post-feed__carousel-dot' . ( 0 === $i ? ' is-active' : '' ) . '" data-dp-carousel-dot="' . esc_attr( $i ) . '" aria-label="' . esc_attr( sprintf( __( 'Go to slide %d', 'digipublish-core' ), $i + 1 ) ) . '"></button>';
+			echo '<button type="button" role="tab" class="tp-post-feed__carousel-dot' . ( 0 === $i ? ' is-active' : '' ) . '" data-dp-carousel-dot="' . esc_attr( $i ) . '" data-wp-on--click="actions.goTo" aria-selected="' . ( 0 === $i ? 'true' : 'false' ) . '" aria-label="' . esc_attr( sprintf( __( 'Go to slide %d', 'digipublish-core' ), $i + 1 ) ) . '"></button>';
 		}
 		echo '</div>';
 	}
 	echo '<div class="tp-post-feed__carousel-nav" aria-label="' . esc_attr__( 'Posts carousel navigation', 'digipublish-core' ) . '">';
-	echo '<button type="button" class="tp-post-feed__carousel-button" data-dp-carousel-prev aria-label="' . esc_attr__( 'Previous posts', 'digipublish-core' ) . '">←</button>';
-	echo '<button type="button" class="tp-post-feed__carousel-button" data-dp-carousel-next aria-label="' . esc_attr__( 'Next posts', 'digipublish-core' ) . '">→</button>';
+	echo '<button type="button" class="tp-post-feed__carousel-button" data-dp-carousel-prev data-wp-on--click="actions.previous" aria-label="' . esc_attr__( 'Previous posts', 'digipublish-core' ) . '">←</button>';
+	echo '<button type="button" class="tp-post-feed__carousel-button" data-dp-carousel-next data-wp-on--click="actions.next" aria-label="' . esc_attr__( 'Next posts', 'digipublish-core' ) . '">→</button>';
 	echo '</div></div></div>';
 }
 

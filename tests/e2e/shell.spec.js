@@ -61,14 +61,34 @@ test('editor loads DigiPublish block registrations and modular editor APIs', asy
 });
 
 
-test('Post Feed carousel next control advances the current slide', async ({ page }) => {
+test('Post Feed carousel is owned by the WordPress Interactivity API', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+
   await page.goto('/digipublish-carousel-test/');
   const carousel = page.locator('.tp-post-feed--carousel').first();
   await expect(carousel).toBeVisible();
+  await expect(carousel).toHaveAttribute('data-wp-interactive', 'digipublish/post-feed');
 
   const counter = carousel.locator('[data-dp-carousel-current]');
   const next = carousel.locator('[data-dp-carousel-next]');
+  const prev = carousel.locator('[data-dp-carousel-prev]');
+  const dots = carousel.locator('[data-dp-carousel-dot]');
+
   await expect(counter).toHaveText('1');
+  await expect(dots.nth(0)).toHaveAttribute('aria-selected', 'true');
+
   await next.click();
   await expect(counter).toHaveText('2');
+  await expect(dots.nth(1)).toHaveClass(/is-active/);
+  await expect(dots.nth(1)).toHaveAttribute('aria-selected', 'true');
+
+  await prev.click();
+  await expect(counter).toHaveText('1');
+
+  await dots.nth(2).click();
+  await expect(counter).toHaveText('3');
+  await expect(dots.nth(2)).toHaveAttribute('aria-selected', 'true');
+
+  expect(errors).toEqual([]);
 });
