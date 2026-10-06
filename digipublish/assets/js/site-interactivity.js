@@ -37,7 +37,7 @@ function bindNextPostHistory( section ) {
 	observer.observe( section );
 }
 
-const { state } = store( 'digipublish/site', {
+const { state, actions } = store( 'digipublish/site', {
 	state: {
 		searchOpen: false,
 		menuOpen: false,
