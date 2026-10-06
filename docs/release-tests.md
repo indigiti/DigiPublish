@@ -34,6 +34,7 @@ Requires Docker and Node.js 22+.
 npm install
 npx wp-env start
 npx wp-env run tests-cli --env-cwd=wp-content/plugins/digipublish-core phpunit -c phpunit.xml.dist
+npx wp-env run cli wp theme activate digipublish
 npx wp-env run cli --env-cwd=wp-content/plugins/digipublish-core wp eval-file tests/fixtures/seed.php
 npx playwright install chromium
 npm run test:e2e
