@@ -560,6 +560,27 @@ jobs:
           }
 
 
+      - name: Guard release test foundation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f package.json
+          test -f .wp-env.json
+          test -f playwright.config.js
+          test -f digipublish-core/phpunit.xml.dist
+          test -f digipublish-core/tests/bootstrap.php
+          test -f tests/e2e/shell.spec.js
+          test -f tests/e2e/accessibility.spec.js
+          test -f tests/performance/lighthouse.mjs
+          test -f .github/workflows/release-tests.yml
+
+          grep -Fq '"core": "WordPress/WordPress#7.1"' .wp-env.json || exit 1
+          grep -Fq '@wordpress/env' package.json || exit 1
+          grep -Fq '@playwright/test' package.json || exit 1
+          grep -Fq '@axe-core/playwright' package.json || exit 1
+          grep -Fq '"lighthouse"' package.json || exit 1
+
+
       - name: Guard dependency-free runtime
         shell: bash
         run: |
