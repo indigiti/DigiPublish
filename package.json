@@ -1,0 +1,20 @@
+{
+  "name": "digipublish-development",
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "wp-env": "wp-env",
+    "test:e2e": "playwright test tests/e2e",
+    "test:performance": "node tests/performance/lighthouse.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0",
+    "@wordpress/env": "11.16.0",
+    "chrome-launcher": "1.2.1",
+    "lighthouse": "13.5.0"
+  },
+  "type": "module"
+}

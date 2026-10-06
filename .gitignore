@@ -1,0 +1,21 @@
+# Development/test dependencies
+/node_modules/
+/digipublish-core/vendor/
+
+# WordPress wp-env runtime state
+/.wp-env/
+
+# PHPUnit
+/digipublish-core/.phpunit.cache/
+/digipublish-core/.phpunit.result.cache
+
+# Browser/performance test outputs
+/artifacts/
+/test-results/
+/playwright-report/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

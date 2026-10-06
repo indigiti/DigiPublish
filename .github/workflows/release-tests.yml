@@ -1,0 +1,73 @@
+name: DigiPublish Release Tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: digipublish-release-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: WordPress 7.1.2 Runtime Release Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Setup PHP test tooling
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+          coverage: none
+
+      - name: Install PHP test dependencies
+        run: composer install --working-dir=digipublish-core --no-interaction --prefer-dist --no-progress
+
+      - name: Install test tooling
+        run: npm install --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Start WordPress 7.1.2 environment
+        run: npx wp-env start
+
+      - name: Run WordPress PHPUnit suite
+        run: npx wp-env run tests-cli --env-cwd=wp-content/plugins/digipublish-core ./vendor/bin/phpunit -c phpunit.xml.dist
+
+      - name: Activate DigiPublish theme
+        run: npx wp-env run cli wp theme activate digipublish
+
+      - name: Seed deterministic editorial content
+        run: npx wp-env run cli --env-cwd=wp-content/plugins/digipublish-core wp eval-file tests/fixtures/seed.php
+
+      - name: Run Playwright and Axe release tests
+        run: npm run test:e2e
+
+      - name: Run Lighthouse release budget
+        run: npm run test:performance
+
+      - name: Upload runtime reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: digipublish-release-test-artifacts
+          path: |
+            artifacts/
+            test-results/
+          if-no-files-found: ignore
+
+      - name: Stop WordPress environment
+        if: always()
+        run: npx wp-env stop || true
