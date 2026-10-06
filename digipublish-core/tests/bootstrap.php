@@ -5,6 +5,15 @@ if ( ! $tests_dir ) {
 	exit( 1 );
 }
 
+$autoload = dirname( __DIR__ ) . '/vendor/autoload.php';
+if ( ! file_exists( $autoload ) ) {
+	fwrite( STDERR, "Composer test dependencies are missing. Run composer install in digipublish-core.\n" );
+	exit( 1 );
+}
+require_once $autoload;
+
+define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', dirname( __DIR__ ) . '/vendor/yoast/phpunit-polyfills' );
+
 require_once $tests_dir . '/includes/functions.php';
 
 tests_add_filter(
