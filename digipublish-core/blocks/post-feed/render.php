@@ -246,6 +246,20 @@ if ( $styles ) {
 }
 
 $async_pagination = in_array( $pagination_type, array( 'ajax', 'infinite' ), true );
+$interactive = $is_carousel || ( $async_pagination && $query->max_num_pages > 1 );
+$interactive_context = array(
+	'current'    => 0,
+	'total'      => 0,
+	'wrap'       => false,
+	'autoplay'   => false,
+	'page'       => 1,
+	'maxPages'   => max( 1, (int) $query->max_num_pages ),
+	'loading'    => false,
+	'ended'      => false,
+	'status'     => '',
+	'pagination' => $pagination_type,
+);
+
 if ( $async_pagination && $query->max_num_pages > 1 ) {
 	$async_attributes = $attributes;
 	$async_attributes['paginationType'] = $pagination_type;
@@ -261,6 +275,7 @@ if ( $async_pagination && $query->max_num_pages > 1 ) {
 	$extra['data-dp-max-pages'] = (string) $query->max_num_pages;
 	$extra['data-dp-rest-url'] = esc_url_raw( rest_url( 'digipublish/v1/post-feed' ) );
 	$extra['data-dp-attributes'] = wp_json_encode( $async_attributes );
+	$extra['data-wp-bind--aria-busy'] = 'context.loading';
 }
 
 if ( $is_carousel ) {
@@ -268,22 +283,20 @@ if ( $is_carousel ) {
 	$extra['data-dp-carousel-autoplay'] = ! empty( $attributes['carouselAutoplay'] ) ? '1' : '0';
 	$extra['data-dp-carousel-dots'] = ! empty( $attributes['carouselDots'] ) ? '1' : '0';
 	$extra['data-dp-carousel-wrap'] = ! empty( $attributes['carouselWrap'] ) ? '1' : '0';
-
-	// WordPress Interactivity API owns the carousel lifecycle.
-	$extra['data-wp-interactive'] = 'digipublish/post-feed';
-	$extra['data-wp-context'] = wp_json_encode(
-		array(
-			'current'  => 0,
-			'total'    => $total,
-			'wrap'     => ! empty( $attributes['carouselWrap'] ),
-			'autoplay' => ! empty( $attributes['carouselAutoplay'] ),
-		)
-	);
-	$extra['data-wp-init'] = 'callbacks.init';
 	$extra['data-wp-on--pointerenter'] = 'actions.pauseAutoplay';
 	$extra['data-wp-on--pointerleave'] = 'actions.resumeAutoplay';
 	$extra['data-wp-on--focusin'] = 'actions.pauseAutoplay';
 	$extra['data-wp-on--focusout'] = 'actions.resumeAutoplay';
+
+	$interactive_context['total'] = $total;
+	$interactive_context['wrap'] = ! empty( $attributes['carouselWrap'] );
+	$interactive_context['autoplay'] = ! empty( $attributes['carouselAutoplay'] );
+}
+
+if ( $interactive ) {
+	$extra['data-wp-interactive'] = 'digipublish/post-feed';
+	$extra['data-wp-context'] = wp_json_encode( $interactive_context );
+	$extra['data-wp-init'] = 'callbacks.init';
 }
 
 $wrapper = get_block_wrapper_attributes( $extra );
@@ -363,11 +376,11 @@ if ( 'numbers' === $pagination_type && $query->max_num_pages > 1 ) {
 
 if ( $async_pagination && $query->max_num_pages > 1 ) {
 	if ( 'ajax' === $pagination_type ) {
-		echo '<div class="tp-post-feed__load-more-wrap"><button type="button" class="tp-post-feed__load-more" data-dp-load-more>' . esc_html__( 'Load More', 'digipublish-core' ) . '</button></div>';
+		echo '<div class="tp-post-feed__load-more-wrap"><button type="button" class="tp-post-feed__load-more" data-dp-load-more data-wp-on--click="actions.loadNext" data-wp-bind--disabled="context.loading" data-wp-bind--hidden="context.ended">' . esc_html__( 'Load More', 'digipublish-core' ) . '</button></div>';
 	} else {
-		echo '<div class="tp-post-feed__infinite-sentinel" data-dp-infinite-sentinel aria-hidden="true"></div>';
+		echo '<div class="tp-post-feed__infinite-sentinel" data-dp-infinite-sentinel data-wp-init="callbacks.observeInfinite" data-wp-bind--hidden="context.ended" aria-hidden="true"></div>';
 	}
-	echo '<div class="tp-post-feed__load-status" data-dp-load-status aria-live="polite"></div>';
+	echo '<div class="tp-post-feed__load-status" data-dp-load-status data-wp-text="context.status" aria-live="polite"></div>';
 }
 
 echo '</section>';
