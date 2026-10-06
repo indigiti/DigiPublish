@@ -192,7 +192,7 @@ if ( 'meta-list' === $layout ) {
 		echo '<a class="' . esc_attr( $class ) . '" href="' . esc_url( get_permalink( $post_id ) ) . '" aria-label="' . esc_attr( get_the_title( $post_id ) ) . '">';
 		echo 'digipublish_gallery' === get_post_type( $post_id )
 			? digipublish_core_gallery_cover_image_markup( $post_id, 'medium', '(max-width: 1120px) 28vw, 92px' )
-			: techpress_editorial_image_markup( $post_id, digipublish_core_image_size( $attributes, 'medium' ), false, '(max-width: 1120px) 28vw, 92px' );
+			: digipublish_core_image_markup( $post_id, digipublish_core_image_size( $attributes, 'medium' ), false, '(max-width: 1120px) 28vw, 92px' );
 		if ( 'digipublish_gallery' === get_post_type( $post_id ) ) {
 			$photo_count = digipublish_core_get_gallery_slide_count( $post_id );
 			if ( $photo_count ) {
