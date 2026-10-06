@@ -1,0 +1,51 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "title": "DigiPublish Dark",
+  "styles": {
+    "color": {
+      "background": "#30323E",
+      "text": "#F5F6F7"
+    },
+    "elements": {
+      "heading": {
+        "color": {
+          "text": "#FFFFFF"
+        }
+      },
+      "link": {
+        "color": {
+          "text": "#F5F6F7"
+        },
+        ":hover": {
+          "color": {
+            "text": "#8FA9FF"
+          }
+        }
+      },
+      "button": {
+        "color": {
+          "background": "#2D5DE0",
+          "text": "#FFFFFF"
+        }
+      }
+    },
+    "blocks": {
+      "core/group": {
+        "color": {
+          "text": "#F5F6F7"
+        }
+      },
+      "core/post-title": {
+        "color": {
+          "text": "#FFFFFF"
+        }
+      },
+      "core/navigation": {
+        "color": {
+          "text": "#F5F6F7"
+        }
+      }
+    }
+  }
+}
