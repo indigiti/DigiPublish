@@ -15,5 +15,6 @@
     "@wordpress/env": "11.16.0",
     "chrome-launcher": "1.2.1",
     "lighthouse": "13.5.0"
-  }
+  },
+  "type": "module"
 }
