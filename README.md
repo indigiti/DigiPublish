@@ -120,7 +120,7 @@ See `docs/native-visibility-transition.md`.
 
 DigiPublish uses `theme.json` and Global Styles as the primary visual configuration layer. Canonical theme CSS consumes `--dp-*` design tokens; historical `--dp-caards-*` variables remain aliases only for saved custom CSS compatibility.
 
-Visual configuration such as colors, typography, templates, headers and footers belongs in the Site Editor. The active palette exposes only canonical DigiPublish colors; historical color slugs remain CSS compatibility aliases instead of duplicate editor choices. The Appearance → DigiPublish Publishing page is limited to non-visual publishing behavior. A native `DigiPublish Dark` Global Style variation is available under `digipublish/styles/dark.json`.
+Visual configuration such as colors, typography, templates, headers and footers belongs in the Site Editor. The active palette exposes only canonical DigiPublish colors; historical color slugs remain CSS compatibility aliases instead of duplicate editor choices. The Appearance → DigiPublish Publishing page is limited to non-visual publishing behavior. Native `DigiPublish Dark`, `DigiPublish Editorial`, and `DigiPublish High Contrast` Global Style variations are available under `digipublish/styles/`.
 
 The default front page and posts home now use the canonical `digipublish/editorial-home` pattern. The former `digipublish/caards-home` slug remains hidden from the inserter for saved-content compatibility.
 
@@ -130,3 +130,8 @@ The default front page and posts home now use the canonical `digipublish/editori
 Caards capability parity and DigiPublish architecture modernization are tracked separately. The dependency-free Gutenberg/Site Editor foundation is in place, while namespace/data compatibility, editor modularization, Interactivity API adoption and full automated release testing remain active 1.0 work.
 
 See `docs/modernization-status.md`.
+
+
+## Publishing configuration
+
+Only non-visual publishing behavior remains under Appearance → DigiPublish Publishing. Header/footer composition, templates, colors, typography, spacing and style presets are owned by the Site Editor and Global Styles. Legacy visual option keys are isolated in the compatibility layer and are not active design settings.
