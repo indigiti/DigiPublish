@@ -42,3 +42,15 @@ CI currently enforces:
 - extracted editor/query modules remain present.
 
 Budgets should decrease as further modules are extracted.
+
+
+## Editor module ownership
+
+The editor runtime is being decomposed without changing saved block content:
+
+- `assets/editor-query.js` owns reusable query controls.
+- `assets/editor-native.js` owns native block-support registration.
+- `assets/editor-design.js` owns shared layout, meta, typography, thumbnail and legacy-visibility inspector controls.
+- `assets/editor.js` remains the registration/block-specific layer and has a CI size budget below 130 KB.
+
+Further block-specific extraction is planned before 1.0.
