@@ -40,7 +40,7 @@ if ( ! empty( $attributes['relatedPosts'] ) && is_singular() ) {
 	$query_attributes['_relatedPostId'] = get_queried_object_id();
 }
 
-$query = new WP_Query( techpress_editorial_post_query_args( $query_attributes ) );
+$query = new WP_Query( digipublish_core_query_post_args( $query_attributes ) );
 if ( ! $query->have_posts() ) {
 	return;
 }

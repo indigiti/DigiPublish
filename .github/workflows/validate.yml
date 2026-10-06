@@ -51,6 +51,53 @@ jobs:
             node --check "$file"
           done < <(find digipublish digipublish-core -type f -name '*.js' -print0)
 
+      - name: Guard editorial query architecture
+        shell: bash
+        run: |
+          set -euo pipefail
+          core="digipublish-core/techpress-editorial.php"
+          query="digipublish-core/includes/query.php"
+          editor="digipublish-core/assets/editor.js"
+          editor_query="digipublish-core/assets/editor-query.js"
+
+          test -f "$query"
+          test -f "$editor_query"
+          grep -Fq "require_once DIGIPUBLISH_CORE_DIR . 'includes/query.php'" "$core" || exit 1
+
+          for fn in digipublish_core_query_post_args digipublish_core_query_feed_args digipublish_core_query_feed_posts digipublish_core_query_view_all_url; do
+            grep -Fq "function $fn" "$query" || {
+              echo "Missing canonical query service function: $fn"
+              exit 1
+            }
+          done
+
+          # Query-heavy blocks must consume canonical DigiPublish query APIs.
+          grep -Fq 'digipublish_core_query_post_args' digipublish-core/blocks/post-feed/render.php || exit 1
+          grep -Fq 'digipublish_core_query_post_args' digipublish-core/blocks/featured-posts/render.php || exit 1
+          grep -Fq 'digipublish_core_query_feed_posts' digipublish-core/blocks/editorial-feed/render.php || exit 1
+          grep -Fq 'digipublish_core_query_feed_posts' digipublish-core/blocks/sidebar-feed/render.php || exit 1
+
+          # Legacy query names may exist only as compatibility wrappers in query.php.
+          if grep -R --line-number --include='*.php' -E 'techpress_editorial_(post_query_args|feed_query_args|feed_get_posts|feed_view_all_url)[[:space:]]*\(' digipublish-core/blocks; then
+            echo "A block renderer bypasses the canonical DigiPublish query service."
+            exit 1
+          fi
+
+          grep -Fq "digipublish-core-editor-query" "$core" || exit 1
+          grep -Fq "DigiPublishEditorQuery" "$editor_query" || exit 1
+          grep -Fq "DigiPublishEditorQuery" "$editor" || exit 1
+
+          # Keep the main bootstrap/editor from absorbing the extracted modules again.
+          test "$(wc -c < "$core")" -lt 60000 || {
+            echo "Core bootstrap exceeded the architectural size budget."
+            exit 1
+          }
+          test "$(wc -c < "$editor")" -lt 138000 || {
+            echo "Main editor bundle exceeded the current size budget."
+            exit 1
+          }
+
+
       - name: Guard dependency-free runtime
         shell: bash
         run: |
@@ -147,6 +194,7 @@ jobs:
           set -euo pipefail
           block="digipublish-core/blocks/post-feed/block.json"
           editor="digipublish-core/assets/editor.js"
+          editor_query="digipublish-core/assets/editor-query.js"
           render="digipublish-core/blocks/post-feed/render.php"
           css="digipublish-core/blocks/post-feed/style.css"
           view="digipublish-core/blocks/post-feed/view.js"
@@ -184,7 +232,7 @@ jobs:
           done
 
           for label in "Block Settings" "Load More" "Infinite Load" "Top Meta Type" "Author" "Category" "Count" "Display compact post meta" "Excerpt length" "Heading Font Size" "Image Orientation" "Enable autoplay" "Enable bullets" "Enable wrap-around" "Filter by Formats" "Filter by Taxonomy" "Filter by Terms" "Display Related Posts" "Avoid Duplicate Posts" "Spacings" "Borders" "Responsive Settings" "Additional CSS"; do
-            grep -Fq "$label" "$editor" || {
+            grep -Fq "$label" "$editor" "$editor_query" || {
               echo "Missing Posts inspector control: $label"
               exit 1
             }

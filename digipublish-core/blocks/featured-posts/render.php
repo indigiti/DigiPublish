@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-$args = techpress_editorial_post_query_args( $attributes );
+$args = digipublish_core_query_post_args( $attributes );
 $need = max( 1, min( 12, (int) ( $attributes['postsToShow'] ?? 7 ) ) );
 
 /*

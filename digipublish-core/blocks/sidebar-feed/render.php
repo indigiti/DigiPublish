@@ -36,76 +36,10 @@ $feed_attributes = array(
 	'period'          => $period,
 	'avoidDuplicates' => false,
 	'fallbackRandom'  => true,
+	'postTypes'       => $post_types,
 );
 
-if ( 'post' === $content_type ) {
-	$posts = techpress_editorial_feed_get_posts( $feed_attributes );
-} else {
-	$query_args = array(
-		'post_type'              => $post_types,
-		'post_status'            => 'publish',
-		'posts_per_page'         => $feed_attributes['postsToShow'],
-		'orderby'                => $order_by,
-		'order'                  => 'DESC',
-		'ignore_sticky_posts'    => true,
-		'no_found_rows'          => true,
-		'update_post_meta_cache' => true,
-		'update_post_term_cache' => true,
-	);
-
-	$current_id = is_singular( array( 'post', 'digipublish_gallery' ) ) ? get_queried_object_id() : 0;
-	if ( $current_id ) {
-		$query_args['post__not_in'] = array( $current_id );
-	}
-
-	if ( 'category' === $source_mode && ! empty( $attributes['categoryId'] ) ) {
-		$query_args['cat'] = absint( $attributes['categoryId'] );
-	} elseif ( 'current' === $source_mode && $current_id ) {
-		$categories = wp_get_post_categories( $current_id );
-		if ( $categories ) {
-			$query_args['category__in'] = array( (int) $categories[0] );
-		}
-	}
-
-	if ( in_array( $period, array( 'day', 'week', 'month' ), true ) ) {
-		$days = 'day' === $period ? 1 : ( 'week' === $period ? 7 : 30 );
-		$query_args['date_query'] = array(
-			array(
-				'after'     => $days . ' days ago',
-				'inclusive' => true,
-			),
-		);
-	}
-
-	$query = new WP_Query( $query_args );
-	$posts = $query->posts;
-
-	if ( count( $posts ) < $count ) {
-		$fallback_args = $query_args;
-		unset( $fallback_args['category__in'], $fallback_args['cat'], $fallback_args['date_query'] );
-		$fallback_args['posts_per_page'] = max( 24, $count * 5 );
-		$fallback_args['orderby'] = 'date';
-		$fallback_args['post__not_in'] = array_values(
-			array_unique(
-				array_merge(
-					wp_list_pluck( $posts, 'ID' ),
-					$current_id ? array( $current_id ) : array()
-				)
-			)
-		);
-		$fallback = new WP_Query( $fallback_args );
-		$pool = $fallback->posts;
-		if ( $pool ) {
-			shuffle( $pool );
-			foreach ( $pool as $post ) {
-				if ( count( $posts ) >= $count ) {
-					break;
-				}
-				$posts[] = $post;
-			}
-		}
-	}
-}
+$posts = digipublish_core_query_feed_posts( $feed_attributes );
 
 if ( 'image-grid' === $layout ) {
 	$posts = array_values(
@@ -123,7 +57,7 @@ if ( 'image-grid' === $layout ) {
 	);
 
 	if ( count( $posts ) < $count ) {
-		$args = techpress_editorial_feed_query_args( $feed_attributes );
+		$args = digipublish_core_query_feed_args( $feed_attributes );
 		$args['post_type'] = $post_types;
 		$args['posts_per_page'] = $count;
 		if ( 'post' === $content_type ) {
@@ -159,7 +93,7 @@ if ( 'image-grid' === $layout ) {
 			$latest_attributes = $feed_attributes;
 			$latest_attributes['sourceMode'] = 'latest';
 			$latest_attributes['categoryId'] = 0;
-			$latest_args = techpress_editorial_feed_query_args( $latest_attributes );
+			$latest_args = digipublish_core_query_feed_args( $latest_attributes );
 			$latest_args['post_type'] = $post_types;
 			$latest_args['posts_per_page'] = $count - count( $posts );
 			if ( 'post' === $content_type ) {
