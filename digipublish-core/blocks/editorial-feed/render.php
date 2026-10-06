@@ -9,7 +9,7 @@ if ( ! in_array( $layout, $allowed_layouts, true ) ) {
 	$layout = 'cards-4';
 }
 
-$posts = techpress_editorial_feed_get_posts( $attributes );
+$posts = digipublish_core_query_feed_posts( $attributes );
 if ( empty( $posts ) ) {
 	if ( is_admin() ) {
 		$empty_wrapper = get_block_wrapper_attributes( array( 'class' => 'tp-editorial-feed tp-editorial-feed--empty' ) );
@@ -20,7 +20,7 @@ if ( empty( $posts ) ) {
 $item_count = count( $posts );
 $heading = isset( $attributes['heading'] ) ? trim( (string) $attributes['heading'] ) : '';
 $description = isset( $attributes['description'] ) ? trim( (string) $attributes['description'] ) : '';
-$view_all = techpress_editorial_feed_view_all_url( $attributes );
+$view_all = digipublish_core_query_view_all_url( $attributes );
 $show_view_all = ! empty( $attributes['showViewAll'] ) && $view_all;
 $view_all_label = ! empty( $attributes['viewAllLabel'] ) ? (string) $attributes['viewAllLabel'] : __( 'View All', 'digipublish-core' );
 
