@@ -1,0 +1,76 @@
+name: DigiPublish Release Tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  phpunit:
+    name: PHPUnit / WordPress 7.1
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install test tooling
+        run: npm install --no-audit --no-fund
+
+      - name: Start WordPress test environment
+        run: npx wp-env start
+
+      - name: Run WordPress PHPUnit suite
+        run: npx wp-env run tests-cli --env-cwd=wp-content/plugins/digipublish-core phpunit -c phpunit.xml.dist
+
+      - name: Stop WordPress environment
+        if: always()
+        run: npx wp-env stop || true
+
+  browser:
+    name: Browser / Accessibility / Performance
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install test tooling
+        run: npm install --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Start WordPress test environment
+        run: npx wp-env start
+
+      - name: Seed deterministic editorial content
+        run: npx wp-env run cli --env-cwd=wp-content/plugins/digipublish-core wp eval-file tests/fixtures/seed.php
+
+      - name: Run Playwright and Axe release tests
+        run: npm run test:e2e
+
+      - name: Run Lighthouse release budget
+        run: npm run test:performance
+
+      - name: Upload browser reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: digipublish-release-test-artifacts
+          path: |
+            artifacts/
+            test-results/
+          if-no-files-found: ignore
+
+      - name: Stop WordPress environment
+        if: always()
+        run: npx wp-env stop || true
