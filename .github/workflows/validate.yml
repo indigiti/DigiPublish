@@ -161,15 +161,32 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          plugin="digipublish-core/techpress-editorial.php"
+          core="digipublish-core/techpress-editorial.php"
+          manifest="digipublish-core/blocks-manifest.php"
+
+          test -f "$manifest"
+          test -f digipublish-core/blocks-manifest-a.php
+          test -f digipublish-core/blocks-manifest-b.php
+          grep -Fq 'wp_register_block_types_from_metadata_collection' "$core" || exit 1
+          ! grep -Fq "$blocks = array(" "$core" || {
+            echo "Hardcoded block registration list returned."
+            exit 1
+          }
+
+          manifest_count="$(php -r '$m=require $argv[1]; echo count($m);' "$manifest")"
+          directory_count="$(find digipublish-core/blocks -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')"
+          test "$manifest_count" = "$directory_count" || {
+            echo "Block metadata manifest count ($manifest_count) does not match block directory count ($directory_count)."
+            exit 1
+          }
 
           for dir in digipublish-core/blocks/*; do
             [ -d "$dir" ] || continue
             block="$(basename "$dir")"
             test -f "$dir/block.json"
             jq -e --arg expected "digipublish/$block" '.name == $expected' "$dir/block.json" >/dev/null
-            grep -Fq "'$block'" "$plugin" || {
-              echo "Block directory is not registered: $block"
+            php -r '$m=require $argv[1]; exit(isset($m[$argv[2]]) ? 0 : 1);' "$manifest" "$block" || {
+              echo "Block directory is missing from metadata manifest: $block"
               exit 1
             }
           done
@@ -273,8 +290,8 @@ jobs:
             test -f "digipublish-core/blocks/$block/block.json"
             test -f "digipublish-core/blocks/$block/render.php"
             jq -e --arg expected "digipublish/$block" '.name == $expected' "digipublish-core/blocks/$block/block.json" >/dev/null
-            grep -Fq "'$block'" digipublish-core/techpress-editorial.php || {
-              echo "Caards-derived block not registered: $block"
+            php -r '$m=require $argv[1]; exit(isset($m[$argv[2]]) ? 0 : 1);' digipublish-core/blocks-manifest.php "$block" || {
+              echo "Caards-derived block missing from metadata manifest: $block"
               exit 1
             }
           done
@@ -352,8 +369,8 @@ jobs:
               exit 1
             }
             jq -e --arg expected "digipublish/$block" '.name == $expected' "digipublish-core/blocks/$block/block.json" >/dev/null
-            grep -Fq "'$block'" "$core" || {
-              echo "Caards parity block not registered: $block"
+            php -r '$m=require $argv[1]; exit(isset($m[$argv[2]]) ? 0 : 1);' digipublish-core/blocks-manifest.php "$block" || {
+              echo "Caards parity block missing from metadata manifest: $block"
               exit 1
             }
           done
@@ -560,7 +577,7 @@ jobs:
           set -euo pipefail
           test -f digipublish-core/blocks/sidebar-feed/block.json
           jq -e '.name == "digipublish/sidebar-feed"' digipublish-core/blocks/sidebar-feed/block.json >/dev/null
-          grep -Fq "'sidebar-feed'" digipublish-core/techpress-editorial.php || exit 1
+          php -r '$m=require $argv[1]; exit(isset($m["sidebar-feed"]) ? 0 : 1);' digipublish-core/blocks-manifest.php || exit 1
           grep -Fq 'digipublish/article-sidebar-widgets' digipublish/parts/sidebar.html || exit 1
           grep -Fq '"layout":"meta-list"' digipublish/patterns/article-sidebar-widgets.php || exit 1
           grep -Fq '"layout":"ranked-list"' digipublish/patterns/article-sidebar-widgets.php || exit 1
