@@ -359,7 +359,7 @@ function digipublish_core_query_feed_posts( $attributes ) {
 		$scope     = 'comment_count' === ( $query_args['orderby'] ?? '' ) ? 'popularity' : 'content';
 
 		if ( ! isset( $request_cache[ $cache_key ] ) ) {
-			$object_key = 'v' . techpress_editorial_cache_version( $scope ) . '_feed_' . $cache_key;
+			$object_key = 'v' . digipublish_core_cache_version( $scope ) . '_feed_' . $cache_key;
 			$post_ids   = wp_cache_get( $object_key, 'techpress_editorial' );
 			if ( false === $post_ids ) {
 				$query    = new WP_Query( $query_args );
