@@ -291,7 +291,8 @@ jobs:
           css="digipublish/assets/css/site.css"
           funcs="digipublish/functions.php"
           compat="digipublish/inc/compatibility.php"
-          interactions="digipublish/assets/js/site-interactions.js"
+          interactions="digipublish/assets/js/site-interactivity.js"
+          load_next="digipublish/assets/js/site-interactions.js"
 
           jq empty "$theme"
           jq empty digipublish/styles/dark.json
@@ -357,14 +358,16 @@ jobs:
           ! grep -Fq '"slug":"digipublish/caards-home"' digipublish/templates/front-page.html || exit 1
           ! grep -Fq '"slug":"digipublish/caards-home"' digipublish/templates/home.html || exit 1
 
-          # Canonical interaction controller is active; the old asset is gone.
+          # Canonical shell interactions use the WordPress Interactivity API.
           test -f "$interactions"
+          test -f "$load_next"
           test ! -f digipublish/assets/js/caards-shell.js
+          grep -Fq "assets/js/site-interactivity.js" "$funcs" || exit 1
+          grep -Fq "'digipublish-site-interactivity'" "$funcs" || exit 1
           grep -Fq "assets/js/site-interactions.js" "$funcs" || exit 1
-          grep -Fq "'digipublish-site-interactions'" "$funcs" || exit 1
           grep -Fq "'digiPublishSite'" "$funcs" || exit 1
           grep -Fq "digipublish-scheme" "$interactions" || exit 1
-          grep -Fq "legacySchemeKey='digipublish-caards-scheme'" "$interactions" || exit 1
+          grep -Fq "legacySchemeKey = 'digipublish-caards-scheme'" "$interactions" || exit 1
 
           # Site Editor owns visual configuration; admin page is behavior-only.
           grep -Fq "DigiPublish Publishing" "$funcs" || exit 1
