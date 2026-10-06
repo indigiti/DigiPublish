@@ -6,14 +6,14 @@ if ( ! ( $author instanceof WP_User ) ) {
     return;
 }
 $author_id = (int) $author->ID;
-$role = get_user_meta( $author_id, 'techpress_role', true );
+$role = digipublish_core_get_user_meta_compat( $author_id, 'digipublish_role' );
 if ( ! $role ) { $role = __( 'Contributor', 'digipublish-core' ); }
 $bio = get_the_author_meta( 'description', $author_id );
 $socials = array(
-    'linkedin' => array( 'label' => 'in', 'url' => get_user_meta( $author_id, 'techpress_linkedin', true ) ),
-    'x' => array( 'label' => 'X', 'url' => get_user_meta( $author_id, 'techpress_x', true ) ),
-    'instagram' => array( 'label' => '◎', 'url' => get_user_meta( $author_id, 'techpress_instagram', true ) ),
-    'youtube' => array( 'label' => '▶', 'url' => get_user_meta( $author_id, 'techpress_youtube', true ) ),
+    'linkedin' => array( 'label' => 'in', 'url' => digipublish_core_get_user_meta_compat( $author_id, 'digipublish_linkedin' ) ),
+    'x' => array( 'label' => 'X', 'url' => digipublish_core_get_user_meta_compat( $author_id, 'digipublish_x' ) ),
+    'instagram' => array( 'label' => '◎', 'url' => digipublish_core_get_user_meta_compat( $author_id, 'digipublish_instagram' ) ),
+    'youtube' => array( 'label' => '▶', 'url' => digipublish_core_get_user_meta_compat( $author_id, 'digipublish_youtube' ) ),
     'website' => array( 'label' => '◉', 'url' => get_the_author_meta( 'user_url', $author_id ) ),
 );
 ?>

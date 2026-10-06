@@ -25,7 +25,7 @@ This document distinguishes **Caards feature parity** from the separate **DigiPu
 | Block consolidation | 32 block types are still registered. Four structural blocks are compatibility-only, gallery-slide is a child block, and several query/presentation blocks still exist as separate public block types even though internals are increasingly shared. |
 | Editor modularization | Shared query/native support has been extracted, but `digipublish-core/assets/editor.js` is still about 134 KB. The original target was block-scoped editor modules/build outputs rather than one large registration bundle. |
 | Responsive architecture | Core visibility is native, but many blocks still store legacy `hideDesktop/hideLaptop/hideTablet/hideMobile` attributes and custom desktop/laptop/tablet/mobile column/gap settings. |
-| Legacy namespace cleanup | Canonical callable functions/constants are being moved to `digipublish*`; stored CPT/taxonomy/meta identifiers and many frontend `dp-caards-*` CSS classes still require compatibility-safe migration. |
+| Legacy namespace cleanup | Active runtime classes are canonical `dp-*`, callable APIs are canonical `digipublish*`, and author/attribution/metric meta uses canonical keys with dual-read/write compatibility. Dictionary CPT/taxonomy IDs remain intentionally deferred. |
 
 ## Not yet complete
 
@@ -35,8 +35,8 @@ This document distinguishes **Caards feature parity** from the separate **DigiPu
 | Real automated test harness | CI has extensive syntax/static regression guards, but there is no PHPUnit/WP integration, Playwright browser/editor, accessibility, WPCS/PHPCS, ESLint/Stylelint or visual-regression harness yet. |
 | Accessibility certification | Existing code includes accessibility considerations, but there is no automated/manual release gate proving WCAG behavior across editor/frontend interactions. |
 | Core Web Vitals/performance budget | Architecture is performance-oriented, but there is no repeatable Lighthouse/CWV release budget in CI. |
-| Stored identifier migration | `tech_term`, `tech_topic`, `techpress_role`, `_techpress_views`, `_techpress_shares`, attribution meta keys and historical option keys cannot be renamed safely without an explicit dual-read/write and migration strategy. |
-| Full Caards CSS-class retirement | `dp-caards-*` remains in templates/rendered markup for compatibility. New canonical classes must be introduced alongside old classes before selectors can be retired. |
+| Dictionary identifier migration | `tech_term` and `tech_topic` remain stored database identifiers and need a dedicated post-type/taxonomy/rewrite migration with rollback tests. |
+| Full compatibility retirement | Historical meta keys, `dp-caards-*` selector aliases, callable aliases and option fallbacks remain supported during the 1.x compatibility window even though active code uses canonical identifiers. |
 
 ## Release rule
 

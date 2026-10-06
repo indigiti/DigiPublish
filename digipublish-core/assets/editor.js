@@ -1601,8 +1601,8 @@
     }, []);
     if (state.postType !== 'post' && state.postType !== 'digipublish_gallery') return null;
 
-    const type = state.meta._techpress_attribution_type || '';
-    const userId = parseInt(state.meta._techpress_attribution_user || 0, 10);
+    const type = state.meta._digipublish_attribution_type || state.meta._techpress_attribution_type || '';
+    const userId = parseInt(state.meta._digipublish_attribution_user || state.meta._techpress_attribution_user || 0, 10);
     const userOptions = [{ label: __('Select person', 'digipublish-core'), value: 0 }];
     if (Array.isArray(users)) users.forEach(function (user) { userOptions.push({ label: user.name, value: user.id }); });
 
@@ -1619,9 +1619,9 @@
           { label: __('Verified by', 'digipublish-core'), value: 'verified' },
           { label: __('Reported by', 'digipublish-core'), value: 'reported' }
         ],
-        onChange: function (value) { updateMeta({ _techpress_attribution_type: value, _techpress_attribution_user: value ? userId : 0 }); }
+        onChange: function (value) { updateMeta({ _digipublish_attribution_type: value, _digipublish_attribution_user: value ? userId : 0 }); }
       }),
-      type ? el(SelectControl, { label: __('Person', 'digipublish-core'), value: userId, options: userOptions, onChange: function (value) { updateMeta({ _techpress_attribution_user: parseInt(value, 10) || 0 }); } }) : null,
+      type ? el(SelectControl, { label: __('Person', 'digipublish-core'), value: userId, options: userOptions, onChange: function (value) { updateMeta({ _digipublish_attribution_user: parseInt(value, 10) || 0 }); } }) : null,
       type && !userId ? el(Notice, { status: 'warning', isDismissible: false }, __('Select the person who should receive this credit.', 'digipublish-core')) : null
     );
   }

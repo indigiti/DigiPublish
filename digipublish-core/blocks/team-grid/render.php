@@ -9,7 +9,7 @@ if ( ! empty( $attributes['heading'] ) ) { echo '<h2 class="dp-team__heading">' 
 if ( $users ) {
 	echo '<div class="dp-team-grid">';
 	foreach ( $users as $user ) {
-		$role = get_user_meta( $user->ID, 'techpress_role', true );
+		$role = digipublish_core_get_user_meta_compat( $user->ID, 'digipublish_role' );
 		$bio = get_the_author_meta( 'description', $user->ID );
 		echo '<article class="dp-team-card"><a href="' . esc_url( get_author_posts_url( $user->ID ) ) . '">' . get_avatar( $user->ID, 180 ) . '</a><h3 class="dp-team-card__name"><a href="' . esc_url( get_author_posts_url( $user->ID ) ) . '">' . esc_html( $user->display_name ) . '</a></h3>';
 		if ( ! empty( $attributes['showRole'] ) && $role ) { echo '<div class="dp-team-card__role">' . esc_html( $role ) . '</div>'; }

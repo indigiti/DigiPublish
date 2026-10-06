@@ -11,13 +11,13 @@ if ( ! $post_id || ! in_array( get_post_type( $post_id ), array( 'post', 'digipu
 
 $author_id   = (int) get_post_field( 'post_author', $post_id );
 $author      = $author_id ? get_userdata( $author_id ) : null;
-$author_role = $author_id ? get_user_meta( $author_id, 'techpress_role', true ) : '';
+$author_role = $author_id ? digipublish_core_get_user_meta_compat( $author_id, 'digipublish_role' ) : '';
 if ( ! $author_role ) {
 	$author_role = __( 'Contributor', 'digipublish-core' );
 }
 
-$attribution_type    = (string) get_post_meta( $post_id, '_techpress_attribution_type', true );
-$attribution_user_id = (int) get_post_meta( $post_id, '_techpress_attribution_user', true );
+$attribution_type    = (string) digipublish_core_get_post_meta_compat( $post_id, '_digipublish_attribution_type' );
+$attribution_user_id = (int) digipublish_core_get_post_meta_compat( $post_id, '_digipublish_attribution_user' );
 $attribution_label   = digipublish_core_attribution_label( $attribution_type );
 $attribution_user    = $attribution_user_id ? get_userdata( $attribution_user_id ) : null;
 $modified_iso        = get_the_modified_date( DATE_W3C, $post_id );

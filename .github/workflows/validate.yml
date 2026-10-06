@@ -141,6 +141,72 @@ jobs:
           grep -Fq "function digipublish_load_next_enabled" "$theme" || exit 1
 
 
+      - name: Guard canonical stored-data namespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          core="digipublish-core/techpress-editorial.php"
+          compat="digipublish-core/includes/data-compatibility.php"
+          editor="digipublish-core/assets/editor.js"
+
+          test -f "$compat"
+          grep -Fq "includes/data-compatibility.php" "$core" || exit 1
+
+          for canonical in             _digipublish_attribution_type             _digipublish_attribution_user             _digipublish_views             _digipublish_shares             digipublish_role             digipublish_linkedin             digipublish_x             digipublish_instagram             digipublish_youtube; do
+            grep -Fq "$canonical" "$compat" "$core" "$editor" digipublish-core/blocks/*/render.php || {
+              echo "Missing canonical stored-data key: $canonical"
+              exit 1
+            }
+          done
+
+          for legacy in             _techpress_attribution_type             _techpress_attribution_user             _techpress_views             _techpress_shares             techpress_role             techpress_linkedin             techpress_x             techpress_instagram             techpress_youtube; do
+            grep -Fq "$legacy" "$compat" "$editor" || {
+              echo "Missing required legacy stored-data compatibility key: $legacy"
+              exit 1
+            }
+          done
+
+          # Active PHP renderers/bootstrap do not directly read historical meta keys.
+          if grep -R --line-number -E "(_techpress_attribution_(type|user)|_techpress_(views|shares)|techpress_(role|linkedin|x|instagram|youtube))"             digipublish-core/blocks --include='*.php'; then
+            echo "Historical stored-data key leaked back into an active renderer."
+            exit 1
+          fi
+          ! grep -Eq "(_techpress_attribution_(type|user)|_techpress_(views|shares)|techpress_(role|linkedin|x|instagram|youtube))" "$core" || exit 1
+
+          # Editor writes canonical attribution keys; old keys are fallback reads only.
+          test "$(grep -c '_techpress_attribution_' "$editor")" -eq 2 || {
+            echo "Unexpected legacy attribution usage in editor."
+            exit 1
+          }
+          grep -Fq "updateMeta({ _digipublish_attribution_type:" "$editor" || exit 1
+          grep -Fq "updateMeta({ _digipublish_attribution_user:" "$editor" || exit 1
+
+          # Direct writes in either namespace are mirrored during the compatibility window.
+          grep -Fq "added_post_meta" "$compat" || exit 1
+          grep -Fq "updated_post_meta" "$compat" || exit 1
+          grep -Fq "deleted_post_meta" "$compat" || exit 1
+          grep -Fq "added_user_meta" "$compat" || exit 1
+          grep -Fq "updated_user_meta" "$compat" || exit 1
+          grep -Fq "deleted_user_meta" "$compat" || exit 1
+
+          # New cache traffic uses the canonical cache group.
+          for file in "$core" digipublish-core/includes/query.php digipublish-core/includes/gallery.php; do
+            ! grep -Fq "'techpress_editorial'" "$file" || {
+              echo "Historical cache group remains active: $file"
+              exit 1
+            }
+          done
+          grep -Fq "'digipublish_core'" "$core" || exit 1
+          grep -Fq "'digipublish_core'" digipublish-core/includes/query.php || exit 1
+          grep -Fq "'digipublish_core'" digipublish-core/includes/gallery.php || exit 1
+
+          # CPT/taxonomy identifiers are intentionally frozen until their own
+          # database/rewrite migration is designed and tested.
+          grep -Fq "register_post_type(" "$core" || exit 1
+          grep -Fq "'tech_term'" "$core" || exit 1
+          grep -Fq "'tech_topic'" "$core" || exit 1
+
+
       - name: Guard Core layout consolidation
         shell: bash
         run: |

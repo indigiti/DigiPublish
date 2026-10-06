@@ -142,3 +142,10 @@ Only non-visual publishing behavior remains under Appearance → DigiPublish Pub
 Active DigiPublish templates, dynamic presentation blocks and browser-created UI now use the canonical `dp-*` class namespace. Historical `dp-caards-*` selectors remain only as saved-content/runtime compatibility aliases; no database rewrite is performed.
 
 See `docs/runtime-class-namespace.md`.
+
+
+## Stored data namespace
+
+Author profile, editorial attribution and editorial metric data now use canonical DigiPublish meta keys with dual-read/write compatibility for historical TechPress records. Dictionary CPT/taxonomy identifiers remain intentionally frozen until a dedicated database/rewrite migration exists.
+
+See `docs/stored-data-namespace.md`.
