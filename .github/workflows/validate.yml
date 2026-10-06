@@ -327,6 +327,7 @@ jobs:
         run: |
           set -euo pipefail
           funcs="digipublish/functions.php"
+          compat="digipublish/inc/compatibility.php"
 
           for variant in one two three four; do
             header="digipublish/patterns/header-$variant.php"
