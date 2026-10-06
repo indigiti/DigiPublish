@@ -6,7 +6,7 @@
   "title": "Section Heading",
   "category": "digipublish-editorial",
   "icon": "heading",
-  "description": "Caards-compatible section heading with border, accent and text color controls.",
+  "description": "Legacy Caards-compatible section heading retained for existing content. Use Core Heading with DigiPublish styles for new content.",
   "textdomain": "digipublish-core",
   "attributes": {
     "text": {
@@ -67,7 +67,8 @@
       "color": true,
       "width": true,
       "style": true
-    }
+    },
+    "inserter": false
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css"
