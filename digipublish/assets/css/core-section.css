@@ -1,0 +1,32 @@
+/**
+ * Native DigiPublish editorial section layout for Core Columns.
+ * Replaces new usage of the legacy digipublish/section block family.
+ */
+.wp-block-columns.is-style-digipublish-editorial-section{
+	display:grid;
+	grid-template-columns:minmax(0,1fr) minmax(260px,390px);
+	gap:var(--wp--preset--spacing--2xl,40px);
+	align-items:start;
+}
+.wp-block-columns.is-style-digipublish-editorial-section.dp-editorial-section--left{
+	grid-template-columns:minmax(260px,390px) minmax(0,1fr);
+}
+.wp-block-columns.is-style-digipublish-editorial-section>.wp-block-column{
+	min-width:0;
+}
+.wp-block-columns.is-style-digipublish-editorial-section .dp-editorial-section__sidebar{
+	position:relative;
+}
+@media(max-width:1019px){
+	.wp-block-columns.is-style-digipublish-editorial-section,
+	.wp-block-columns.is-style-digipublish-editorial-section.dp-editorial-section--left{
+		grid-template-columns:minmax(0,1fr);
+		gap:var(--wp--preset--spacing--xl,32px);
+	}
+}
+@media(max-width:599px){
+	.wp-block-columns.is-style-digipublish-editorial-section,
+	.wp-block-columns.is-style-digipublish-editorial-section.dp-editorial-section--left{
+		gap:var(--wp--preset--spacing--lg,24px);
+	}
+}
