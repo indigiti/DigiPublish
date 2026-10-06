@@ -27,9 +27,9 @@ Historical `--dp-caards-*` variables remain defined as aliases only. New DigiPub
 
 ## theme.json compatibility
 
-Existing preset slugs are retained because saved blocks and user Global Styles can reference those identifiers. Their user-facing labels are normalized to DigiPublish concepts such as Canvas, Surface, Text, Text Muted, Brand and Border.
+The active Global Styles palette exposes only the canonical DigiPublish choices: Canvas, Surface, Surface Raised, Text, Text Muted, Brand, Brand Hover, Border, Surface Dark and Canvas Dark.
 
-This means visual naming can evolve without invalidating saved preset classes or CSS variables.
+Historical preset slugs (`ink`, `body`, `muted`, `brand`, `brand-dark`, `surface-soft`, `footer`) are no longer shown as duplicate editor choices. Their `--wp--preset--color--*` variables and utility classes remain in compatibility CSS so previously saved blocks continue to render correctly.
 
 ## Site Editor ownership
 
@@ -71,3 +71,10 @@ It has no jQuery or third-party runtime dependency.
 Header and footer variants are exposed as semantic block patterns for `core/template-part/header` and `core/template-part/footer`. This makes all four DigiPublish variants available from the Site Editor replacement flow.
 
 Historical header/footer variant options remain a fallback for older installations. They are bypassed automatically when the canonical `header` or `footer` template part has a custom Site Editor save, so explicit Site Editor edits always take precedence.
+
+
+## Homepage pattern ownership
+
+The canonical homepage composition is `digipublish/editorial-home`, used by both `front-page.html` and `home.html`.
+
+The historical `digipublish/caards-home` pattern remains registered with `Inserter: false` solely so saved pattern references continue to resolve. New templates and new editor insertion use the DigiPublish-native slug.

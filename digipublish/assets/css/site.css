@@ -55,7 +55,31 @@
 	--tp-surface-soft:var(--dp-surface);
 	--tp-radius:var(--dp-radius-card);
 	--tp-wide:var(--dp-layout-wide);
+
+	/* WordPress preset compatibility for palette slugs removed from Global Styles. */
+	--wp--preset--color--ink:var(--dp-text);
+	--wp--preset--color--body:var(--dp-text);
+	--wp--preset--color--muted:var(--dp-text-muted);
+	--wp--preset--color--brand:var(--dp-brand);
+	--wp--preset--color--brand-dark:var(--dp-brand-hover);
+	--wp--preset--color--surface-soft:var(--dp-surface);
+	--wp--preset--color--footer:var(--dp-surface-dark);
 }
+
+.has-ink-color{color:var(--wp--preset--color--ink)!important}
+.has-ink-background-color{background-color:var(--wp--preset--color--ink)!important}
+.has-body-color{color:var(--wp--preset--color--body)!important}
+.has-body-background-color{background-color:var(--wp--preset--color--body)!important}
+.has-muted-color{color:var(--wp--preset--color--muted)!important}
+.has-muted-background-color{background-color:var(--wp--preset--color--muted)!important}
+.has-brand-color{color:var(--wp--preset--color--brand)!important}
+.has-brand-background-color{background-color:var(--wp--preset--color--brand)!important}
+.has-brand-dark-color{color:var(--wp--preset--color--brand-dark)!important}
+.has-brand-dark-background-color{background-color:var(--wp--preset--color--brand-dark)!important}
+.has-surface-soft-color{color:var(--wp--preset--color--surface-soft)!important}
+.has-surface-soft-background-color{background-color:var(--wp--preset--color--surface-soft)!important}
+.has-footer-color{color:var(--wp--preset--color--footer)!important}
+.has-footer-background-color{background-color:var(--wp--preset--color--footer)!important}
 
 html{scroll-behavior:smooth}
 *,*::before,*::after{box-sizing:border-box}

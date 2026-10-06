@@ -195,6 +195,24 @@ jobs:
           grep -Fq '"title": "DigiPublish Post — Standard"' "$theme" || exit 1
           grep -Fq '"title": "Header — DigiPublish 1"' "$theme" || exit 1
 
+          # Compatibility palette slugs are not exposed as duplicate Global Style choices.
+          for canonical_slug in site surface white primary secondary accent accent-hover border dark dark-site; do
+            jq -e --arg slug "$canonical_slug" '.settings.color.palette[] | select(.slug == $slug)' "$theme" >/dev/null || {
+              echo "Required DigiPublish palette color is missing: $canonical_slug"
+              exit 1
+            }
+          done
+          for legacy_slug in ink body muted brand brand-dark surface-soft footer; do
+            ! jq -e --arg slug "$legacy_slug" '.settings.color.palette[] | select(.slug == $slug)' "$theme" >/dev/null || {
+              echo "Compatibility color leaked back into the editor palette: $legacy_slug"
+              exit 1
+            }
+            grep -Fq -- "--wp--preset--color--$legacy_slug:" "$css" || {
+              echo "Missing saved-content preset variable compatibility: $legacy_slug"
+              exit 1
+            }
+          done
+
           # Canonical design tokens own active CSS; old token names are aliases only.
           for token in             --dp-canvas             --dp-surface             --dp-surface-raised             --dp-text             --dp-text-muted             --dp-brand             --dp-brand-hover             --dp-border             --dp-surface-dark             --dp-canvas-dark             --dp-radius-card             --dp-layout-wide             --dp-layout-content; do
             grep -Fq -- "$token:" "$css" || {
@@ -208,6 +226,22 @@ jobs:
           }
           grep -Fq -- '--dp-caards-site:var(--dp-canvas)' "$css" || exit 1
           grep -Fq 'body.digipublish-shell' "$css" || exit 1
+
+          # Active block CSS/rendering consumes canonical DigiPublish tokens only.
+          if grep -R --line-number -E 'var\(--dp-caards-|var\(--tp-(ink|body|muted|brand|brand-dark|accent|border|surface|surface-soft|radius|wide)'             digipublish-core/blocks --include='*.css' --include='*.php'; then
+            echo "Active block implementation still consumes compatibility design tokens."
+            exit 1
+          fi
+
+          # Canonical homepage pattern owns new template composition; legacy slug is hidden.
+          test -f digipublish/patterns/editorial-home.php
+          grep -Fq 'Slug: digipublish/editorial-home' digipublish/patterns/editorial-home.php || exit 1
+          grep -Fq 'Inserter: true' digipublish/patterns/editorial-home.php || exit 1
+          grep -Fq 'Inserter: false' digipublish/patterns/caards-home.php || exit 1
+          grep -Fq '"slug":"digipublish/editorial-home"' digipublish/templates/front-page.html || exit 1
+          grep -Fq '"slug":"digipublish/editorial-home"' digipublish/templates/home.html || exit 1
+          ! grep -Fq '"slug":"digipublish/caards-home"' digipublish/templates/front-page.html || exit 1
+          ! grep -Fq '"slug":"digipublish/caards-home"' digipublish/templates/home.html || exit 1
 
           # Canonical interaction controller is active; the old asset is gone.
           test -f "$interactions"
@@ -494,7 +528,7 @@ jobs:
         run: |
           set -euo pipefail
           css="digipublish/assets/css/site.css"
-          home="digipublish/patterns/caards-home.php"
+          home="digipublish/patterns/editorial-home.php"
           header="digipublish/parts/header-one.html"
           funcs="digipublish/functions.php"
 

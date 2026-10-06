@@ -1,18 +1,18 @@
 <?php
 /**
- * Title: DigiPublish Editorial Homepage
- * Slug: digipublish/caards-home
+ * Title: DigiPublish Editorial Home
+ * Slug: digipublish/editorial-home
  * Categories: digipublish
- * Inserter: false
+ * Inserter: true
  *
  * DigiPublish editorial homepage composition.
- * The legacy slug is retained for saved pattern compatibility.
+ * Canonical DigiPublish homepage pattern. Legacy Caards slug remains separately for saved-content compatibility.
  */
 ?>
-<!-- wp:group {"align":"full","className":"dp-caards-home-hero","layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull dp-caards-home-hero">
-	<!-- wp:group {"align":"wide","className":"dp-caards-home-hero__inner","layout":{"type":"constrained"}} -->
-	<div class="wp-block-group alignwide dp-caards-home-hero__inner">
+<!-- wp:group {"align":"full","className":"dp-editorial-home-hero dp-caards-home-hero","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull dp-editorial-home-hero dp-caards-home-hero">
+	<!-- wp:group {"align":"wide","className":"dp-editorial-home-hero__inner dp-caards-home-hero__inner","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group alignwide dp-editorial-home-hero__inner dp-caards-home-hero__inner">
 		<!-- wp:paragraph {"align":"center","className":"dp-caards-eyebrow","fontSize":"xs"} -->
 		<p class="has-text-align-center dp-caards-eyebrow has-xs-font-size">Revolutionizing Technological Frontiers</p>
 		<!-- /wp:paragraph -->
@@ -28,8 +28,8 @@
 </div>
 <!-- /wp:group -->
 
-<!-- wp:group {"align":"wide","className":"dp-caards-demo-mosaic","layout":{"type":"default"}} -->
-<div class="wp-block-group alignwide dp-caards-demo-mosaic">
+<!-- wp:group {"align":"wide","className":"dp-editorial-mosaic dp-caards-demo-mosaic","layout":{"type":"default"}} -->
+<div class="wp-block-group alignwide dp-editorial-mosaic dp-caards-demo-mosaic">
 	<!-- wp:group {"className":"dp-caards-mosaic__col dp-caards-mosaic__col--feature","layout":{"type":"default"}} -->
 	<div class="wp-block-group dp-caards-mosaic__col dp-caards-mosaic__col--feature">
 		<!-- wp:digipublish/post-feed {"heading":"","postsToShow":1,"layout":"standard-1","offset":0,"showExcerpt":true,"excerptLength":95,"showAuthor":false,"showDate":false,"showReadTime":true,"showViews":true,"showShares":true,"showCategory":true,"imageOrientation":"portrait","className":"dp-caards-mosaic-card dp-caards-mosaic-card--feature"} /-->
@@ -58,14 +58,14 @@
 </div>
 <!-- /wp:group -->
 
-<!-- wp:group {"anchor":"latest","align":"wide","className":"dp-caards-home-section dp-caards-home-section--latest","layout":{"type":"default"}} -->
-<div id="latest" class="wp-block-group alignwide dp-caards-home-section dp-caards-home-section--latest">
+<!-- wp:group {"anchor":"latest","align":"wide","className":"dp-editorial-home-section dp-editorial-home-section--latest dp-caards-home-section dp-caards-home-section--latest","layout":{"type":"default"}} -->
+<div id="latest" class="wp-block-group alignwide dp-editorial-home-section dp-editorial-home-section--latest dp-caards-home-section dp-caards-home-section--latest">
 	<!-- wp:digipublish/post-feed {"heading":"Latest Stories","postsToShow":8,"layout":"standard-1","offset":6,"columnsDesktop":4,"columnsTablet":2,"columnsMobile":1,"showExcerpt":true,"excerptLength":90,"showAuthor":false,"showDate":true,"showReadTime":true,"showViews":true,"showCategory":true} /-->
 </div>
 <!-- /wp:group -->
 
-<!-- wp:group {"anchor":"newsletter","align":"wide","className":"dp-caards-newsletter","layout":{"type":"constrained"}} -->
-<div id="newsletter" class="wp-block-group alignwide dp-caards-newsletter">
+<!-- wp:group {"anchor":"newsletter","align":"wide","className":"dp-editorial-newsletter dp-caards-newsletter","layout":{"type":"constrained"}} -->
+<div id="newsletter" class="wp-block-group alignwide dp-editorial-newsletter dp-caards-newsletter">
 	<!-- wp:pattern {"slug":"digipublish/newsletter"} /-->
 </div>
 <!-- /wp:group -->

@@ -230,7 +230,7 @@ if ( in_array( $border_style, array( 'solid', 'dashed', 'dotted', 'double' ), tr
 	$styles[] = 'border-style:' . $border_style;
 	$border_width = digipublish_core_css_length( $attributes['blockBorderWidth'] ?? '', '1px' );
 	$styles[] = 'border-width:' . $border_width;
-	$styles[] = 'border-color:var(--tp-border)';
+	$styles[] = 'border-color:var(--dp-border)';
 }
 
 if ( ! empty( $attributes['customCss'] ) ) {
