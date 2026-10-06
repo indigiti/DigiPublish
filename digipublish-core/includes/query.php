@@ -360,11 +360,11 @@ function digipublish_core_query_feed_posts( $attributes ) {
 
 		if ( ! isset( $request_cache[ $cache_key ] ) ) {
 			$object_key = 'v' . digipublish_core_cache_version( $scope ) . '_feed_' . $cache_key;
-			$post_ids   = wp_cache_get( $object_key, 'techpress_editorial' );
+			$post_ids   = wp_cache_get( $object_key, 'digipublish_core' );
 			if ( false === $post_ids ) {
 				$query    = new WP_Query( $query_args );
 				$post_ids = wp_list_pluck( $query->posts, 'ID' );
-				wp_cache_set( $object_key, $post_ids, 'techpress_editorial', 15 * MINUTE_IN_SECONDS );
+				wp_cache_set( $object_key, $post_ids, 'digipublish_core', 15 * MINUTE_IN_SECONDS );
 			}
 			$post_ids = array_map( 'absint', (array) $post_ids );
 			_prime_post_caches( $post_ids, true, true );
