@@ -120,4 +120,6 @@ See `docs/native-visibility-transition.md`.
 
 DigiPublish uses `theme.json` and Global Styles as the primary visual configuration layer. Canonical theme CSS consumes `--dp-*` design tokens; historical `--dp-caards-*` variables remain aliases only for saved custom CSS compatibility.
 
-Visual configuration such as colors, typography, templates, headers and footers belongs in the Site Editor. The Appearance → DigiPublish Publishing page is limited to non-visual publishing behavior. A native `DigiPublish Dark` Global Style variation is available under `digipublish/styles/dark.json`.
+Visual configuration such as colors, typography, templates, headers and footers belongs in the Site Editor. The active palette exposes only canonical DigiPublish colors; historical color slugs remain CSS compatibility aliases instead of duplicate editor choices. The Appearance → DigiPublish Publishing page is limited to non-visual publishing behavior. A native `DigiPublish Dark` Global Style variation is available under `digipublish/styles/dark.json`.
+
+The default front page and posts home now use the canonical `digipublish/editorial-home` pattern. The former `digipublish/caards-home` slug remains hidden from the inserter for saved-content compatibility.
