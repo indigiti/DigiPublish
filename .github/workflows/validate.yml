@@ -240,6 +240,35 @@ jobs:
           ! grep -Fq "Caards Layout Options" digipublish-core/assets/editor.js || exit 1
 
 
+      - name: Guard Site Editor header/footer ownership
+        shell: bash
+        run: |
+          set -euo pipefail
+          funcs="digipublish/functions.php"
+
+          for variant in one two three four; do
+            header="digipublish/patterns/header-$variant.php"
+            footer="digipublish/patterns/footer-$variant.php"
+            test -f "$header"
+            test -f "$footer"
+            grep -Fq "Block Types: core/template-part/header" "$header" || exit 1
+            grep -Fq "Block Types: core/template-part/footer" "$footer" || exit 1
+            grep -Fq "parts/header-$variant.html" "$header" || exit 1
+            grep -Fq "parts/footer-$variant.html" "$footer" || exit 1
+          done
+
+          grep -Fq "function digipublish_site_editor_part_is_custom" "$funcs" || exit 1
+          grep -Fq "get_block_template( get_stylesheet() . '//' . $slug, 'wp_template_part' )" "$funcs" || exit 1
+          grep -Fq "'custom' === $template->source" "$funcs" || exit 1
+          grep -Fq "digipublish_site_editor_part_is_custom( 'header' )" "$funcs" || exit 1
+          grep -Fq "digipublish_site_editor_part_is_custom( 'footer' )" "$funcs" || exit 1
+
+          # Legacy variant options remain a fallback only when canonical parts
+          # have not yet been customized in the Site Editor.
+          grep -Fq "digipublish_caards_header_variant" "$funcs" || exit 1
+          grep -Fq "digipublish_caards_footer_variant" "$funcs" || exit 1
+
+
       - name: Guard dependency-free runtime
         shell: bash
         run: |
