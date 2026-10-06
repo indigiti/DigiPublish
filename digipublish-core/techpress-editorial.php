@@ -1232,3 +1232,6 @@ function digipublish_core_deactivate() {
 	flush_rewrite_rules();
 }
 register_deactivation_hook( __FILE__, 'digipublish_core_deactivate' );
+
+// Legacy callable aliases are isolated from the production namespace.
+require_once DIGIPUBLISH_CORE_DIR . 'includes/compatibility.php';
