@@ -34,6 +34,9 @@ jobs:
       - name: Seed representative publishing content
         run: npm run env:seed
 
+      - name: Run WordPress integration assertions
+        run: bash tests/integration/assert-wordpress.sh
+
       - name: Run browser, editor, accessibility and performance gates
         run: npm run test:e2e
 
