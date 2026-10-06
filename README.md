@@ -149,3 +149,10 @@ See `docs/runtime-class-namespace.md`.
 Author profile, editorial attribution and editorial metric data now use canonical DigiPublish meta keys with dual-read/write compatibility for historical TechPress records. Dictionary CPT/taxonomy identifiers remain intentionally frozen until a dedicated database/rewrite migration exists.
 
 See `docs/stored-data-namespace.md`.
+
+
+## Editor modules
+
+Reusable query controls, native block-support filters and post/page document panels now live in focused editor modules. The main block-registration bundle no longer owns document-sidebar APIs and is protected by a decreasing CI size budget.
+
+See `docs/editor-module-architecture.md`.
