@@ -568,6 +568,7 @@ jobs:
           test -f .wp-env.json
           test -f playwright.config.js
           test -f digipublish-core/phpunit.xml.dist
+          test -f digipublish-core/composer.json
           test -f digipublish-core/tests/bootstrap.php
           test -f tests/e2e/shell.spec.js
           test -f tests/e2e/accessibility.spec.js
@@ -576,9 +577,24 @@ jobs:
 
           grep -Fq '"core": "https://wordpress.org/wordpress-7.1.2.zip"' .wp-env.json || exit 1
           grep -Fq '@wordpress/env' package.json || exit 1
+          grep -Fq '"node": ">=24"' package.json || exit 1
+          grep -Fq 'yoast/phpunit-polyfills' digipublish-core/composer.json || exit 1
+          grep -Fq 'WP_TESTS_PHPUNIT_POLYFILLS_PATH' digipublish-core/tests/bootstrap.php || exit 1
           grep -Fq '@playwright/test' package.json || exit 1
           grep -Fq '@axe-core/playwright' package.json || exit 1
           grep -Fq '"lighthouse"' package.json || exit 1
+
+
+      - name: Guard shell accessibility fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'function closeOverlays' digipublish/assets/js/site-interactions.js || exit 1
+          grep -Fq "btn.setAttribute('aria-expanded','false')" digipublish/assets/js/site-interactions.js || exit 1
+          grep -Fq 'function digipublish_navigation_fallback_blocks' digipublish/functions.php || exit 1
+          grep -Fq "'core/navigation-link'" digipublish/functions.php || exit 1
+          grep -Fq "'core/home-link'" digipublish/functions.php || exit 1
+          grep -Fq "'block_core_navigation_render_fallback'" digipublish/functions.php || exit 1
 
 
       - name: Guard dependency-free runtime
