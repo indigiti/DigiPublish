@@ -46,8 +46,8 @@ if ( ! empty( $attributes['showBreadcrumbs'] ) ) {
 }
 
 $category = '';
-if ( $is_post && ! empty( $attributes['showCategory'] ) && function_exists( 'techpress_editorial_category_markup' ) ) {
-	$category = '<div class="dp-caards-entry-hero__category">' . techpress_editorial_category_markup( $post_id ) . '</div>';
+if ( $is_post && ! empty( $attributes['showCategory'] ) && function_exists( 'digipublish_core_category_markup' ) ) {
+	$category = '<div class="dp-caards-entry-hero__category">' . digipublish_core_category_markup( $post_id ) . '</div>';
 }
 
 $meta = array();
@@ -61,16 +61,16 @@ if ( $is_post && ! empty( $attributes['showComments'] ) ) {
 	$count = get_comments_number( $post_id );
 	$meta[] = esc_html( sprintf( _n( '%s comment', '%s comments', $count, 'digipublish-core' ), number_format_i18n( $count ) ) );
 }
-if ( $is_post && ! empty( $attributes['showReadTime'] ) && function_exists( 'techpress_editorial_read_time' ) ) {
-	$minutes = techpress_editorial_read_time( $post_id );
+if ( $is_post && ! empty( $attributes['showReadTime'] ) && function_exists( 'digipublish_core_read_time' ) ) {
+	$minutes = digipublish_core_read_time( $post_id );
 	$meta[] = esc_html( sprintf( _n( '%d min read', '%d min read', $minutes, 'digipublish-core' ), $minutes ) );
 }
-if ( $is_post && ! empty( $attributes['showViews'] ) && function_exists( 'techpress_editorial_metric_value' ) ) {
-	$views = techpress_editorial_metric_value( $post_id, '_techpress_views' );
+if ( $is_post && ! empty( $attributes['showViews'] ) && function_exists( 'digipublish_core_metric_value' ) ) {
+	$views = digipublish_core_metric_value( $post_id, '_techpress_views' );
 	if ( $views ) { $meta[] = esc_html( number_format_i18n( $views ) . ' ' . __( 'views', 'digipublish-core' ) ); }
 }
-if ( $is_post && ! empty( $attributes['showShares'] ) && function_exists( 'techpress_editorial_metric_value' ) ) {
-	$shares = techpress_editorial_metric_value( $post_id, '_techpress_shares' );
+if ( $is_post && ! empty( $attributes['showShares'] ) && function_exists( 'digipublish_core_metric_value' ) ) {
+	$shares = digipublish_core_metric_value( $post_id, '_techpress_shares' );
 	if ( $shares ) { $meta[] = esc_html( number_format_i18n( $shares ) . ' ' . __( 'shares', 'digipublish-core' ) ); }
 }
 $meta_html = $meta ? '<div class="dp-caards-entry-hero__meta"><span>' . implode( '</span><span>', $meta ) . '</span></div>' : '';
