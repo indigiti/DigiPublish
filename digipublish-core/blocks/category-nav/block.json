@@ -6,7 +6,7 @@
   "title": "Category Navigation",
   "category": "digipublish-editorial",
   "icon": "menu-alt3",
-  "description": "Caards-style category navigation with filtering and ordering controls.",
+  "description": "Editorial category navigation with filtering, ordering, dictionary, gallery and search links.",
   "textdomain": "digipublish-core",
   "attributes": {
     "limit": {
