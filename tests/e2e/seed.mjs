@@ -22,6 +22,7 @@ for (let i = 1; i <= 8; i += 1) {
       'post', 'create',
       '--post_type=post',
       '--post_status=publish',
+      '--post_author=1',
       `--post_title=${title}`,
       `--post_name=${slug}`,
       '--post_excerpt=Representative editorial excerpt for automated browser and accessibility testing.',
