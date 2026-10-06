@@ -6,7 +6,7 @@
   "title": "Featured Categories",
   "category": "digipublish-editorial",
   "icon": "category",
-  "description": "Caards/Powerkit-compatible featured categories including Vertical List Alt.",
+  "description": "Featured category list with Default and Vertical List Alt presentations.",
   "textdomain": "digipublish-core",
   "attributes": {
     "heading": {

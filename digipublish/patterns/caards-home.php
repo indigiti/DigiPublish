@@ -1,12 +1,12 @@
 <?php
 /**
- * Title: Caards Editorial Homepage
+ * Title: DigiPublish Editorial Homepage
  * Slug: digipublish/caards-home
  * Categories: digipublish
  * Inserter: true
  *
- * Homepage composition follows the Caards 1.0.4 demo structure:
- * centered editorial hero + asymmetric four-column card mosaic.
+ * DigiPublish editorial homepage composition.
+ * The legacy slug is retained for saved pattern compatibility.
  */
 ?>
 <!-- wp:group {"align":"full","className":"dp-caards-home-hero","layout":{"type":"constrained"}} -->

@@ -6,7 +6,7 @@
   "title": "Entry Hero",
   "category": "digipublish-editorial",
   "icon": "cover-image",
-  "description": "Caards-style singular header with Standard, Large, Full, Title and None modes.",
+  "description": "Singular entry header with Standard, Large, Full, Title and None presentation modes.",
   "textdomain": "digipublish-core",
   "attributes": {
     "layout": {

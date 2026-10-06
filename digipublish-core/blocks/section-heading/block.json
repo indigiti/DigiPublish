@@ -6,7 +6,7 @@
   "title": "Section Heading",
   "category": "digipublish-editorial",
   "icon": "heading",
-  "description": "Legacy Caards-compatible section heading retained for existing content. Use Core Heading with DigiPublish styles for new content.",
+  "description": "Legacy section heading retained for saved-content compatibility.",
   "textdomain": "digipublish-core",
   "attributes": {
     "text": {

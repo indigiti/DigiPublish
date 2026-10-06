@@ -1,9 +1,11 @@
 (function(){
 'use strict';
 var root=document.documentElement;
-var schemeKey='digipublish-caards-scheme';
+var schemeKey='digipublish-scheme';
+var legacySchemeKey='digipublish-caards-scheme';
 function applyScheme(value){
   var dark=value==='dark';
+  root.classList.toggle('dp-theme-dark',dark);
   root.classList.toggle('dp-caards-dark',dark);
   root.setAttribute('data-dp-scheme',dark?'dark':'light');
   document.querySelectorAll('[data-dp-scheme-toggle]').forEach(function(btn){
@@ -11,11 +13,11 @@ function applyScheme(value){
     btn.setAttribute('aria-label',dark?'Use light mode':'Use dark mode');
   });
 }
-try{applyScheme(localStorage.getItem(schemeKey)||'light');}catch(e){applyScheme('light');}
+try{applyScheme(localStorage.getItem(schemeKey)||localStorage.getItem(legacySchemeKey)||'light');}catch(e){applyScheme('light');}
 document.addEventListener('click',function(event){
   var scheme=event.target.closest('[data-dp-scheme-toggle]');
   if(scheme){
-    var next=root.classList.contains('dp-caards-dark')?'light':'dark';
+    var next=root.classList.contains('dp-theme-dark')||root.classList.contains('dp-caards-dark')?'light':'dark';
     try{localStorage.setItem(schemeKey,next);}catch(e){}
     applyScheme(next);
     return;
@@ -40,6 +42,7 @@ document.addEventListener('click',function(event){
     if(overlay){
       var open=!overlay.classList.contains('is-open');
       overlay.classList.toggle('is-open',open);
+      document.body.classList.toggle('dp-menu-open',open);
       document.body.classList.toggle('dp-caards-menu-open',open);
       menu.setAttribute('aria-expanded',open?'true':'false');
     }
@@ -48,18 +51,21 @@ document.addEventListener('click',function(event){
   var close=event.target.closest('[data-dp-overlay-close]');
   if(close){
     document.querySelectorAll('.dp-caards-fullscreen.is-open,.dp-caards-search.is-open').forEach(function(el){el.classList.remove('is-open');});
+    document.body.classList.remove('dp-menu-open');
     document.body.classList.remove('dp-caards-menu-open');
   }
 });
 document.addEventListener('keydown',function(event){
   if(event.key==='Escape'){
     document.querySelectorAll('.dp-caards-fullscreen.is-open,.dp-caards-search.is-open').forEach(function(el){el.classList.remove('is-open');});
+    document.body.classList.remove('dp-menu-open');
     document.body.classList.remove('dp-caards-menu-open');
   }
 });
 
 function initLoadNextPost(){
-  var cfg=window.digiPublishCaards&&window.digiPublishCaards.loadNext;
+  var runtime=window.digiPublishSite||window.digiPublishCaards||{};
+  var cfg=runtime.loadNext;
   if(!cfg||!cfg.enabled||!cfg.postId||!cfg.restUrl||!('IntersectionObserver' in window)) return;
   var first=document.querySelector('.dp-caards-singular');
   if(!first||document.querySelector('[data-dp-nextpost-sentinel]')) return;

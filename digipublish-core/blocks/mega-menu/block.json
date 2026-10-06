@@ -6,7 +6,7 @@
   "title": "Mega Menu",
   "category": "digipublish-editorial",
   "icon": "menu-alt3",
-  "description": "FSE-native Caards mega menu with latest or category post cards.",
+  "description": "Site Editor compatible mega menu with latest or category story cards.",
   "textdomain": "digipublish-core",
   "attributes": {
     "label": {

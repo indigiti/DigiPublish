@@ -293,7 +293,7 @@ return array(
 		'title' => 'Category Navigation',
 		'category' => 'digipublish-editorial',
 		'icon' => 'menu-alt3',
-		'description' => 'Caards-style category navigation with filtering and ordering controls.',
+		'description' => 'Editorial category navigation with filtering, ordering, dictionary, gallery and search links.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'limit' => array(
@@ -385,7 +385,7 @@ return array(
 		'title' => 'Current Date',
 		'category' => 'digipublish-editorial',
 		'icon' => 'calendar-alt',
-		'description' => 'Caards-style current date utility block.',
+		'description' => 'Current date utility block with alignment and responsive typography controls.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'format' => array(
@@ -462,7 +462,7 @@ return array(
 		'title' => 'Custom Link',
 		'category' => 'digipublish-editorial',
 		'icon' => 'admin-links',
-		'description' => 'Caards-style custom link or header button.',
+		'description' => 'Editorial custom link or header action with text and button treatments.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'label' => array(
@@ -755,7 +755,7 @@ return array(
 		'title' => 'Entry Hero',
 		'category' => 'digipublish-editorial',
 		'icon' => 'cover-image',
-		'description' => 'Caards-style singular header with Standard, Large, Full, Title and None modes.',
+		'description' => 'Singular entry header with Standard, Large, Full, Title and None presentation modes.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'layout' => array(
@@ -823,7 +823,7 @@ return array(
 		'title' => 'Featured Categories',
 		'category' => 'digipublish-editorial',
 		'icon' => 'category',
-		'description' => 'Caards/Powerkit-compatible featured categories including Vertical List Alt.',
+		'description' => 'Featured category list with Default and Vertical List Alt presentations.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'heading' => array(

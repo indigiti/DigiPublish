@@ -6,7 +6,7 @@
   "title": "Meet Team",
   "category": "digipublish-editorial",
   "icon": "groups",
-  "description": "Caards-style editorial team grid from WordPress users.",
+  "description": "Editorial team grid sourced from WordPress users.",
   "textdomain": "digipublish-core",
   "attributes": {
     "heading": {

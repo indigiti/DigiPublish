@@ -20,7 +20,7 @@ DigiPublish is a Gutenberg-first publishing framework for WordPress, built as a 
 - Article bylines with optional **Fact Checked by**, **Verified by**, or **Reported by** attribution
 - Related stories, author cards, article TOC, ad slots, and popular categories
 - Mobile-first swipe layouts and publication navigation
-- Performance-oriented per-block assets, query reuse, responsive images, and optional Google Fonts
+- Performance-oriented per-block assets, query reuse, responsive images, and locally managed fonts
 
 ## Backward compatibility
 
@@ -114,3 +114,10 @@ See `docs/core-layout-architecture.md`.
 DigiPublish now uses WordPress Core block visibility for new responsive visibility settings. Historical desktop/laptop/tablet/mobile hide attributes remain only as a saved-content compatibility layer and appear in the editor only when a block is already using them.
 
 See `docs/native-visibility-transition.md`.
+
+
+## Design system
+
+DigiPublish uses `theme.json` and Global Styles as the primary visual configuration layer. Canonical theme CSS consumes `--dp-*` design tokens; historical `--dp-caards-*` variables remain aliases only for saved custom CSS compatibility.
+
+Visual configuration such as colors, typography, templates, headers and footers belongs in the Site Editor. The Appearance → DigiPublish Publishing page is limited to non-visual publishing behavior. A native `DigiPublish Dark` Global Style variation is available under `digipublish/styles/dark.json`.

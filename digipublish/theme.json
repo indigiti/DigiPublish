@@ -15,37 +15,37 @@
       "palette": [
         {
           "slug": "site",
-          "name": "Caards Site",
+          "name": "Canvas",
           "color": "#E6E9EB"
         },
         {
           "slug": "surface",
-          "name": "Caards Surface",
+          "name": "Surface",
           "color": "#F6F7F8"
         },
         {
           "slug": "white",
-          "name": "White",
+          "name": "Surface Raised",
           "color": "#FFFFFF"
         },
         {
           "slug": "primary",
-          "name": "Primary",
+          "name": "Text",
           "color": "#2F323D"
         },
         {
           "slug": "secondary",
-          "name": "Secondary",
+          "name": "Text Muted",
           "color": "#78848F"
         },
         {
           "slug": "accent",
-          "name": "Accent",
+          "name": "Brand",
           "color": "#2D5DE0"
         },
         {
           "slug": "accent-hover",
-          "name": "Accent Hover",
+          "name": "Brand Hover",
           "color": "#1048DE"
         },
         {
@@ -55,47 +55,47 @@
         },
         {
           "slug": "dark",
-          "name": "Dark Surface",
+          "name": "Surface Dark",
           "color": "#1B1C1F"
         },
         {
           "slug": "dark-site",
-          "name": "Dark Site",
+          "name": "Canvas Dark",
           "color": "#30323E"
         },
         {
           "slug": "ink",
-          "name": "Ink",
+          "name": "Ink (Compatibility)",
           "color": "#2F323D"
         },
         {
           "slug": "body",
-          "name": "Body",
+          "name": "Body (Compatibility)",
           "color": "#2F323D"
         },
         {
           "slug": "muted",
-          "name": "Muted",
+          "name": "Muted (Compatibility)",
           "color": "#78848F"
         },
         {
           "slug": "brand",
-          "name": "Brand",
+          "name": "Brand (Compatibility)",
           "color": "#2D5DE0"
         },
         {
           "slug": "brand-dark",
-          "name": "Brand Dark",
+          "name": "Brand Dark (Compatibility)",
           "color": "#1048DE"
         },
         {
           "slug": "surface-soft",
-          "name": "Surface Soft",
+          "name": "Surface Soft (Compatibility)",
           "color": "#F6F7F8"
         },
         {
           "slug": "footer",
-          "name": "Footer",
+          "name": "Footer (Compatibility)",
           "color": "#1B1C1F"
         }
       ],
@@ -243,12 +243,12 @@
       "presets": [
         {
           "slug": "card",
-          "name": "Caards Card",
+          "name": "Card",
           "shadow": "0 12px 40px rgba(47,50,61,.08)"
         },
         {
           "slug": "floating",
-          "name": "Caards Floating",
+          "name": "Floating",
           "shadow": "0 20px 70px rgba(47,50,61,.16)"
         }
       ]
@@ -378,70 +378,70 @@
   "customTemplates": [
     {
       "name": "single-standard",
-      "title": "Caards Post — Standard",
+      "title": "DigiPublish Post — Standard",
       "postTypes": [
         "post"
       ]
     },
     {
       "name": "single-large",
-      "title": "Caards Post — Large Hero",
+      "title": "DigiPublish Post — Large Hero",
       "postTypes": [
         "post"
       ]
     },
     {
       "name": "single-full",
-      "title": "Caards Post — Full Hero",
+      "title": "DigiPublish Post — Full Hero",
       "postTypes": [
         "post"
       ]
     },
     {
       "name": "single-title",
-      "title": "Caards Post — Title Only",
+      "title": "DigiPublish Post — Title Only",
       "postTypes": [
         "post"
       ]
     },
     {
       "name": "single-no-sidebar",
-      "title": "Caards Post — No Sidebar",
+      "title": "DigiPublish Post — No Sidebar",
       "postTypes": [
         "post"
       ]
     },
     {
       "name": "page-large",
-      "title": "Caards Page — Large Hero",
+      "title": "DigiPublish Page — Large Hero",
       "postTypes": [
         "page"
       ]
     },
     {
       "name": "page-full",
-      "title": "Caards Page — Full Hero",
+      "title": "DigiPublish Page — Full Hero",
       "postTypes": [
         "page"
       ]
     },
     {
       "name": "page-title",
-      "title": "Caards Page — Title Only",
+      "title": "DigiPublish Page — Title Only",
       "postTypes": [
         "page"
       ]
     },
     {
       "name": "page-no-title",
-      "title": "Caards Page — No Header",
+      "title": "DigiPublish Page — No Header",
       "postTypes": [
         "page"
       ]
     },
     {
       "name": "meet-team",
-      "title": "Caards Meet Team",
+      "title": "DigiPublish Meet Team",
       "postTypes": [
         "page"
       ]
@@ -450,52 +450,52 @@
   "templateParts": [
     {
       "name": "header",
-      "title": "Header — Caards 1",
+      "title": "Header — DigiPublish 1",
       "area": "header"
     },
     {
       "name": "header-one",
-      "title": "Header — Caards 1",
+      "title": "Header — DigiPublish 1",
       "area": "header"
     },
     {
       "name": "header-two",
-      "title": "Header — Caards 2",
+      "title": "Header — DigiPublish 2",
       "area": "header"
     },
     {
       "name": "header-three",
-      "title": "Header — Caards 3",
+      "title": "Header — DigiPublish 3",
       "area": "header"
     },
     {
       "name": "header-four",
-      "title": "Header — Caards 4",
+      "title": "Header — DigiPublish 4",
       "area": "header"
     },
     {
       "name": "footer",
-      "title": "Footer — Caards 1",
+      "title": "Footer — DigiPublish 1",
       "area": "footer"
     },
     {
       "name": "footer-one",
-      "title": "Footer — Caards 1",
+      "title": "Footer — DigiPublish 1",
       "area": "footer"
     },
     {
       "name": "footer-two",
-      "title": "Footer — Caards 2",
+      "title": "Footer — DigiPublish 2",
       "area": "footer"
     },
     {
       "name": "footer-three",
-      "title": "Footer — Caards 3",
+      "title": "Footer — DigiPublish 3",
       "area": "footer"
     },
     {
       "name": "footer-four",
-      "title": "Footer — Caards 4",
+      "title": "Footer — DigiPublish 4",
       "area": "footer"
     },
     {
