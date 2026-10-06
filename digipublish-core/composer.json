@@ -1,0 +1,13 @@
+{
+  "name": "indigiti/digipublish-core-tests",
+  "description": "Development-only test dependencies for DigiPublish Core.",
+  "type": "project",
+  "require": {},
+  "require-dev": {
+    "yoast/phpunit-polyfills": "^4.0"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {}
+  }
+}
