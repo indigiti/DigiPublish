@@ -471,6 +471,23 @@ function digipublish_register_publishing_settings() {
 add_action( 'admin_init', 'digipublish_register_publishing_settings' );
 
 /**
+ * Whether a canonical template part has been customized in the Site Editor.
+ */
+function digipublish_site_editor_part_is_custom( $slug ) {
+	if ( ! function_exists( 'get_block_template' ) ) {
+		return false;
+	}
+
+	$slug = sanitize_key( (string) $slug );
+	if ( ! in_array( $slug, array( 'header', 'footer' ), true ) ) {
+		return false;
+	}
+
+	$template = get_block_template( get_stylesheet() . '//' . $slug, 'wp_template_part' );
+	return $template instanceof WP_Block_Template && 'custom' === $template->source;
+}
+
+/**
  * Honor legacy non-default header/footer selections from earlier releases.
  *
  * New sites and the historical "one" default render the canonical Site Editor
@@ -484,11 +501,17 @@ function digipublish_caards_route_template_parts( $parsed_block ) {
 
 	$slug = isset( $parsed_block['attrs']['slug'] ) ? sanitize_key( (string) $parsed_block['attrs']['slug'] ) : '';
 	if ( 'header' === $slug ) {
+		if ( digipublish_site_editor_part_is_custom( 'header' ) ) {
+			return $parsed_block;
+		}
 		$variant = sanitize_key( (string) get_option( 'digipublish_caards_header_variant', '' ) );
 		if ( in_array( $variant, array( 'two', 'three', 'four' ), true ) ) {
 			$parsed_block['attrs']['slug'] = 'header-' . $variant;
 		}
 	} elseif ( 'footer' === $slug ) {
+		if ( digipublish_site_editor_part_is_custom( 'footer' ) ) {
+			return $parsed_block;
+		}
 		$variant = sanitize_key( (string) get_option( 'digipublish_caards_footer_variant', '' ) );
 		if ( in_array( $variant, array( 'two', 'three', 'four' ), true ) ) {
 			$parsed_block['attrs']['slug'] = 'footer-' . $variant;

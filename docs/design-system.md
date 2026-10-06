@@ -64,3 +64,10 @@ The first-party browser controller is `assets/js/site-interactions.js`. It owns 
 - Auto Load Next Post.
 
 It has no jQuery or third-party runtime dependency.
+
+
+## Header and footer ownership
+
+Header and footer variants are exposed as semantic block patterns for `core/template-part/header` and `core/template-part/footer`. This makes all four DigiPublish variants available from the Site Editor replacement flow.
+
+Historical header/footer variant options remain a fallback for older installations. They are bypassed automatically when the canonical `header` or `footer` template part has a custom Site Editor save, so explicit Site Editor edits always take precedence.
