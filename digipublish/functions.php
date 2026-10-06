@@ -371,50 +371,77 @@ add_filter( 'render_block_core/template-part', 'digipublish_interactive_header_t
 
 /**
  * Enqueue the Core Interactivity API shell module on every frontend request.
- *
- * The legacy classic script is now restricted to Auto Load Next Post while
- * that flow completes its separate migration.
  */
 function digipublish_enqueue_site_interactions() {
 	if ( function_exists( 'wp_enqueue_script_module' ) ) {
 		wp_enqueue_script_module( 'digipublish-site-interactivity' );
 	}
+}
+add_action( 'wp_enqueue_scripts', 'digipublish_enqueue_site_interactions', 30 );
 
-	if ( ! is_singular( 'post' ) ) {
-		return;
+/**
+ * Attach Auto Load Next Interactivity API context to the canonical singular
+ * wrapper and append the server-rendered sentinel/status lifecycle controls.
+ */
+function digipublish_interactive_singular_group( $block_content, $block ) {
+	if (
+		is_admin() ||
+		! is_singular( 'post' ) ||
+		! class_exists( 'WP_HTML_Tag_Processor' )
+	) {
+		return $block_content;
 	}
 
 	$post_id = get_queried_object_id();
-	if ( ! digipublish_load_next_enabled( $post_id ) ) {
-		return;
+	if ( ! $post_id || ! digipublish_load_next_enabled( $post_id ) ) {
+		return $block_content;
 	}
 
-	$path = get_theme_file_path( 'assets/js/site-interactions.js' );
-	if ( ! file_exists( $path ) ) {
-		return;
+	$class_name = isset( $block['attrs']['className'] ) ? (string) $block['attrs']['className'] : '';
+	if ( ! digipublish_runtime_class_matches( $class_name, 'dp-singular' ) ) {
+		return $block_content;
 	}
 
-	wp_enqueue_script(
-		'digipublish-site-interactions',
-		get_theme_file_uri( 'assets/js/site-interactions.js' ),
-		array(),
-		(string) filemtime( $path ),
-		true
-	);
+	$processor = new WP_HTML_Tag_Processor( $block_content );
+	if ( ! $processor->next_tag() ) {
+		return $block_content;
+	}
 
-	wp_localize_script(
-		'digipublish-site-interactions',
-		'digiPublishSite',
-		array(
-			'loadNext' => array(
-				'enabled' => true,
-				'postId'  => $post_id,
-				'restUrl' => esc_url_raw( rest_url( 'digipublish/v1/load-next-post' ) ),
-			),
+	$processor->set_attribute( 'data-wp-interactive', 'digipublish/site' );
+	$processor->set_attribute(
+		'data-wp-context',
+		wp_json_encode(
+			array(
+				'currentPostId' => (int) $post_id,
+				'loadedPostIds' => array( (int) $post_id ),
+				'restUrl'       => esc_url_raw( rest_url( 'digipublish/v1/load-next-post' ) ),
+				'isLoading'     => false,
+				'ended'         => false,
+				'loadStatus'    => '',
+			)
 		)
 	);
+	$block_content = $processor->get_updated_html();
+
+	$sentinel = '<div class="dp-nextpost-sentinel" data-dp-nextpost-sentinel data-wp-interactive="digipublish/site" data-wp-context="' .
+		esc_attr(
+			wp_json_encode(
+				array(
+					'currentPostId' => (int) $post_id,
+					'loadedPostIds' => array( (int) $post_id ),
+					'restUrl'       => esc_url_raw( rest_url( 'digipublish/v1/load-next-post' ) ),
+					'isLoading'     => false,
+					'ended'         => false,
+					'loadStatus'    => '',
+				)
+			)
+		) .
+		'" data-wp-init="callbacks.initLoadNext" data-wp-bind--hidden="context.ended" aria-hidden="true"></div>';
+	$status = '<div class="dp-nextpost-status" data-wp-interactive="digipublish/site" data-wp-text="context.loadStatus" aria-live="polite"></div>';
+
+	return $block_content . $sentinel . $status;
 }
-add_action( 'wp_enqueue_scripts', 'digipublish_enqueue_site_interactions', 30 );
+add_filter( 'render_block_core/group', 'digipublish_interactive_singular_group', 25, 2 );
 
 /**
  * Per-post/page layout settings equivalent to the Caards editor layout panel.
