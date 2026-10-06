@@ -1211,7 +1211,10 @@ function digipublish_core_feed_story_markup( $post_id, $attributes, $class = 'tp
  * Return an empty string from the filter to retain the reserved placeholder.
  */
 function digipublish_core_ad_provider_markup( $slot_name, $attributes ) {
-	return apply_filters( 'techpress_ad_slot_html', '', $slot_name, $attributes );
+	$html = apply_filters( 'digipublish_ad_slot_html', '', $slot_name, $attributes );
+
+	// Legacy filter retained for pre-1.0 ad integrations.
+	return apply_filters( 'techpress_ad_slot_html', $html, $slot_name, $attributes );
 }
 
 /**
