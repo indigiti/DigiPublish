@@ -24,6 +24,67 @@ function techpress_theme_setup() {
 }
 add_action( 'after_setup_theme', 'techpress_theme_setup' );
 
+
+/**
+ * Register DigiPublish visual treatments on WordPress Core layout blocks.
+ *
+ * New editorial composition uses Core blocks. The legacy DigiPublish section
+ * block family remains registered only so existing content continues to edit
+ * and render without migration.
+ */
+function digipublish_register_core_layout_styles() {
+	register_block_style(
+		'core/columns',
+		array(
+			'name'  => 'digipublish-editorial-section',
+			'label' => __( 'DigiPublish Editorial Section', 'digipublish' ),
+		)
+	);
+
+	register_block_style(
+		'core/heading',
+		array(
+			'name'  => 'digipublish-accent',
+			'label' => __( 'DigiPublish Accent', 'digipublish' ),
+		)
+	);
+
+	register_block_style(
+		'core/heading',
+		array(
+			'name'  => 'digipublish-accent-box',
+			'label' => __( 'DigiPublish Accent Box', 'digipublish' ),
+		)
+	);
+
+	$section_path = get_theme_file_path( 'assets/css/core-section.css' );
+	if ( file_exists( $section_path ) ) {
+		wp_enqueue_block_style(
+			'core/columns',
+			array(
+				'handle' => 'digipublish-core-section',
+				'src'    => get_theme_file_uri( 'assets/css/core-section.css' ),
+				'path'   => $section_path,
+				'ver'    => (string) filemtime( $section_path ),
+			)
+		);
+	}
+
+	$heading_path = get_theme_file_path( 'assets/css/core-heading.css' );
+	if ( file_exists( $heading_path ) ) {
+		wp_enqueue_block_style(
+			'core/heading',
+			array(
+				'handle' => 'digipublish-core-heading',
+				'src'    => get_theme_file_uri( 'assets/css/core-heading.css' ),
+				'path'   => $heading_path,
+				'ver'    => (string) filemtime( $heading_path ),
+			)
+		);
+	}
+}
+add_action( 'init', 'digipublish_register_core_layout_styles', 30 );
+
 /**
  * Load only the small theme shell stylesheet on the front end.
  * Custom block CSS is registered per block by the companion plugin and is

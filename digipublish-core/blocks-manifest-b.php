@@ -1021,7 +1021,7 @@ return array(
 		'title' => 'Section Content',
 		'category' => 'digipublish-editorial',
 		'icon' => 'align-wide',
-		'description' => 'Caards-compatible section content column.',
+		'description' => 'Legacy Caards-compatible structural block retained for existing content. Use Core Group/Columns patterns for new content.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'textColor' => array(
@@ -1063,6 +1063,7 @@ return array(
 				'width' => true,
 				'style' => true,
 			),
+			'inserter' => false,
 		),
 		'editorScript' => 'digipublish-core-editor',
 		'style' => 'file:./style.css',
@@ -1078,7 +1079,7 @@ return array(
 		'title' => 'Section Heading',
 		'category' => 'digipublish-editorial',
 		'icon' => 'heading',
-		'description' => 'Caards-compatible section heading with border, accent and text color controls.',
+		'description' => 'Legacy Caards-compatible section heading retained for existing content. Use Core Heading with DigiPublish styles for new content.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'text' => array(
@@ -1140,6 +1141,7 @@ return array(
 				'width' => true,
 				'style' => true,
 			),
+			'inserter' => false,
 		),
 		'editorScript' => 'digipublish-core-editor',
 		'style' => 'file:./style.css',
@@ -1152,7 +1154,7 @@ return array(
 		'title' => 'Section Sidebar',
 		'category' => 'digipublish-editorial',
 		'icon' => 'align-pull-right',
-		'description' => 'Caards-compatible section sidebar column.',
+		'description' => 'Legacy Caards-compatible structural block retained for existing content. Use Core Group/Columns patterns for new content.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'textColor' => array(
@@ -1194,6 +1196,7 @@ return array(
 				'width' => true,
 				'style' => true,
 			),
+			'inserter' => false,
 		),
 		'editorScript' => 'digipublish-core-editor',
 		'style' => 'file:./style.css',
@@ -1209,7 +1212,7 @@ return array(
 		'title' => 'Section',
 		'category' => 'digipublish-editorial',
 		'icon' => 'columns',
-		'description' => 'Caards-compatible content/sidebar section.',
+		'description' => 'Legacy Caards-compatible structural block retained for existing content. Use Core Group/Columns patterns for new content.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'layout' => array(
@@ -1279,6 +1282,7 @@ return array(
 				'width' => true,
 				'style' => true,
 			),
+			'inserter' => false,
 		),
 		'editorScript' => 'digipublish-core-editor',
 		'style' => 'file:./style.css',

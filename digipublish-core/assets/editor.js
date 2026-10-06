@@ -1400,7 +1400,7 @@
     edit:function(p){return socialCarouselEdit(p,'twitter');},save:function(){return null;}});
   registerBlockType('digipublish/section-heading',{
     apiVersion:3,title:__('Section Heading','digipublish-core'),category:'digipublish-editorial',icon:'heading',
-    supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
+    supports:{html:false,inserter:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
     attributes:{text:{type:'string',default:'Section Heading'},level:{type:'integer',default:2},borderColor:{type:'string',default:''},accentColor:{type:'string',default:''},accentContrastColor:{type:'string',default:''},textColor:{type:'string',default:''},styleVariant:{type:'string',default:'style-1'},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
     edit:function(props){
       const a=props.attributes,set=props.setAttributes;
@@ -1450,7 +1450,7 @@
   }
   registerBlockType('digipublish/section',{
     apiVersion:3,title:__('Section','digipublish-core'),category:'digipublish-editorial',icon:'columns',
-    supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
+    supports:{html:false,inserter:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
     attributes:{layout:{type:'string',default:'right-sidebar'},gapDesktop:{type:'string',default:'40px'},gapLaptop:{type:'string',default:'40px'},gapTablet:{type:'string',default:'40px'},gapMobile:{type:'string',default:'40px'},sidebarWidthDesktop:{type:'string',default:'390px'},sidebarWidthLaptop:{type:'string',default:'390px'},sidebarWidthTablet:{type:'string',default:'300px'},sidebarWidthMobile:{type:'string',default:'300px'},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
     edit:function(props){const a=props.attributes,set=props.setAttributes,bp=useBlockProps({className:sectionClasses(a),style:sectionStyle(a)});return el(Fragment,{},
       el(InspectorControls,{},
@@ -1475,7 +1475,7 @@
   function sectionColumnBlock(name,title,icon,className){
     registerBlockType(name,{
       apiVersion:3,title:title,category:'digipublish-editorial',icon:icon,parent:['digipublish/section'],
-      supports:{html:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
+      supports:{html:false,inserter:false,anchor:true,customClassName:true,spacing:{margin:true,padding:true},border:{radius:true,color:true,width:true,style:true}},
       attributes:{textColor:{type:'string',default:''},backgroundColor:{type:'string',default:''},hideDesktop:{type:'boolean',default:false},hideLaptop:{type:'boolean',default:false},hideTablet:{type:'boolean',default:false},hideMobile:{type:'boolean',default:false}},
       edit:function(props){const a=props.attributes,set=props.setAttributes,styles={};if(a.textColor)styles['--dp-section-'+className+'-color']=a.textColor;if(a.backgroundColor)styles['--dp-section-'+className+'-bg']=a.backgroundColor;const classes=[a.hideDesktop?'dp-hide-desktop':'',a.hideLaptop?'dp-hide-laptop':'',a.hideTablet?'dp-hide-tablet':'',a.hideMobile?'dp-hide-mobile':''].filter(Boolean).join(' ');const bp=useBlockProps({className:classes,style:styles});return el(Fragment,{},
         el(InspectorControls,{},el(PanelBody,{title:__('Color Settings','digipublish-core'),initialOpen:true},

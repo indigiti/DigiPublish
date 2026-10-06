@@ -6,7 +6,7 @@
   "title": "Section Content",
   "category": "digipublish-editorial",
   "icon": "align-wide",
-  "description": "Caards-compatible section content column.",
+  "description": "Legacy Caards-compatible structural block retained for existing content. Use Core Group/Columns patterns for new content.",
   "textdomain": "digipublish-core",
   "attributes": {
     "textColor": {
@@ -47,7 +47,8 @@
       "color": true,
       "width": true,
       "style": true
-    }
+    },
+    "inserter": false
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
