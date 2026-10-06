@@ -141,6 +141,39 @@ jobs:
           }
 
 
+      - name: Guard native visibility transition
+        shell: bash
+        run: |
+          set -euo pipefail
+          core="digipublish-core/techpress-editorial.php"
+          editor="digipublish-core/assets/editor.js"
+          native="digipublish-core/assets/editor-native.js"
+
+          test -f "$native"
+          grep -Fq "digipublish-core-editor-native" "$core" || exit 1
+          grep -Fq "wp-hooks" "$core" || exit 1
+          grep -Fq "blocks.registerBlockType" "$native" || exit 1
+          grep -Fq "visibility: true" "$native" || exit 1
+
+          for block in archive-feed category-nav current-date custom-link editorial-feed featured-posts gallery-archive instagram-carousel opt-in-form post-feed related-posts section section-content section-sidebar section-heading sidebar-feed twitter-carousel; do
+            jq -e '.supports.visibility == true' "digipublish-core/blocks/$block/block.json" >/dev/null || {
+              echo "Native WordPress visibility support is missing: $block"
+              exit 1
+            }
+          done
+
+          grep -Fq "Legacy Visibility" "$editor" || exit 1
+          grep -Fq "WordPress Visibility" "$editor" || exit 1
+          ! grep -Fq "Responsive Settings" "$editor" || {
+            echo "Parallel DigiPublish viewport-visibility panel returned."
+            exit 1
+          }
+
+          # Compatibility attributes/classes remain until saved legacy rules are cleared.
+          grep -Fq "hideDesktop" digipublish-core/blocks/post-feed/block.json || exit 1
+          grep -Fq "dp-hide-desktop" digipublish-core/blocks/post-feed/style.css || exit 1
+
+
       - name: Guard dependency-free runtime
         shell: bash
         run: |
@@ -291,7 +324,7 @@ jobs:
             }
           done
 
-          for label in "Block Settings" "Load More" "Infinite Load" "Top Meta Type" "Author" "Category" "Count" "Display compact post meta" "Excerpt length" "Heading Font Size" "Image Orientation" "Enable autoplay" "Enable bullets" "Enable wrap-around" "Filter by Formats" "Filter by Taxonomy" "Filter by Terms" "Display Related Posts" "Avoid Duplicate Posts" "Spacings" "Borders" "Responsive Settings" "Additional CSS"; do
+          for label in "Block Settings" "Load More" "Infinite Load" "Top Meta Type" "Author" "Category" "Count" "Display compact post meta" "Excerpt length" "Heading Font Size" "Image Orientation" "Enable autoplay" "Enable bullets" "Enable wrap-around" "Filter by Formats" "Filter by Taxonomy" "Filter by Terms" "Display Related Posts" "Avoid Duplicate Posts" "Spacings" "Borders" "Legacy Visibility" "Additional CSS"; do
             grep -Fq "$label" "$editor" "$editor_query" || {
               echo "Missing Posts inspector control: $label"
               exit 1

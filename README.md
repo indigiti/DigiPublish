@@ -107,3 +107,10 @@ This removes the previous hand-maintained 32-block PHP registration list and let
 New structural layouts use WordPress Core Group, Columns, Column and Heading blocks with DigiPublish styles and patterns. The old DigiPublish Section block family remains registered only for saved-content compatibility and is hidden from the inserter.
 
 See `docs/core-layout-architecture.md`.
+
+
+## Native responsive visibility
+
+DigiPublish now uses WordPress Core block visibility for new responsive visibility settings. Historical desktop/laptop/tablet/mobile hide attributes remain only as a saved-content compatibility layer and appear in the editor only when a block is already using them.
+
+See `docs/native-visibility-transition.md`.
