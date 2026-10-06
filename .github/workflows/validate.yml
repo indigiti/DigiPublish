@@ -59,9 +59,11 @@ jobs:
           query="digipublish-core/includes/query.php"
           editor="digipublish-core/assets/editor.js"
           editor_query="digipublish-core/assets/editor-query.js"
+          editor_document="digipublish-core/assets/editor-document.js"
 
           test -f "$query"
           test -f "$editor_query"
+          test -f "$editor_document"
           grep -Fq "require_once DIGIPUBLISH_CORE_DIR . 'includes/query.php'" "$core" || exit 1
 
           for fn in digipublish_core_query_post_args digipublish_core_query_feed_args digipublish_core_query_feed_posts digipublish_core_query_view_all_url; do
@@ -92,10 +94,43 @@ jobs:
             echo "Core bootstrap exceeded the architectural size budget."
             exit 1
           }
-          test "$(wc -c < "$editor")" -lt 138000 || {
+          test "$(wc -c < "$editor")" -lt 130000 || {
             echo "Main editor bundle exceeded the current size budget."
             exit 1
           }
+          test "$(wc -c < "$editor_document")" -lt 7000 || {
+            echo "Document editor module exceeded its current size budget."
+            exit 1
+          }
+
+
+      - name: Guard editor document module ownership
+        shell: bash
+        run: |
+          set -euo pipefail
+          core="digipublish-core/techpress-editorial.php"
+          editor="digipublish-core/assets/editor.js"
+          document="digipublish-core/assets/editor-document.js"
+
+          test -f "$document"
+          grep -Fq "digipublish-core-editor-document" "$core" || exit 1
+          grep -Fq "assets/editor-document.js" "$core" || exit 1
+
+          grep -Fq "registerPlugin('digipublish-editorial-attribution'" "$document" || exit 1
+          grep -Fq "registerPlugin('digipublish-layout'" "$document" || exit 1
+          grep -Fq "DigiPublish Layout Options" "$document" || exit 1
+
+          # Main block-registration bundle must not absorb document-editor APIs.
+          ! grep -Fq "PluginDocumentSettingPanel" "$editor" || exit 1
+          ! grep -Fq "registerPlugin(" "$editor" || exit 1
+          ! grep -Fq "wp.plugins" "$editor" || exit 1
+          ! grep -Fq "wp.editor" "$editor" || exit 1
+
+          # Removed document-only WordPress packages must stay out of main deps.
+          main_deps="$(grep -A4 "'digipublish-core-editor'," "$core")"
+          [[ "$main_deps" != *"'wp-plugins'"* ]] || exit 1
+          [[ "$main_deps" != *"'wp-editor'"* ]] || exit 1
+          [[ "$main_deps" != *"'wp-edit-post'"* ]] || exit 1
 
 
       - name: Guard canonical DigiPublish callable namespace
@@ -148,19 +183,20 @@ jobs:
           core="digipublish-core/techpress-editorial.php"
           compat="digipublish-core/includes/data-compatibility.php"
           editor="digipublish-core/assets/editor.js"
+          editor_document="digipublish-core/assets/editor-document.js"
 
           test -f "$compat"
           grep -Fq "includes/data-compatibility.php" "$core" || exit 1
 
           for canonical in             _digipublish_attribution_type             _digipublish_attribution_user             _digipublish_views             _digipublish_shares             digipublish_role             digipublish_linkedin             digipublish_x             digipublish_instagram             digipublish_youtube; do
-            grep -Fq "$canonical" "$compat" "$core" "$editor" digipublish-core/blocks/*/render.php || {
+            grep -Fq "$canonical" "$compat" "$core" "$editor" "$editor_document" digipublish-core/blocks/*/render.php || {
               echo "Missing canonical stored-data key: $canonical"
               exit 1
             }
           done
 
           for legacy in             _techpress_attribution_type             _techpress_attribution_user             _techpress_views             _techpress_shares             techpress_role             techpress_linkedin             techpress_x             techpress_instagram             techpress_youtube; do
-            grep -Fq "$legacy" "$compat" "$editor" || {
+            grep -Fq "$legacy" "$compat" "$editor" "$editor_document" || {
               echo "Missing required legacy stored-data compatibility key: $legacy"
               exit 1
             }
@@ -174,12 +210,12 @@ jobs:
           ! grep -Eq "(_techpress_attribution_(type|user)|_techpress_(views|shares)|techpress_(role|linkedin|x|instagram|youtube))" "$core" || exit 1
 
           # Editor writes canonical attribution keys; old keys are fallback reads only.
-          test "$(grep -c '_techpress_attribution_' "$editor")" -eq 2 || {
+          test "$(grep -c '_techpress_attribution_' "$editor_document")" -eq 2 || {
             echo "Unexpected legacy attribution usage in editor."
             exit 1
           }
-          grep -Fq "updateMeta({ _digipublish_attribution_type:" "$editor" || exit 1
-          grep -Fq "updateMeta({ _digipublish_attribution_user:" "$editor" || exit 1
+          grep -Fq "updateMeta({ _digipublish_attribution_type:" "$editor_document" || exit 1
+          grep -Fq "updateMeta({ _digipublish_attribution_user:" "$editor_document" || exit 1
 
           # Direct writes in either namespace are mirrored during the compatibility window.
           grep -Fq "added_post_meta" "$compat" || exit 1
@@ -388,8 +424,8 @@ jobs:
           grep -Fq "digipublish_caards_default_header" digipublish/inc/compatibility.php || exit 1
           grep -Fq "digipublish_caards_default_sidebar" digipublish/inc/compatibility.php || exit 1
 
-          grep -Fq "DigiPublish Layout Options" digipublish-core/assets/editor.js || exit 1
-          ! grep -Fq "Caards Layout Options" digipublish-core/assets/editor.js || exit 1
+          grep -Fq "DigiPublish Layout Options" digipublish-core/assets/editor-document.js || exit 1
+          ! grep -Fq "Caards Layout Options" digipublish-core/assets/editor-document.js || exit 1
 
 
       - name: Guard canonical runtime class namespace
