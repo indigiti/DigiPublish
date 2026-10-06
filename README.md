@@ -86,3 +86,10 @@ The default article template shows four cards below the article. Candidates are 
 DigiPublish preserves Caards-inspired publishing capabilities without requiring the original runtime frameworks. Production code does not require Canvas, Powerkit, Flickity, Colcade, Magnific Popup, Classic Widgets, or remote Google Fonts.
 
 Interactive layouts use browser-native APIs and first-party DigiPublish controllers. Masonry feed insertions use synced Gutenberg patterns, and typography defaults to resilient system stacks with optional locally hosted fonts managed through WordPress Font Library.
+
+
+## Architecture direction
+
+DigiPublish is progressively separating presentation, editorial querying and editor controls without changing saved block content. Query-heavy blocks now consume the canonical service in `digipublish-core/includes/query.php`, while reusable editor query controls live in `digipublish-core/assets/editor-query.js`.
+
+Archive and related-content ranking remain specialist layers where their semantics differ from a normal editorial feed. See `docs/editorial-query-architecture.md` for the ownership rules.
