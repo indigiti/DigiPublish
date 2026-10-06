@@ -386,9 +386,9 @@ jobs:
           done
 
           grep -Fq -- '--dp-columns-laptop' "$render" || exit 1
-          grep -Fq -- '--dp-column-gap-l' "$render" || exit 1
-          grep -Fq -- '--dp-content-gap-m' "$render" || exit 1
-          grep -Fq -- '--dp-card-heading-size-t' "$render" || exit 1
+          grep -Fq 'columnGapLaptop' "$render" || exit 1
+          grep -Fq 'contentGapMobile' "$render" || exit 1
+          grep -Fq 'cardHeadingFontSizeTablet' "$render" || exit 1
           grep -Fq '@media(min-width:1020px) and (max-width:1199px)' "$css" || exit 1
           grep -Fq '@media(min-width:600px) and (max-width:1019px)' "$css" || exit 1
           grep -Fq "horizontal-5' === \$semantic_layout ? 'thumbnail'" "$core" || exit 1
