@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.11.2
+
+- Completed the first major DigiPublish 1.0 frontend modernization checkpoint.
+- Migrated Posts carousel, Load More and Infinite Scroll to the WordPress Interactivity API under one `digipublish/post-feed` runtime.
+- Migrated the site shell (search, fullscreen navigation, dark/light scheme, Escape handling and sticky header) to the `digipublish/site` Interactivity store.
+- Migrated Auto Load Next Post into the same site Interactivity runtime while preserving the existing REST contract, same-category/reverse-direction settings and browser URL/title updates.
+- Removed the retired classic Posts and site interaction controllers.
+- Added WordPress 7.1 runtime regression coverage for carousel navigation, AJAX pagination, Auto Load Next multi-article loading and history behavior.
+- Retained dependency-free production runtime and saved-content compatibility boundaries.
+- Kept PHPUnit, Playwright, Axe and Lighthouse as release gates.
+- Bumped the theme, Core plugin and all 32 custom block manifests to 0.11.2.
+
 ## 0.11.1
 
 - Re-audited DigiPublish against the actual Caards 1.0.4 source and demo reference.
