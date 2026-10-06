@@ -194,6 +194,7 @@ jobs:
           set -euo pipefail
           block="digipublish-core/blocks/post-feed/block.json"
           editor="digipublish-core/assets/editor.js"
+          editor_query="digipublish-core/assets/editor-query.js"
           render="digipublish-core/blocks/post-feed/render.php"
           css="digipublish-core/blocks/post-feed/style.css"
           view="digipublish-core/blocks/post-feed/view.js"
@@ -231,7 +232,7 @@ jobs:
           done
 
           for label in "Block Settings" "Load More" "Infinite Load" "Top Meta Type" "Author" "Category" "Count" "Display compact post meta" "Excerpt length" "Heading Font Size" "Image Orientation" "Enable autoplay" "Enable bullets" "Enable wrap-around" "Filter by Formats" "Filter by Taxonomy" "Filter by Terms" "Display Related Posts" "Avoid Duplicate Posts" "Spacings" "Borders" "Responsive Settings" "Additional CSS"; do
-            grep -Fq "$label" "$editor" || {
+            grep -Fq "$label" "$editor" "$editor_query" || {
               echo "Missing Posts inspector control: $label"
               exit 1
             }
