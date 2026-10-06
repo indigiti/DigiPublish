@@ -142,6 +142,7 @@ function digipublish_core_attribution_label( $type ) {
 function digipublish_core_register_blocks() {
 	$editor_js        = DIGIPUBLISH_CORE_DIR . 'assets/editor.js';
 	$editor_query_js  = DIGIPUBLISH_CORE_DIR . 'assets/editor-query.js';
+	$editor_design_js = DIGIPUBLISH_CORE_DIR . 'assets/editor-design.js';
 	$editor_native_js = DIGIPUBLISH_CORE_DIR . 'assets/editor-native.js';
 
 	wp_register_script(
@@ -149,6 +150,14 @@ function digipublish_core_register_blocks() {
 		DIGIPUBLISH_CORE_URL . 'assets/editor-native.js',
 		array( 'wp-hooks' ),
 		file_exists( $editor_native_js ) ? (string) filemtime( $editor_native_js ) : DIGIPUBLISH_CORE_VERSION,
+		true
+	);
+
+	wp_register_script(
+		'digipublish-core-editor-design',
+		DIGIPUBLISH_CORE_URL . 'assets/editor-design.js',
+		array( 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n' ),
+		file_exists( $editor_design_js ) ? (string) filemtime( $editor_design_js ) : DIGIPUBLISH_CORE_VERSION,
 		true
 	);
 
@@ -163,7 +172,7 @@ function digipublish_core_register_blocks() {
 	wp_register_script(
 		'digipublish-core-editor',
 		DIGIPUBLISH_CORE_URL . 'assets/editor.js',
-		array( 'digipublish-core-editor-native', 'digipublish-core-editor-query', 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-data', 'wp-core-data', 'wp-plugins', 'wp-editor', 'wp-edit-post' ),
+		array( 'digipublish-core-editor-native', 'digipublish-core-editor-query', 'digipublish-core-editor-design', 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-data', 'wp-core-data', 'wp-plugins', 'wp-editor', 'wp-edit-post' ),
 		file_exists( $editor_js ) ? (string) filemtime( $editor_js ) : DIGIPUBLISH_CORE_VERSION,
 		true
 	);
