@@ -440,12 +440,13 @@ function digipublish_migrate_publishing_settings() {
 		'digipublish_caards_load_nextpost_reverse'       => 'digipublish_load_next_reverse',
 	);
 
+	$missing = '__digipublish_missing__';
 	foreach ( $map as $legacy => $canonical ) {
-		if ( false !== get_option( $canonical, false ) ) {
+		if ( $missing !== get_option( $canonical, $missing ) ) {
 			continue;
 		}
-		$value = get_option( $legacy, null );
-		if ( null !== $value ) {
+		$value = get_option( $legacy, $missing );
+		if ( $missing !== $value ) {
 			update_option( $canonical, (bool) $value, false );
 		}
 	}
