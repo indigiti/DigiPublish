@@ -229,6 +229,8 @@ jobs:
 
           jq empty "$theme"
           jq empty digipublish/styles/dark.json
+          jq empty digipublish/styles/editorial.json
+          jq empty digipublish/styles/high-contrast.json
 
           # User-facing Global Styles/template labels are DigiPublish-native.
           ! grep -Eq '"(name|title)"[[:space:]]*:[[:space:]]*"Caards' "$theme" || {
@@ -236,6 +238,8 @@ jobs:
             exit 1
           }
           grep -Fq '"title": "DigiPublish Dark"' digipublish/styles/dark.json || exit 1
+          grep -Fq '"title": "DigiPublish Editorial"' digipublish/styles/editorial.json || exit 1
+          grep -Fq '"title": "DigiPublish High Contrast"' digipublish/styles/high-contrast.json || exit 1
           grep -Fq '"title": "DigiPublish Post — Standard"' "$theme" || exit 1
           grep -Fq '"title": "Header — DigiPublish 1"' "$theme" || exit 1
 
