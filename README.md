@@ -149,3 +149,10 @@ See `docs/runtime-class-namespace.md`.
 Author profile, editorial attribution and editorial metric data now use canonical DigiPublish meta keys with dual-read/write compatibility for historical TechPress records. Dictionary CPT/taxonomy identifiers remain intentionally frozen until a dedicated database/rewrite migration exists.
 
 See `docs/stored-data-namespace.md`.
+
+
+## Release quality gates
+
+A development-only WordPress integration and Playwright harness validates the real theme/plugin together before release. It covers server-side block registration/rendering, compatibility reads, frontend interactions, Site Editor/post editor smoke tests, accessibility and frontend performance/dependency budgets.
+
+See `docs/release-quality-gates.md`.
