@@ -68,11 +68,11 @@ if ( $is_post && ! empty( $attributes['showReadTime'] ) && function_exists( 'dig
 	$meta[] = esc_html( sprintf( _n( '%d min read', '%d min read', $minutes, 'digipublish-core' ), $minutes ) );
 }
 if ( $is_post && ! empty( $attributes['showViews'] ) && function_exists( 'digipublish_core_metric_value' ) ) {
-	$views = digipublish_core_metric_value( $post_id, '_techpress_views' );
+	$views = digipublish_core_metric_value( $post_id, '_digipublish_views' );
 	if ( $views ) { $meta[] = esc_html( number_format_i18n( $views ) . ' ' . __( 'views', 'digipublish-core' ) ); }
 }
 if ( $is_post && ! empty( $attributes['showShares'] ) && function_exists( 'digipublish_core_metric_value' ) ) {
-	$shares = digipublish_core_metric_value( $post_id, '_techpress_shares' );
+	$shares = digipublish_core_metric_value( $post_id, '_digipublish_shares' );
 	if ( $shares ) { $meta[] = esc_html( number_format_i18n( $shares ) . ' ' . __( 'shares', 'digipublish-core' ) ); }
 }
 $meta_html = $meta ? '<div class="dp-entry-hero__meta"><span>' . implode( '</span><span>', $meta ) . '</span></div>' : '';
