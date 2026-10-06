@@ -72,3 +72,20 @@ test('Post Feed carousel next control advances the current slide', async ({ page
   await next.click();
   await expect(counter).toHaveText('2');
 });
+
+
+test('Post Feed Load More uses the WordPress Interactivity API', async ({ page }) => {
+  await page.goto('/digipublish-pagination-test/');
+
+  const feed = page.locator('.tp-post-feed[data-wp-interactive="digipublish/post-feed"]').first();
+  await expect(feed).toBeVisible();
+  await expect(feed.locator('.tp-card')).toHaveCount(3);
+
+  const button = feed.locator('[data-dp-load-more]');
+  await expect(button).toHaveAttribute('data-wp-on--click', 'actions.loadNext');
+  await button.click();
+
+  await expect(feed.locator('.tp-card')).toHaveCount(6);
+  await expect(feed).toHaveAttribute('aria-busy', 'false');
+  await expect(feed.locator('[data-dp-load-status]')).toHaveText('');
+});

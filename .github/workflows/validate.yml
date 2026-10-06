@@ -597,6 +597,47 @@ jobs:
           grep -Fq "'block_core_navigation_render_fallback'" digipublish/functions.php || exit 1
 
 
+      - name: Guard Posts Interactivity API pagination
+        shell: bash
+        run: |
+          set -euo pipefail
+          core="digipublish-core/techpress-editorial.php"
+          block="digipublish-core/blocks/post-feed/block.json"
+          render="digipublish-core/blocks/post-feed/render.php"
+          legacy_view="digipublish-core/blocks/post-feed/view.js"
+          module="digipublish-core/assets/post-feed-interactivity.js"
+
+          test -f "$module"
+          jq -e '.supports.interactivity == true' "$block" >/dev/null
+          jq -e '.viewScriptModule == "digipublish-core-post-feed-interactivity"' "$block" >/dev/null
+          grep -Fq "wp_register_script_module(" "$core" || exit 1
+          grep -Fq "digipublish-core-post-feed-interactivity" "$core" || exit 1
+          grep -Fq "@wordpress/interactivity" "$core" || exit 1
+
+          grep -Fq "data-wp-interactive" "$render" || exit 1
+          grep -Fq "wp_interactivity_data_wp_context" "$render" || exit 1
+          grep -Fq 'data-wp-on--click="actions.loadNext"' "$render" || exit 1
+          grep -Fq 'data-wp-init="callbacks.initInfinite"' "$render" || exit 1
+          grep -Fq "data-wp-bind--aria-busy" "$render" || exit 1
+          grep -Fq "context.isLoading" "$render" || exit 1
+          grep -Fq 'data-wp-text="context.status"' "$render" || exit 1
+
+          grep -Fq "store( namespace" "$module" || exit 1
+          grep -Fq "*loadNext()" "$module" || exit 1
+          grep -Fq "withScope" "$module" || exit 1
+
+          ! grep -Fq "async function loadNext" "$legacy_view" || {
+            echo "Legacy Posts pagination controller returned."
+            exit 1
+          }
+          ! grep -Fq "initInfinite" "$legacy_view" || {
+            echo "Infinite pagination still exists in the legacy Posts view script."
+            exit 1
+          }
+
+          grep -Fq "Post Feed Load More uses the WordPress Interactivity API" tests/e2e/shell.spec.js || exit 1
+
+
       - name: Guard dependency-free runtime
         shell: bash
         run: |
@@ -714,6 +755,7 @@ jobs:
           render="digipublish-core/blocks/post-feed/render.php"
           css="digipublish-core/blocks/post-feed/style.css"
           view="digipublish-core/blocks/post-feed/view.js"
+          interactivity="digipublish-core/assets/post-feed-interactivity.js"
           core="digipublish-core/techpress-editorial.php"
 
           jq -e '
@@ -760,7 +802,7 @@ jobs:
           grep -Fq 'data-dp-infinite-sentinel' "$render" || exit 1
           grep -Fq '.tp-feed--masonry-1' "$css" || exit 1
           grep -Fq '.tp-feed--carousel-1' "$css" || exit 1
-          grep -Fq 'IntersectionObserver' "$view" || exit 1
+          grep -Fq 'IntersectionObserver' "$interactivity" || exit 1
           grep -Fq 'digipublish/v1' "$core" || exit 1
           grep -Fq 'GPL-3.0 Caards theme by Code Supply Co.' "$core" || exit 1
           grep -Fq 'Caards 1.0.4' THIRD_PARTY_NOTICES.md || exit 1
