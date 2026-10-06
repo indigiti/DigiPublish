@@ -164,8 +164,8 @@
       "fontFamilies": [
         {
           "slug": "manrope",
-          "name": "Manrope",
-          "fontFamily": "Manrope, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+          "name": "DigiPublish Sans",
+          "fontFamily": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
         },
         {
           "slug": "system",
@@ -175,12 +175,12 @@
         {
           "slug": "sans",
           "name": "Editorial Sans",
-          "fontFamily": "Manrope, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+          "fontFamily": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
         },
         {
           "slug": "reading",
           "name": "Reading Sans",
-          "fontFamily": "Manrope, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+          "fontFamily": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
         }
       ],
       "fontSizes": [

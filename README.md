@@ -9,7 +9,7 @@ DigiPublish is a Gutenberg-first publishing framework for WordPress, built as a 
 
 ## Current version
 
-**0.10.1**
+**0.11.1**
 
 ## Capabilities
 
@@ -79,3 +79,10 @@ All slides are server-rendered under one canonical URL. JavaScript only enhances
 DigiPublish 0.10.1 adds a Read Next mode to `digipublish/related-posts`.
 
 The default article template shows four cards below the article. Candidates are ranked using all shared categories and tags, then recent posts fill any remaining positions without repeating the current article. Editors can switch between Read Next and the previous Related Features layout.
+
+
+## Dependency-free runtime
+
+DigiPublish preserves Caards-inspired publishing capabilities without requiring the original runtime frameworks. Production code does not require Canvas, Powerkit, Flickity, Colcade, Magnific Popup, Classic Widgets, or remote Google Fonts.
+
+Interactive layouts use browser-native APIs and first-party DigiPublish controllers. Masonry feed insertions use synced Gutenberg patterns, and typography defaults to resilient system stacks with optional locally hosted fonts managed through WordPress Font Library.

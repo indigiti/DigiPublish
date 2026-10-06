@@ -51,6 +51,34 @@ jobs:
             node --check "$file"
           done < <(find digipublish digipublish-core -type f -name '*.js' -print0)
 
+      - name: Guard dependency-free runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # No Classic Widgets runtime. Gutenberg patterns/blocks own all layout composition.
+          if grep -R --line-number --include='*.php' -E 'register_sidebar[[:space:]]*\(|dynamic_sidebar[[:space:]]*\(|the_widget[[:space:]]*\(' digipublish digipublish-core; then
+            echo "Classic Widgets runtime dependency found."
+            exit 1
+          fi
+
+          # No remote Google Fonts dependency in the production theme/plugin.
+          if grep -R --line-number -E 'fonts\.googleapis\.com|fonts\.gstatic\.com' digipublish digipublish-core; then
+            echo "Remote font dependency found."
+            exit 1
+          fi
+
+          # Guard the original Caards runtime libraries from returning.
+          if grep -R --line-number --include='*.js' -E 'new[[:space:]]+Flickity|Colcade[[:space:]]*\(|magnificPopup[[:space:]]*\(' digipublish digipublish-core; then
+            echo "Retired Caards JavaScript runtime dependency found."
+            exit 1
+          fi
+
+          grep -Fq 'digipublish_core_post_feed_loop_pattern' digipublish-core/techpress-editorial.php || exit 1
+          grep -Fq 'masonryPatternId' digipublish-core/blocks/post-feed/block.json || exit 1
+          grep -Fq 'useSyncedPatternOptions' digipublish-core/assets/editor.js || exit 1
+
+
       - name: Guard obsolete theme-part slug
         shell: bash
         run: |
@@ -323,7 +351,7 @@ jobs:
           done
 
           # Remaining Posts layout fields from the source layouts.
-          for label in "Margin Content" "Vertical Align Content" "Vertical Align Image" "Image Width" "Enable post format" "Enable video backgrounds" "Enable video controls" "Heading Color" "Post Meta Links Hover" "Read More Text Color Hover" "Display widgets in archive" "Widget Area" "Display widgets after N-th post" "Repeat widgets"; do
+          for label in "Margin Content" "Vertical Align Content" "Vertical Align Image" "Image Width" "Enable post format" "Enable video backgrounds" "Enable video controls" "Heading Color" "Post Meta Links Hover" "Read More Text Color Hover" "Insert a synced pattern between posts" "Synced pattern" "Insert after every N-th post" "Repeat pattern"; do
             grep -Fq "$label" "$editor" || {
               echo "Missing Caards Posts source field: $label"
               exit 1
@@ -331,8 +359,12 @@ jobs:
           done
 
           grep -Fq "digipublish_post_video_url" "$core" || exit 1
-          grep -Fq "digipublish_core_post_feed_loop_widget" "$core" || exit 1
-          grep -Fq "sidebar-archive" "$core" || exit 1
+          grep -Fq "digipublish_core_post_feed_loop_pattern" "$core" || exit 1
+          grep -Fq "masonryPatternId" "$core" || exit 1
+          ! grep -Fq "register_sidebar(" "$core" || {
+            echo "Classic Widget area registration returned."
+            exit 1
+          }
 
           # Caards Powerkit block extensions.
           for label in "Input Background" "Button Background Hover" "Vertical List Alt"; do
@@ -378,7 +410,7 @@ jobs:
             .attributes.masonryWidgetsRepeat.default == true
           ' "$posts" >/dev/null
 
-          for label in             "Number of Columns — Laptop"             "Gap between Posts"             "Margin Content"             "Vertical Align Content"             "Vertical Align Image"             "Image Width"             "Enable post format"             "Enable video backgrounds"             "Enable video controls"             "Heading Color Hover"             "Post Meta Links Hover"             "Masonry Widgets"             "Repeat widgets"; do
+          for label in             "Number of Columns — Laptop"             "Gap between Posts"             "Margin Content"             "Vertical Align Content"             "Vertical Align Image"             "Image Width"             "Enable post format"             "Enable video backgrounds"             "Enable video controls"             "Heading Color Hover"             "Post Meta Links Hover"             "Masonry Pattern"             "Repeat pattern"; do
             grep -Fq "$label" "$editor" || {
               echo "Missing Caards Posts setting: $label"
               exit 1
@@ -393,7 +425,7 @@ jobs:
           grep -Fq '@media(min-width:600px) and (max-width:1019px)' "$css" || exit 1
           grep -Fq "horizontal-5' === \$semantic_layout ? 'thumbnail'" "$core" || exit 1
           grep -Fq 'digipublish_post_video_url' "$core" || exit 1
-          grep -Fq 'digipublish_core_post_feed_loop_widget' "$core" || exit 1
+          grep -Fq 'digipublish_core_post_feed_loop_pattern' "$core" || exit 1
 
           jq -e '
             .attributes.showDictionary.default == false and

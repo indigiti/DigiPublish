@@ -489,6 +489,10 @@
     "excerptFontSizeMobile": {
       "type": "string",
       "default": ""
+    },
+    "masonryPatternId": {
+      "type": "integer",
+      "default": 0
     }
   },
   "supports": {

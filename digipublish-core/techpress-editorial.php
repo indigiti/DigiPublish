@@ -146,24 +146,6 @@ function techpress_editorial_register_blocks() {
 add_action( 'init', 'techpress_editorial_register_blocks', 20 );
 
 /**
- * Classic widget area retained for Caards Masonry widget insertion parity.
- */
-function digipublish_core_register_caards_widget_areas() {
-	register_sidebar(
-		array(
-			'name'          => __( 'Posts / Archive Loop Widgets', 'digipublish-core' ),
-			'id'            => 'sidebar-archive',
-			'description'   => __( 'Widgets inserted between Masonry Posts cards when enabled in the Posts block.', 'digipublish-core' ),
-			'before_widget' => '<div class="tp-post-feed__widget %2$s">',
-			'after_widget'  => '</div>',
-			'before_title'  => '<h3 class="tp-post-feed__widget-title">',
-			'after_title'   => '</h3>',
-		)
-	);
-}
-add_action( 'widgets_init', 'digipublish_core_register_caards_widget_areas' );
-
-/**
  * Add a dedicated inserter category.
  */
 function techpress_editorial_block_categories( $categories ) {
@@ -1040,50 +1022,32 @@ function digipublish_core_post_feed_card_markup( $post_id, $attributes = array()
 }
 
 /**
- * Render one widget from a sidebar at a repeated Masonry interval.
- * Adapted from Caards' GPL widget-loop behavior.
+ * Render a synced pattern (wp_block) at a repeated Masonry interval.
+ *
+ * This replaces the old Classic Widgets bridge. Editors can compose any
+ * Gutenberg blocks inside a synced pattern and inject that pattern between
+ * Masonry cards without a widget area or third-party runtime.
  */
-function digipublish_core_post_feed_loop_widget( $sidebar, $current = 1, $iteration = 3, $repeat = false ) {
-	global $wp_registered_widgets;
-	$sidebars = wp_get_sidebars_widgets();
-	if ( empty( $sidebars[ $sidebar ] ) || ! is_array( $sidebars[ $sidebar ] ) ) {
+function digipublish_core_post_feed_loop_pattern( $pattern_id, $current = 1, $iteration = 3, $repeat = false ) {
+	$pattern_id = absint( $pattern_id );
+	$iteration  = max( 1, absint( $iteration ) );
+	$current    = max( 1, absint( $current ) );
+
+	if ( ! $pattern_id || ( ! $repeat && $current > $iteration ) ) {
 		return '';
 	}
-	$widgets = array_values( $sidebars[ $sidebar ] );
-	$total = count( $widgets );
-	if ( ! $total ) {
+
+	$pattern = get_post( $pattern_id );
+	if ( ! $pattern || 'wp_block' !== $pattern->post_type || 'publish' !== $pattern->post_status ) {
 		return '';
 	}
-	$slot = (int) floor( $current / max( 1, $iteration ) ) - 1;
-	if ( $slot < 0 || ( ! $repeat && $slot >= $total ) ) {
+
+	$content = trim( (string) $pattern->post_content );
+	if ( '' === $content ) {
 		return '';
 	}
-	$widget_slug = $widgets[ $slot % $total ];
-	if ( empty( $wp_registered_widgets[ $widget_slug ] ) || empty( $wp_registered_widgets[ $widget_slug ]['callback'][0] ) ) {
-		return '';
-	}
-	$registered = $wp_registered_widgets[ $widget_slug ];
-	$widget = isset( $registered['LWL_original_callback'][0] ) ? $registered['LWL_original_callback'][0] : $registered['callback'][0];
-	if ( ! is_object( $widget ) || ! method_exists( $widget, 'get_settings' ) ) {
-		return '';
-	}
-	$number = $registered['params'][0]['number'] ?? null;
-	$settings = $widget->get_settings();
-	if ( null === $number || ! isset( $settings[ $number ] ) ) {
-		return '';
-	}
-	ob_start();
-	the_widget(
-		get_class( $widget ),
-		$settings[ $number ],
-		array(
-			'before_widget' => '<div class="tp-card tp-post-feed__widget-card"><div class="tp-post-feed__widget %1$s">',
-			'after_widget'  => '</div></div>',
-			'before_title'  => '<h3 class="tp-post-feed__widget-title">',
-			'after_title'   => '</h3>',
-		)
-	);
-	return (string) ob_get_clean();
+
+	return '<div class="tp-card tp-post-feed__pattern-card"><div class="tp-post-feed__pattern">' . do_blocks( $content ) . '</div></div>';
 }
 
 /**
@@ -1135,8 +1099,12 @@ function digipublish_core_rest_post_feed( WP_REST_Request $request ) {
 		if ( 'masonry-1' === ( $attributes['layout'] ?? '' ) && ! empty( $attributes['masonryWidgets'] ) ) {
 			$after = max( 1, absint( $attributes['masonryWidgetsAfter'] ?? 3 ) );
 			if ( 0 === $current_index % $after ) {
-				$sidebar = sanitize_key( (string) ( $attributes['masonryWidgetArea'] ?? 'sidebar-archive' ) );
-				$content .= digipublish_core_post_feed_loop_widget( $sidebar, $current_index, $after, ! empty( $attributes['masonryWidgetsRepeat'] ) );
+				$content .= digipublish_core_post_feed_loop_pattern(
+					absint( $attributes['masonryPatternId'] ?? 0 ),
+					$current_index,
+					$after,
+					! empty( $attributes['masonryWidgetsRepeat'] )
+				);
 			}
 		}
 	}
