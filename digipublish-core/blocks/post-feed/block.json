@@ -512,7 +512,8 @@
       "width": true,
       "style": true
     },
-    "customClassName": true
+    "customClassName": true,
+    "visibility": true
   },
   "editorScript": "digipublish-core-editor",
   "style": "file:./style.css",
