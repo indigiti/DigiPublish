@@ -129,8 +129,17 @@ function techpress_editorial_attribution_label( $type ) {
  * can load only the CSS needed by the blocks rendered on a request.
  */
 function techpress_editorial_register_blocks() {
-	$editor_js       = TECHPRESS_EDITORIAL_DIR . 'assets/editor.js';
-	$editor_query_js = TECHPRESS_EDITORIAL_DIR . 'assets/editor-query.js';
+	$editor_js        = TECHPRESS_EDITORIAL_DIR . 'assets/editor.js';
+	$editor_query_js  = TECHPRESS_EDITORIAL_DIR . 'assets/editor-query.js';
+	$editor_native_js = TECHPRESS_EDITORIAL_DIR . 'assets/editor-native.js';
+
+	wp_register_script(
+		'digipublish-core-editor-native',
+		TECHPRESS_EDITORIAL_URL . 'assets/editor-native.js',
+		array( 'wp-hooks' ),
+		file_exists( $editor_native_js ) ? (string) filemtime( $editor_native_js ) : TECHPRESS_EDITORIAL_VERSION,
+		true
+	);
 
 	wp_register_script(
 		'digipublish-core-editor-query',
@@ -143,7 +152,7 @@ function techpress_editorial_register_blocks() {
 	wp_register_script(
 		'digipublish-core-editor',
 		TECHPRESS_EDITORIAL_URL . 'assets/editor.js',
-		array( 'digipublish-core-editor-query', 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-data', 'wp-core-data', 'wp-plugins', 'wp-editor', 'wp-edit-post' ),
+		array( 'digipublish-core-editor-native', 'digipublish-core-editor-query', 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-data', 'wp-core-data', 'wp-plugins', 'wp-editor', 'wp-edit-post' ),
 		file_exists( $editor_js ) ? (string) filemtime( $editor_js ) : TECHPRESS_EDITORIAL_VERSION,
 		true
 	);
