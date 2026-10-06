@@ -168,7 +168,7 @@ jobs:
           test -f digipublish-core/blocks-manifest-a.php
           test -f digipublish-core/blocks-manifest-b.php
           grep -Fq 'wp_register_block_types_from_metadata_collection' "$core" || exit 1
-          ! grep -Fq "$blocks = array(" "$core" || {
+          ! grep -Fq '$blocks = array(' "$core" || {
             echo "Hardcoded block registration list returned."
             exit 1
           }
