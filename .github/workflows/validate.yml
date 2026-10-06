@@ -511,6 +511,55 @@ jobs:
           fi
 
 
+      - name: Guard runtime class namespace
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Active filesystem markup/renderers must emit canonical dp-* classes.
+          if grep -R --line-number --fixed-strings 'dp-caards-'             digipublish/parts             digipublish/templates             digipublish/patterns/editorial-home.php             digipublish-core/blocks --include='*.html' --include='*.php'; then
+            echo "Historical dp-caards-* class leaked into active runtime output."
+            exit 1
+          fi
+
+          # Compatibility locations are intentionally allowed to recognize old markup.
+          grep -Fq 'dp-caards-' digipublish/assets/css/site.css || exit 1
+          grep -Fq 'dp-caards-' digipublish/assets/js/site-interactions.js || exit 1
+          grep -Fq 'dp-caards-shell' digipublish/inc/compatibility.php || exit 1
+          grep -Fq 'dp-caards-' digipublish/patterns/caards-home.php || exit 1
+
+          grep -Fq 'className":"dp-header' digipublish/parts/header.html || exit 1
+          grep -Fq 'className":"dp-footer' digipublish/parts/footer.html || exit 1
+          grep -Fq 'className":"dp-singular' digipublish/templates/single.html || exit 1
+          grep -Fq 'className":"dp-editorial-home-hero' digipublish/patterns/editorial-home.php || exit 1
+
+
+      - name: Guard editor module boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          core="digipublish-core/techpress-editorial.php"
+          editor="digipublish-core/assets/editor.js"
+          design="digipublish-core/assets/editor-design.js"
+
+          test -f "$design"
+          grep -Fq "digipublish-core-editor-design" "$core" || exit 1
+          grep -Fq "assets/editor-design.js" "$core" || exit 1
+          grep -Fq "DigiPublishEditorDesign" "$design" || exit 1
+          grep -Fq "DigiPublishEditorDesign" "$editor" || exit 1
+          grep -Fq "sharedDesignControls" "$design" || exit 1
+
+          ! grep -Fq "function sharedDesignControls" "$editor" || {
+            echo "Shared design controls collapsed back into the main editor bundle."
+            exit 1
+          }
+
+          test "$(wc -c < "$editor")" -lt 130000 || {
+            echo "Main editor bundle exceeded the modularization budget."
+            exit 1
+          }
+
+
       - name: Guard dependency-free runtime
         shell: bash
         run: |
