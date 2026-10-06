@@ -68,7 +68,7 @@ Caards-style per-device hide attributes remain supported for existing saved bloc
 
 ## Design-system normalization
 
-Caards remains a documented GPL source reference, not the active product design namespace. DigiPublish now uses canonical `--dp-*` theme tokens, DigiPublish-native Global Styles/template labels, and the first-party `site-interactions.js` runtime. Historical `--dp-caards-*` CSS variables, layout option keys, dark-mode class/storage key and pattern slug remain only where required for saved-site compatibility.
+Caards remains a documented GPL source reference, not the active product design namespace. DigiPublish now uses canonical `--dp-*` theme tokens, DigiPublish-native Global Styles/template labels, and the first-party WordPress Interactivity API `site-interactivity.js` runtime. Historical `--dp-caards-*` CSS variables, layout option keys, dark-mode class/storage key and pattern slug remain only where required for saved-site compatibility.
 
 
 ## Runtime namespace modernization
