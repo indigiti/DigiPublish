@@ -100,6 +100,30 @@ unset( $digipublish_legacy_header, $digipublish_legacy_footer );
 
 
 /**
+ * Match canonical runtime classes while recognizing historical saved markup.
+ *
+ * Legacy class literals remain isolated in this compatibility layer so active
+ * theme code can stay in the canonical dp-* namespace.
+ */
+function digipublish_runtime_class_matches( $class_list, $canonical ) {
+	$aliases = array(
+		'dp-header'     => 'dp-caards-header',
+		'dp-search'     => 'dp-caards-search',
+		'dp-fullscreen' => 'dp-caards-fullscreen',
+	);
+
+	$class_list = preg_split( '/\s+/', trim( (string) $class_list ) );
+	$class_list = array_filter( is_array( $class_list ) ? $class_list : array() );
+
+	if ( in_array( $canonical, $class_list, true ) ) {
+		return true;
+	}
+
+	return isset( $aliases[ $canonical ] ) && in_array( $aliases[ $canonical ], $class_list, true );
+}
+
+
+/**
  * Preserve the historical shell body class for site-specific CSS written
  * before the canonical dp-* namespace. Active theme code emits dp-shell.
  */
