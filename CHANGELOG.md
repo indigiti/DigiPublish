@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.11.1
+
+- Re-audited DigiPublish against the actual Caards 1.0.4 source and demo reference.
+- Replaced the conflicting legacy DigiPublish visual shell with a Caards-native theme shell and rebuilt the homepage/header composition for closer visual fidelity.
+- Completed all Caards-defined block/settings parity across Posts, Section, Section Content, Section Sidebar, Section Heading, Current Date, Category Navigation, Custom Link, Instagram, X/Twitter, Opt-In Form and Featured Categories.
+- Completed Posts source defaults and all 16 layout-specific controls, including responsive Desktop/Laptop/Tablet/Mobile columns, gaps, content spacing, card heights and typography.
+- Added source-scoped post-format icons, supported video backgrounds and controls, layout-specific colors, Masonry widget insertion/repeat behavior, and fixed Horizontal 5 thumbnail semantics.
+- Matched Caards responsive breakpoints and prevented hidden layout settings from leaking into unsupported layouts.
+- Changed DigiPublish-only Category Navigation extras (Dictionary, Photo Galleries and Search) to explicit opt-ins so Caards behavior remains the default.
+- Added and expanded CI parity/visual-fidelity guards to protect the migration.
+- Bumped the theme, Core plugin and all 32 custom block manifests to 0.11.1.
+
+
 ## 0.11.0
 
 - Ported the GPL-3.0 Caards 1.0.4 visual/theme system into DigiPublish while preserving the Gutenberg/FSE architecture.
