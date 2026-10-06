@@ -6,7 +6,7 @@
   "title": "Custom Link",
   "category": "digipublish-editorial",
   "icon": "admin-links",
-  "description": "Caards-style custom link or header button.",
+  "description": "Editorial custom link or header action with text and button treatments.",
   "textdomain": "digipublish-core",
   "attributes": {
     "label": {
