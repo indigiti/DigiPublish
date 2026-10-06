@@ -380,14 +380,14 @@ function digipublish_enqueue_site_interactions() {
 add_action( 'wp_enqueue_scripts', 'digipublish_enqueue_site_interactions', 30 );
 
 /**
- * Attach Auto Load Next Interactivity API context to the canonical singular
- * wrapper and append the server-rendered sentinel/status lifecycle controls.
+ * Append the Auto Load Next Interactivity API runtime immediately after the
+ * canonical singular wrapper. The runtime owns one shared context for its
+ * sentinel, loaded article fragments and accessible live status.
  */
 function digipublish_interactive_singular_group( $block_content, $block ) {
 	if (
 		is_admin() ||
-		! is_singular( 'post' ) ||
-		! class_exists( 'WP_HTML_Tag_Processor' )
+		! is_singular( 'post' )
 	) {
 		return $block_content;
 	}
@@ -402,14 +402,7 @@ function digipublish_interactive_singular_group( $block_content, $block ) {
 		return $block_content;
 	}
 
-	$processor = new WP_HTML_Tag_Processor( $block_content );
-	if ( ! $processor->next_tag() ) {
-		return $block_content;
-	}
-
-	$processor->set_attribute( 'data-wp-interactive', 'digipublish/site' );
-	$processor->set_attribute(
-		'data-wp-context',
+	$context = esc_attr(
 		wp_json_encode(
 			array(
 				'currentPostId' => (int) $post_id,
@@ -421,25 +414,13 @@ function digipublish_interactive_singular_group( $block_content, $block ) {
 			)
 		)
 	);
-	$block_content = $processor->get_updated_html();
 
-	$sentinel = '<div class="dp-nextpost-sentinel" data-dp-nextpost-sentinel data-wp-interactive="digipublish/site" data-wp-context="' .
-		esc_attr(
-			wp_json_encode(
-				array(
-					'currentPostId' => (int) $post_id,
-					'loadedPostIds' => array( (int) $post_id ),
-					'restUrl'       => esc_url_raw( rest_url( 'digipublish/v1/load-next-post' ) ),
-					'isLoading'     => false,
-					'ended'         => false,
-					'loadStatus'    => '',
-				)
-			)
-		) .
-		'" data-wp-init="callbacks.initLoadNext" data-wp-bind--hidden="context.ended" aria-hidden="true"></div>';
-	$status = '<div class="dp-nextpost-status" data-wp-interactive="digipublish/site" data-wp-text="context.loadStatus" aria-live="polite"></div>';
+	$runtime  = '<div class="dp-nextpost-runtime" data-wp-interactive="digipublish/site" data-wp-context="' . $context . '">';
+	$runtime .= '<div class="dp-nextpost-sentinel" data-dp-nextpost-sentinel data-wp-init="callbacks.initLoadNext" data-wp-bind--hidden="context.ended" aria-hidden="true"></div>';
+	$runtime .= '<div class="dp-nextpost-status" data-dp-nextpost-status data-wp-text="context.loadStatus" aria-live="polite"></div>';
+	$runtime .= '</div>';
 
-	return $block_content . $sentinel . $status;
+	return $block_content . $runtime;
 }
 add_filter( 'render_block_core/group', 'digipublish_interactive_singular_group', 25, 2 );
 
