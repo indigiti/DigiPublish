@@ -248,6 +248,27 @@ function digipublish_register_site_interactivity_module() {
 add_action( 'init', 'digipublish_register_site_interactivity_module', 30 );
 
 /**
+ * Let Core treat template parts as Interactivity API roots without declaring
+ * client-side navigation compatibility for every template part.
+ */
+function digipublish_template_part_interactivity_support( $args, $block_type ) {
+	if ( 'core/template-part' !== $block_type ) {
+		return $args;
+	}
+
+	if ( empty( $args['supports'] ) || ! is_array( $args['supports'] ) ) {
+		$args['supports'] = array();
+	}
+	if ( empty( $args['supports']['interactivity'] ) || ! is_array( $args['supports']['interactivity'] ) ) {
+		$args['supports']['interactivity'] = array();
+	}
+	$args['supports']['interactivity']['interactive'] = true;
+
+	return $args;
+}
+add_filter( 'register_block_type_args', 'digipublish_template_part_interactivity_support', 20, 2 );
+
+/**
  * Initialize server state used by header directives before WordPress processes
  * the interactive template-part markup.
  */
@@ -276,8 +297,7 @@ function digipublish_site_interactivity_state() {
 function digipublish_interactive_header_template_part( $block_content, $block ) {
 	if (
 		is_admin() ||
-		! class_exists( 'WP_HTML_Tag_Processor' ) ||
-		! function_exists( 'wp_interactivity_process_directives' )
+		! class_exists( 'WP_HTML_Tag_Processor' )
 	) {
 		return $block_content;
 	}
@@ -345,7 +365,7 @@ function digipublish_interactive_header_template_part( $block_content, $block ) 
 		}
 	}
 
-	return wp_interactivity_process_directives( $processor->get_updated_html() );
+	return $processor->get_updated_html();
 }
 add_filter( 'render_block_core/template-part', 'digipublish_interactive_header_template_part', 20, 2 );
 
