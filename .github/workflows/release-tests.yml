@@ -18,7 +18,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
+
+      - name: Setup PHP test tooling
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+          coverage: none
+
+      - name: Install PHP test dependencies
+        run: composer install --working-dir=digipublish-core --no-interaction --prefer-dist --no-progress
 
       - name: Install test tooling
         run: npm install --no-audit --no-fund
