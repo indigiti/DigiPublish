@@ -246,6 +246,7 @@ if ( $styles ) {
 }
 
 $async_pagination = in_array( $pagination_type, array( 'ajax', 'infinite' ), true );
+$interactive_context = '';
 if ( $async_pagination && $query->max_num_pages > 1 ) {
 	$async_attributes = $attributes;
 	$async_attributes['paginationType'] = $pagination_type;
@@ -255,12 +256,33 @@ if ( $async_pagination && $query->max_num_pages > 1 ) {
 	if ( ! empty( $attributes['relatedPosts'] ) && is_singular() ) {
 		$async_attributes['_relatedPostId'] = get_queried_object_id();
 	}
+
+	$rest_url = esc_url_raw( rest_url( 'digipublish/v1/post-feed' ) );
+
+	// Historical data attributes remain during the 1.x compatibility window,
+	// while WordPress Interactivity API directives own active pagination.
 	$extra['data-dp-post-feed'] = '1';
 	$extra['data-dp-pagination'] = $pagination_type;
 	$extra['data-dp-page'] = '1';
 	$extra['data-dp-max-pages'] = (string) $query->max_num_pages;
-	$extra['data-dp-rest-url'] = esc_url_raw( rest_url( 'digipublish/v1/post-feed' ) );
+	$extra['data-dp-rest-url'] = $rest_url;
 	$extra['data-dp-attributes'] = wp_json_encode( $async_attributes );
+
+	$extra['data-wp-interactive'] = 'digipublish/post-feed';
+	$extra['data-wp-bind--aria-busy'] = 'context.isLoading';
+	$interactive_context = wp_interactivity_data_wp_context(
+		array(
+			'pagination' => $pagination_type,
+			'page'       => 1,
+			'maxPages'   => (int) $query->max_num_pages,
+			'restUrl'    => $rest_url,
+			'attributes' => $async_attributes,
+			'isLoading'  => false,
+			'ended'      => false,
+			'status'     => '',
+		),
+		'digipublish/post-feed'
+	);
 }
 
 if ( $is_carousel ) {
@@ -271,7 +293,7 @@ if ( $is_carousel ) {
 
 $wrapper = get_block_wrapper_attributes( $extra );
 
-echo '<section ' . $wrapper . '>';
+echo '<section ' . $wrapper . ( $interactive_context ? ' ' . $interactive_context : '' ) . '>';
 if ( ! empty( $attributes['heading'] ) ) {
 	$tag = digipublish_core_heading_tag( $attributes );
 	echo '<' . $tag . ' class="tp-section-title">' . esc_html( $attributes['heading'] ) . '</' . $tag . '>';
@@ -347,11 +369,11 @@ if ( 'numbers' === $pagination_type && $query->max_num_pages > 1 ) {
 
 if ( $async_pagination && $query->max_num_pages > 1 ) {
 	if ( 'ajax' === $pagination_type ) {
-		echo '<div class="tp-post-feed__load-more-wrap"><button type="button" class="tp-post-feed__load-more" data-dp-load-more>' . esc_html__( 'Load More', 'digipublish-core' ) . '</button></div>';
+		echo '<div class="tp-post-feed__load-more-wrap"><button type="button" class="tp-post-feed__load-more" data-dp-load-more data-wp-on--click="actions.loadNext" data-wp-bind--disabled="context.isLoading" data-wp-bind--hidden="context.ended">' . esc_html__( 'Load More', 'digipublish-core' ) . '</button></div>';
 	} else {
-		echo '<div class="tp-post-feed__infinite-sentinel" data-dp-infinite-sentinel aria-hidden="true"></div>';
+		echo '<div class="tp-post-feed__infinite-sentinel" data-dp-infinite-sentinel data-wp-init="callbacks.initInfinite" data-wp-bind--hidden="context.ended" aria-hidden="true"></div>';
 	}
-	echo '<div class="tp-post-feed__load-status" data-dp-load-status aria-live="polite"></div>';
+	echo '<div class="tp-post-feed__load-status" data-dp-load-status data-wp-text="context.status" aria-live="polite"></div>';
 }
 
 echo '</section>';
