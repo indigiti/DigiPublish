@@ -181,7 +181,7 @@ function digipublish_enqueue_site_interactions() {
 	}
 	wp_enqueue_script(
 		'digipublish-site-interactions',
-		get_theme_file_uri( 'assets/js/caards-shell.js' ),
+		get_theme_file_uri( 'assets/js/site-interactions.js' ),
 		array(),
 		(string) filemtime( $path ),
 		true
@@ -200,7 +200,7 @@ function digipublish_enqueue_site_interactions() {
 			'restUrl' => esc_url_raw( rest_url( 'digipublish/v1/load-next-post' ) ),
 		);
 	}
-	wp_localize_script( 'digipublish-caards-shell', 'digiPublishSite', $config );
+	wp_localize_script( 'digipublish-site-interactions', 'digiPublishSite', $config );
 }
 add_action( 'wp_enqueue_scripts', 'digipublish_enqueue_site_interactions', 30 );
 
