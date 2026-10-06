@@ -120,8 +120,8 @@ if ( 'read-next' === $layout ) {
 
 	foreach ( $posts as $post ) {
 		$id = (int) $post->ID;
-		$views = digipublish_core_metric_value( $id, '_techpress_views' );
-		$shares = digipublish_core_metric_value( $id, '_techpress_shares' );
+		$views = digipublish_core_metric_value( $id, '_digipublish_views' );
+		$shares = digipublish_core_metric_value( $id, '_digipublish_shares' );
 		$minutes = digipublish_core_read_time( $id );
 
 		echo '<article class="tp-read-next-card">';
