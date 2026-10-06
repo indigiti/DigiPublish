@@ -309,7 +309,7 @@ function digipublish_core_render_gallery_slide( $attributes, $index = 1, $total 
  */
 function digipublish_core_get_gallery_categories( $limit = 10 ) {
 	$limit = max( 1, min( 30, absint( $limit ) ) );
-	$key   = 'v' . techpress_editorial_cache_version() . '_gallery_categories_' . $limit;
+	$key   = 'v' . digipublish_core_cache_version() . '_gallery_categories_' . $limit;
 	$terms = wp_cache_get( $key, 'techpress_editorial' );
 
 	if ( false !== $terms ) {
