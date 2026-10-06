@@ -13,6 +13,17 @@ class DigiPublishArchitectureTest extends WP_UnitTestCase {
 		}
 	}
 
+	public function test_post_feed_declares_interactivity_api_support() {
+		$metadata = json_decode(
+			file_get_contents( dirname( __DIR__ ) . '/blocks/post-feed/block.json' ),
+			true
+		);
+
+		$this->assertTrue( $metadata['supports']['interactivity'] );
+		$this->assertSame( 'file:./view-interactivity.js', $metadata['viewScriptModule'] );
+		$this->assertSame( 'file:./view.js', $metadata['viewScript'] );
+	}
+
 	public function test_query_id_normalization_is_stable() {
 		$this->assertSame(
 			array( 3, 2, 7 ),
