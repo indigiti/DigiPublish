@@ -23,7 +23,7 @@ This document distinguishes **Caards feature parity** from the separate **DigiPu
 | Area | Why it is not finished |
 | --- | --- |
 | Block consolidation | 32 block types are still registered. Four structural blocks are compatibility-only, gallery-slide is a child block, and several query/presentation blocks still exist as separate public block types even though internals are increasingly shared. |
-| Editor modularization | Shared query/native support has been extracted, but `digipublish-core/assets/editor.js` is still about 134 KB. The original target was block-scoped editor modules/build outputs rather than one large registration bundle. |
+| Editor modularization | Query controls, native support and document sidebar panels are extracted; the main editor bundle is now about 129 KB. Block registrations/presentation controls still need further block-family or block-scoped extraction. |
 | Responsive architecture | Core visibility is native, but many blocks still store legacy `hideDesktop/hideLaptop/hideTablet/hideMobile` attributes and custom desktop/laptop/tablet/mobile column/gap settings. |
 | Legacy namespace cleanup | Active runtime classes are canonical `dp-*`, callable APIs are canonical `digipublish*`, and author/attribution/metric meta uses canonical keys with dual-read/write compatibility. Dictionary CPT/taxonomy IDs remain intentionally deferred. |
 
