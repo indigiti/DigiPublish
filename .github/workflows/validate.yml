@@ -400,7 +400,8 @@ jobs:
         run: |
           set -euo pipefail
           css="digipublish/assets/css/site.css"
-          js="digipublish/assets/js/site-interactions.js"
+          shell_js="digipublish/assets/js/site-interactivity.js"
+          load_next_js="digipublish/assets/js/site-interactions.js"
           compat="digipublish/inc/compatibility.php"
 
           # Active filesystem markup/renderers use only canonical dp-* classes.
@@ -424,13 +425,20 @@ jobs:
             }
           done
 
-          # The interaction controller targets canonical selectors first and
-          # retains a small explicit map for previously saved template parts.
-          grep -Fq "compatSelector('.dp-header',legacyClass.header)" "$js" || exit 1
-          grep -Fq "compatSelector('.dp-singular',legacyClass.singular)" "$js" || exit 1
-          grep -Fq "sentinel.className='dp-nextpost-sentinel'" "$js" || exit 1
-          grep -Fq "marker.className='dp-header-marker'" "$js" || exit 1
-          grep -Fq "header:'.dp-caards-header'" "$js" || exit 1
+          # Shell behavior is canonical; historical saved-header class matching
+          # is isolated in the PHP compatibility layer.
+          grep -Fq "store( 'digipublish/site'" "$shell_js" || exit 1
+          grep -Fq "dp-theme-dark" "$shell_js" || exit 1
+          grep -Fq "dp-menu-open" "$shell_js" || exit 1
+          grep -Fq "function digipublish_runtime_class_matches" "$compat" || exit 1
+          grep -Fq "dp-caards-header" "$compat" || exit 1
+          grep -Fq "dp-caards-search" "$compat" || exit 1
+          grep -Fq "dp-caards-fullscreen" "$compat" || exit 1
+
+          # Load Next keeps only its singular saved-markup compatibility hook.
+          grep -Fq "legacySingular='.dp-caards-singular'" "$load_next_js" || exit 1
+          grep -Fq "sentinel.className='dp-nextpost-sentinel'" "$load_next_js" || exit 1
+          ! grep -Fq "dp-caards-header" "$load_next_js" || exit 1
 
           # Historical shell class is emitted only through compatibility code.
           ! grep -Fq "dp-caards-shell" digipublish/functions.php || exit 1
