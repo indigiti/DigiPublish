@@ -185,8 +185,8 @@ jobs:
             block="$(basename "$dir")"
             test -f "$dir/block.json"
             jq -e --arg expected "digipublish/$block" '.name == $expected' "$dir/block.json" >/dev/null
-            php -r '$m=require $argv[1]; exit(isset($m[$argv[2]]) ? 0 : 1);' "$manifest" "$block" || {
-              echo "Block directory is missing from metadata manifest: $block"
+            php -r '$m=require $argv[1]; $j=json_decode(file_get_contents($argv[2]), true); exit(isset($m[$argv[3]]) && $m[$argv[3]] == $j ? 0 : 1);' "$manifest" "$dir/block.json" "$block" || {
+              echo "Block metadata manifest is missing or stale for: $block"
               exit 1
             }
           done
