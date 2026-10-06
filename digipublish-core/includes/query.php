@@ -497,22 +497,3 @@ function digipublish_core_query_view_all_url( $attributes ) {
 	$posts_page = absint( get_option( 'page_for_posts' ) );
 	return $posts_page ? get_permalink( $posts_page ) : home_url( '/' );
 }
-
-/**
- * Backward-compatible aliases for sites/integrations using pre-1.0 names.
- */
-function techpress_editorial_post_query_args( $attributes ) {
-	return digipublish_core_query_post_args( $attributes );
-}
-
-function techpress_editorial_feed_query_args( $attributes ) {
-	return digipublish_core_query_feed_args( $attributes );
-}
-
-function techpress_editorial_feed_get_posts( $attributes ) {
-	return digipublish_core_query_feed_posts( $attributes );
-}
-
-function techpress_editorial_feed_view_all_url( $attributes ) {
-	return digipublish_core_query_view_all_url( $attributes );
-}
