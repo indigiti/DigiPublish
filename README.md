@@ -93,3 +93,10 @@ Interactive layouts use browser-native APIs and first-party DigiPublish controll
 DigiPublish is progressively separating presentation, editorial querying and editor controls without changing saved block content. Query-heavy blocks now consume the canonical service in `digipublish-core/includes/query.php`, while reusable editor query controls live in `digipublish-core/assets/editor-query.js`.
 
 Archive and related-content ranking remain specialist layers where their semantics differ from a normal editorial feed. See `docs/editorial-query-architecture.md` for the ownership rules.
+
+
+## Block registration
+
+DigiPublish registers its custom blocks through WordPress' native block metadata collection API. `digipublish-core/blocks-manifest.php` is the registration source of truth and CI verifies that every manifest entry exactly matches its corresponding `block.json`.
+
+This removes the previous hand-maintained 32-block PHP registration list and lets WordPress serve block metadata from opcode-cache-friendly PHP rather than repeatedly decoding individual JSON files.
