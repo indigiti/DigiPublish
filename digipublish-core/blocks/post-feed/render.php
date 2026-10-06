@@ -298,8 +298,12 @@ foreach ( $query->posts as $index => $post ) {
 		$current = $base_index + $index + 1;
 		$after = max( 1, absint( $attributes['masonryWidgetsAfter'] ?? 3 ) );
 		if ( 0 === $current % $after ) {
-			$sidebar = sanitize_key( (string) ( $attributes['masonryWidgetArea'] ?? 'sidebar-archive' ) );
-			echo digipublish_core_post_feed_loop_widget( $sidebar, $current, $after, ! empty( $attributes['masonryWidgetsRepeat'] ) );
+			echo digipublish_core_post_feed_loop_pattern(
+				absint( $attributes['masonryPatternId'] ?? 0 ),
+				$current,
+				$after,
+				! empty( $attributes['masonryWidgetsRepeat'] )
+			);
 		}
 	}
 }
