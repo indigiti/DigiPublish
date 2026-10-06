@@ -66,7 +66,7 @@ return array(
 		'title' => 'Instagram Carousel',
 		'category' => 'digipublish-editorial',
 		'icon' => 'instagram',
-		'description' => 'Caards-compatible Instagram carousel. Can be populated manually or by an integration using a filter.',
+		'description' => 'Instagram presentation block for manually supplied or provider-filtered feed items.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'heading' => array(
@@ -163,7 +163,7 @@ return array(
 		'title' => 'Mega Menu',
 		'category' => 'digipublish-editorial',
 		'icon' => 'menu-alt3',
-		'description' => 'FSE-native Caards mega menu with latest or category post cards.',
+		'description' => 'Site Editor compatible mega menu with latest or category story cards.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'label' => array(
@@ -216,7 +216,7 @@ return array(
 		'title' => 'Opt-In Form',
 		'category' => 'digipublish-editorial',
 		'icon' => 'email',
-		'description' => 'Caards-compatible opt-in form with source color controls and integration hook.',
+		'description' => 'Editorial opt-in form with first-party color controls and integration hooks.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'heading' => array(
@@ -1025,7 +1025,7 @@ return array(
 		'title' => 'Section Content',
 		'category' => 'digipublish-editorial',
 		'icon' => 'align-wide',
-		'description' => 'Legacy Caards-compatible structural block retained for existing content. Use Core Group/Columns patterns for new content.',
+		'description' => 'Legacy section content column retained for saved-content compatibility.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'textColor' => array(
@@ -1084,7 +1084,7 @@ return array(
 		'title' => 'Section Heading',
 		'category' => 'digipublish-editorial',
 		'icon' => 'heading',
-		'description' => 'Legacy Caards-compatible section heading retained for existing content. Use Core Heading with DigiPublish styles for new content.',
+		'description' => 'Legacy section heading retained for saved-content compatibility.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'text' => array(
@@ -1160,7 +1160,7 @@ return array(
 		'title' => 'Section Sidebar',
 		'category' => 'digipublish-editorial',
 		'icon' => 'align-pull-right',
-		'description' => 'Legacy Caards-compatible structural block retained for existing content. Use Core Group/Columns patterns for new content.',
+		'description' => 'Legacy section sidebar retained for saved-content compatibility.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'textColor' => array(
@@ -1219,7 +1219,7 @@ return array(
 		'title' => 'Section',
 		'category' => 'digipublish-editorial',
 		'icon' => 'columns',
-		'description' => 'Legacy Caards-compatible structural block retained for existing content. Use Core Group/Columns patterns for new content.',
+		'description' => 'Legacy content/sidebar structural block retained for saved-content compatibility.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'layout' => array(
@@ -1426,7 +1426,7 @@ return array(
 		'title' => 'Meet Team',
 		'category' => 'digipublish-editorial',
 		'icon' => 'groups',
-		'description' => 'Caards-style editorial team grid from WordPress users.',
+		'description' => 'Editorial team grid sourced from WordPress users.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'heading' => array(
@@ -1518,7 +1518,7 @@ return array(
 		'title' => 'X / Twitter Carousel',
 		'category' => 'digipublish-editorial',
 		'icon' => 'twitter',
-		'description' => 'Caards-compatible X/Twitter carousel with manual or filter-provided feed items.',
+		'description' => 'X/Twitter presentation block for manually supplied or provider-filtered feed items.',
 		'textdomain' => 'digipublish-core',
 		'attributes' => array(
 			'heading' => array(
