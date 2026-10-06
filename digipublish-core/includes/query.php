@@ -359,7 +359,7 @@ function digipublish_core_query_feed_posts( $attributes ) {
 		$scope     = 'comment_count' === ( $query_args['orderby'] ?? '' ) ? 'popularity' : 'content';
 
 		if ( ! isset( $request_cache[ $cache_key ] ) ) {
-			$object_key = 'v' . techpress_editorial_cache_version( $scope ) . '_feed_' . $cache_key;
+			$object_key = 'v' . digipublish_core_cache_version( $scope ) . '_feed_' . $cache_key;
 			$post_ids   = wp_cache_get( $object_key, 'techpress_editorial' );
 			if ( false === $post_ids ) {
 				$query    = new WP_Query( $query_args );
@@ -496,23 +496,4 @@ function digipublish_core_query_view_all_url( $attributes ) {
 	}
 	$posts_page = absint( get_option( 'page_for_posts' ) );
 	return $posts_page ? get_permalink( $posts_page ) : home_url( '/' );
-}
-
-/**
- * Backward-compatible aliases for sites/integrations using pre-1.0 names.
- */
-function techpress_editorial_post_query_args( $attributes ) {
-	return digipublish_core_query_post_args( $attributes );
-}
-
-function techpress_editorial_feed_query_args( $attributes ) {
-	return digipublish_core_query_feed_args( $attributes );
-}
-
-function techpress_editorial_feed_get_posts( $attributes ) {
-	return digipublish_core_query_feed_posts( $attributes );
-}
-
-function techpress_editorial_feed_view_all_url( $attributes ) {
-	return digipublish_core_query_view_all_url( $attributes );
 }

@@ -77,7 +77,7 @@ jobs:
           grep -Fq 'digipublish_core_query_feed_posts' digipublish-core/blocks/editorial-feed/render.php || exit 1
           grep -Fq 'digipublish_core_query_feed_posts' digipublish-core/blocks/sidebar-feed/render.php || exit 1
 
-          # Legacy query names may exist only as compatibility wrappers in query.php.
+          # Legacy query names may exist only inside the dedicated compatibility layer.
           if grep -R --line-number --include='*.php' -E 'techpress_editorial_(post_query_args|feed_query_args|feed_get_posts|feed_view_all_url)[[:space:]]*\(' digipublish-core/blocks; then
             echo "A block renderer bypasses the canonical DigiPublish query service."
             exit 1
@@ -96,6 +96,49 @@ jobs:
             echo "Main editor bundle exceeded the current size budget."
             exit 1
           }
+
+
+      - name: Guard canonical DigiPublish callable namespace
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          core="digipublish-core/techpress-editorial.php"
+          core_compat="digipublish-core/includes/compatibility.php"
+          theme="digipublish/functions.php"
+          theme_compat="digipublish/inc/compatibility.php"
+
+          test -f "$core_compat"
+          test -f "$theme_compat"
+          grep -Fq "includes/compatibility.php" "$core" || exit 1
+          grep -Fq "inc/compatibility.php" "$theme" || exit 1
+
+          # Canonical constants own runtime configuration.
+          grep -Fq "define( 'DIGIPUBLISH_CORE_VERSION'" "$core" || exit 1
+          grep -Fq "define( 'DIGIPUBLISH_CORE_DIR'" "$core" || exit 1
+          grep -Fq "define( 'DIGIPUBLISH_CORE_URL'" "$core" || exit 1
+          grep -Fq "define( 'TECHPRESS_EDITORIAL_VERSION', DIGIPUBLISH_CORE_VERSION" "$core" || exit 1
+          grep -Fq "define( 'TECHPRESS_EDITORIAL_DIR', DIGIPUBLISH_CORE_DIR" "$core" || exit 1
+          grep -Fq "define( 'TECHPRESS_EDITORIAL_URL', DIGIPUBLISH_CORE_URL" "$core" || exit 1
+
+          # Production PHP cannot call legacy callable namespaces.
+          if grep -R --line-number --include='*.php'             --exclude='compatibility.php'             -E 'techpress_editorial_[A-Za-z0-9_]+[[:space:]]*\(|techpress_theme_[A-Za-z0-9_]+[[:space:]]*\(|digipublish_caards_[A-Za-z0-9_]+[[:space:]]*\('             digipublish digipublish-core; then
+            echo "Legacy callable namespace escaped the compatibility layer."
+            exit 1
+          fi
+
+          # Compatibility files must still expose representative old APIs.
+          grep -Fq "function techpress_editorial_register_content_types" "$core_compat" || exit 1
+          grep -Fq "function techpress_editorial_post_query_args" "$core_compat" || exit 1
+          grep -Fq "function techpress_theme_setup" "$theme_compat" || exit 1
+          grep -Fq "function digipublish_caards_load_next_enabled" "$theme_compat" || exit 1
+
+          # Representative canonical APIs must remain first-class.
+          grep -Fq "function digipublish_core_register_content_types" "$core" || exit 1
+          grep -Fq "function digipublish_core_image_markup" "$core" || exit 1
+          grep -Fq "function digipublish_core_read_time" "$core" || exit 1
+          grep -Fq "function digipublish_theme_setup" "$theme" || exit 1
+          grep -Fq "function digipublish_load_next_enabled" "$theme" || exit 1
 
 
       - name: Guard Core layout consolidation

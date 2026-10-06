@@ -10,7 +10,7 @@ DigiPublish query-heavy blocks share one server-side query service in `digipubli
 - `digipublish_core_query_view_all_url()` — canonical context-aware destination resolver.
 - `digipublish_core_rendered_post_ids()` — request-scoped duplicate registry.
 
-Legacy `techpress_editorial_*` query function names remain as thin wrappers only so existing integrations are not broken. New block code must use the canonical `digipublish_core_query_*` API.
+Legacy `techpress_editorial_*` query function names remain as thin wrappers in `digipublish-core/includes/compatibility.php` only, so existing integrations are not broken. New block code must use the canonical `digipublish_core_query_*` API.
 
 ## Current consumers
 

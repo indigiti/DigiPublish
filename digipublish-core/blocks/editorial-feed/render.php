@@ -62,7 +62,7 @@ switch ( $layout ) {
 		echo '<div class="tp-weekly-mosaic">';
 		foreach ( $posts as $index => $post ) {
 			$class = $index < 2 ? 'tp-weekly-card tp-weekly-card--overlay' : ( 2 === $index ? 'tp-weekly-card tp-weekly-card--standard' : 'tp-weekly-card tp-weekly-card--mini' );
-			echo techpress_editorial_feed_story_markup( $post->ID, $attributes, $class, $index < 2 );
+			echo digipublish_core_feed_story_markup( $post->ID, $attributes, $class, $index < 2 );
 		}
 		echo '</div>';
 		break;
@@ -70,7 +70,7 @@ switch ( $layout ) {
 	case 'carousel-overlay':
 		echo '<div class="tp-editorial-carousel" data-tp-carousel>';
 		foreach ( $posts as $post ) {
-			echo techpress_editorial_feed_story_markup( $post->ID, $attributes, 'tp-carousel-card', true );
+			echo digipublish_core_feed_story_markup( $post->ID, $attributes, 'tp-carousel-card', true );
 		}
 		echo '</div>';
 		if ( $item_count > 1 ) {
@@ -82,7 +82,7 @@ switch ( $layout ) {
 		echo '<div class="tp-featured-trio">';
 		foreach ( array_slice( $posts, 0, 3 ) as $index => $post ) {
 			$class = 0 === $index ? 'tp-featured-trio__lead' : 'tp-featured-trio__side';
-			echo techpress_editorial_feed_story_markup( $post->ID, $attributes, $class, true );
+			echo digipublish_core_feed_story_markup( $post->ID, $attributes, $class, true );
 		}
 		echo '</div>';
 		break;
@@ -90,7 +90,7 @@ switch ( $layout ) {
 	case 'compact-grid':
 		echo '<div class="tp-compact-grid">';
 		foreach ( $posts as $post ) {
-			echo techpress_editorial_feed_story_markup( $post->ID, $attributes, 'tp-compact-card', false );
+			echo digipublish_core_feed_story_markup( $post->ID, $attributes, 'tp-compact-card', false );
 		}
 		echo '</div>';
 		break;
@@ -98,7 +98,7 @@ switch ( $layout ) {
 	case 'latest-cards':
 		echo '<div class="tp-latest-card-grid">';
 		foreach ( $posts as $post ) {
-			echo techpress_editorial_feed_story_markup( $post->ID, $attributes, 'tp-latest-card', false );
+			echo digipublish_core_feed_story_markup( $post->ID, $attributes, 'tp-latest-card', false );
 		}
 		echo '</div>';
 		break;
@@ -107,7 +107,7 @@ switch ( $layout ) {
 	default:
 		echo '<div class="tp-editorial-card-grid">';
 		foreach ( $posts as $post ) {
-			echo techpress_editorial_feed_story_markup( $post->ID, $attributes, 'tp-editorial-card', false );
+			echo digipublish_core_feed_story_markup( $post->ID, $attributes, 'tp-editorial-card', false );
 		}
 		echo '</div>';
 		break;

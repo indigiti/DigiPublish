@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Theme setup.
  */
-function techpress_theme_setup() {
+function digipublish_theme_setup() {
 	register_block_pattern_category(
 		'digipublish',
 		array( 'label' => __( 'DigiPublish Editorial', 'digipublish' ) )
@@ -22,7 +22,7 @@ function techpress_theme_setup() {
 	add_theme_support( 'digipublish-performance' );
 	add_theme_support( 'responsive-embeds' );
 }
-add_action( 'after_setup_theme', 'techpress_theme_setup' );
+add_action( 'after_setup_theme', 'digipublish_theme_setup' );
 
 
 /**
@@ -90,7 +90,7 @@ add_action( 'init', 'digipublish_register_core_layout_styles', 30 );
  * Custom block CSS is registered per block by the companion plugin and is
  * therefore loaded only when that block appears on the page.
  */
-function techpress_theme_enqueue_assets() {
+function digipublish_enqueue_theme_assets() {
 	$path = get_theme_file_path( 'assets/css/site.css' );
 	$ver  = file_exists( $path ) ? (string) filemtime( $path ) : wp_get_theme()->get( 'Version' );
 
@@ -101,12 +101,12 @@ function techpress_theme_enqueue_assets() {
 		$ver
 	);
 }
-add_action( 'wp_enqueue_scripts', 'techpress_theme_enqueue_assets' );
+add_action( 'wp_enqueue_scripts', 'digipublish_enqueue_theme_assets' );
 
 /**
  * Keep the full theme shell available in the Site Editor.
  */
-function techpress_theme_editor_assets() {
+function digipublish_enqueue_editor_assets() {
 	$path = get_theme_file_path( 'assets/css/site.css' );
 	$ver  = file_exists( $path ) ? (string) filemtime( $path ) : wp_get_theme()->get( 'Version' );
 
@@ -117,25 +117,25 @@ function techpress_theme_editor_assets() {
 		$ver
 	);
 }
-add_action( 'enqueue_block_editor_assets', 'techpress_theme_editor_assets' );
+add_action( 'enqueue_block_editor_assets', 'digipublish_enqueue_editor_assets' );
 
 /**
  * Ask modern WordPress to enqueue block styles only for blocks that are
  * actually rendered. This is safe for a block theme and substantially lowers
  * CSS transfer on simpler pages.
  */
-function techpress_theme_load_block_assets_on_demand( $load_on_demand ) {
+function digipublish_load_block_assets_on_demand( $load_on_demand ) {
 	if ( is_admin() ) {
 		return $load_on_demand;
 	}
 	return true;
 }
-add_filter( 'should_load_block_assets_on_demand', 'techpress_theme_load_block_assets_on_demand' );
+add_filter( 'should_load_block_assets_on_demand', 'digipublish_load_block_assets_on_demand' );
 
 /**
  * Page-type classes used by the lean theme stylesheet.
  */
-function techpress_theme_body_classes( $classes ) {
+function digipublish_theme_body_classes( $classes ) {
 	$classes[] = 'digipublish-site';
 	if ( is_singular( 'post' ) ) {
 		$classes[] = 'digipublish-article';
@@ -158,7 +158,7 @@ function techpress_theme_body_classes( $classes ) {
 	}
 	return $classes;
 }
-add_filter( 'body_class', 'techpress_theme_body_classes' );
+add_filter( 'body_class', 'digipublish_theme_body_classes' );
 
 /**
  * Typography is intentionally dependency-free.
@@ -195,7 +195,7 @@ function digipublish_enqueue_site_interactions() {
 	if ( is_singular( 'post' ) ) {
 		$post_id = get_queried_object_id();
 		$config['loadNext'] = array(
-			'enabled' => digipublish_caards_load_next_enabled( $post_id ),
+			'enabled' => digipublish_load_next_enabled( $post_id ),
 			'postId'  => $post_id,
 			'restUrl' => esc_url_raw( rest_url( 'digipublish/v1/load-next-post' ) ),
 		);
@@ -207,7 +207,7 @@ add_action( 'wp_enqueue_scripts', 'digipublish_enqueue_site_interactions', 30 );
 /**
  * Per-post/page layout settings equivalent to the Caards editor layout panel.
  */
-function digipublish_caards_register_singular_meta() {
+function digipublish_register_singular_meta() {
 	$schema = array(
 		'digipublish_singular_sidebar' => array( 'type' => 'string', 'default' => 'default' ),
 		'digipublish_page_header_type' => array( 'type' => 'string', 'default' => 'default' ),
@@ -238,12 +238,12 @@ function digipublish_caards_register_singular_meta() {
 		}
 	}
 }
-add_action( 'init', 'digipublish_caards_register_singular_meta', 15 );
+add_action( 'init', 'digipublish_register_singular_meta', 15 );
 
 /**
  * Expose selected singular layout choices to the theme shell.
  */
-function digipublish_caards_body_classes( $classes ) {
+function digipublish_singular_body_classes( $classes ) {
 	$classes[] = 'digipublish-shell';
 	$classes[] = 'dp-caards-shell';
 	if ( is_singular( array( 'post', 'page' ) ) ) {
@@ -267,12 +267,12 @@ function digipublish_caards_body_classes( $classes ) {
 	}
 	return $classes;
 }
-add_filter( 'body_class', 'digipublish_caards_body_classes', 30 );
+add_filter( 'body_class', 'digipublish_singular_body_classes', 30 );
 
 /**
  * Safe helper for theme/plugin renderers.
  */
-function digipublish_caards_singular_setting( $post_id, $key, $fallback = '' ) {
+function digipublish_singular_setting( $post_id, $key, $fallback = '' ) {
 	$value = get_post_meta( absint( $post_id ), $key, true );
 	if ( '' === $value || null === $value || 'default' === $value ) {
 		return $fallback;
@@ -284,7 +284,7 @@ function digipublish_caards_singular_setting( $post_id, $key, $fallback = '' ) {
 /**
  * Resolve the Caards-style Auto Load Next Post state.
  */
-function digipublish_caards_load_next_enabled( $post_id ) {
+function digipublish_load_next_enabled( $post_id ) {
 	$value = sanitize_key( (string) get_post_meta( absint( $post_id ), 'digipublish_load_nextpost', true ) );
 	if ( 'enabled' === $value ) {
 		return true;
@@ -298,7 +298,7 @@ function digipublish_caards_load_next_enabled( $post_id ) {
 /**
  * Find the adjacent post using the Caards direction/category semantics.
  */
-function digipublish_caards_adjacent_post_id( $post_id, $exclude = array() ) {
+function digipublish_adjacent_post_id( $post_id, $exclude = array() ) {
 	$post_id = absint( $post_id );
 	if ( ! $post_id ) {
 		return 0;
@@ -340,7 +340,7 @@ function digipublish_caards_adjacent_post_id( $post_id, $exclude = array() ) {
 /**
  * Render the article fragment used by Auto Load Next Post.
  */
-function digipublish_caards_render_next_article( $post_id ) {
+function digipublish_render_next_article( $post_id ) {
 	$post_id = absint( $post_id );
 	$loaded  = get_post( $post_id );
 	if ( ! $loaded || 'post' !== $loaded->post_type || 'publish' !== $loaded->post_status ) {
@@ -391,7 +391,7 @@ function digipublish_caards_render_next_article( $post_id ) {
 /**
  * Public REST endpoint for Auto Load Next Post.
  */
-function digipublish_caards_register_load_next_route() {
+function digipublish_register_load_next_route() {
 	register_rest_route(
 		'digipublish/v1',
 		'/load-next-post',
@@ -402,11 +402,11 @@ function digipublish_caards_register_load_next_route() {
 				$params  = $request->get_json_params();
 				$current = absint( $params['postId'] ?? 0 );
 				$exclude = isset( $params['exclude'] ) && is_array( $params['exclude'] ) ? $params['exclude'] : array();
-				$next_id = digipublish_caards_adjacent_post_id( $current, $exclude );
+				$next_id = digipublish_adjacent_post_id( $current, $exclude );
 				if ( ! $next_id ) {
 					return rest_ensure_response( array( 'end' => true, 'content' => '' ) );
 				}
-				$content = digipublish_caards_render_next_article( $next_id );
+				$content = digipublish_render_next_article( $next_id );
 				return rest_ensure_response(
 					array(
 						'end'     => '' === $content,
@@ -420,7 +420,7 @@ function digipublish_caards_register_load_next_route() {
 		)
 	);
 }
-add_action( 'rest_api_init', 'digipublish_caards_register_load_next_route' );
+add_action( 'rest_api_init', 'digipublish_register_load_next_route' );
 
 /**
  * Register non-visual publishing behavior settings.
@@ -494,7 +494,7 @@ function digipublish_site_editor_part_is_custom( $slug ) {
  * template parts directly. This keeps old selections 2–4 working without
  * making a hidden option override the Site Editor on new installations.
  */
-function digipublish_caards_route_template_parts( $parsed_block ) {
+function digipublish_route_legacy_template_parts( $parsed_block ) {
 	if ( empty( $parsed_block['blockName'] ) || 'core/template-part' !== $parsed_block['blockName'] ) {
 		return $parsed_block;
 	}
@@ -520,7 +520,7 @@ function digipublish_caards_route_template_parts( $parsed_block ) {
 
 	return $parsed_block;
 }
-add_filter( 'render_block_data', 'digipublish_caards_route_template_parts', 15 );
+add_filter( 'render_block_data', 'digipublish_route_legacy_template_parts', 15 );
 
 /**
  * Non-visual publishing behavior page.
@@ -568,3 +568,6 @@ function digipublish_render_publishing_settings_page() {
 	</div>
 	<?php
 }
+
+// Legacy callable aliases are isolated from the production namespace.
+require_once get_theme_file_path( 'inc/compatibility.php' );

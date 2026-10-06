@@ -8,7 +8,7 @@ if ( ! is_category() ) {
 
 $term  = get_queried_object();
 $limit = max( 3, min( 8, absint( $attributes['limit'] ?? 5 ) ) );
-$ids   = techpress_editorial_get_category_expert_ids( (int) $term->term_id, $limit );
+$ids   = digipublish_core_get_category_expert_ids( (int) $term->term_id, $limit );
 if ( ! $ids ) {
 	return;
 }

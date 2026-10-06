@@ -15,18 +15,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'TECHPRESS_EDITORIAL_VERSION', '0.11.1' );
-define( 'TECHPRESS_EDITORIAL_DIR', plugin_dir_path( __FILE__ ) );
-define( 'TECHPRESS_EDITORIAL_URL', plugin_dir_url( __FILE__ ) );
+define( 'DIGIPUBLISH_CORE_VERSION', '0.11.1' );
+define( 'DIGIPUBLISH_CORE_DIR', plugin_dir_path( __FILE__ ) );
+define( 'DIGIPUBLISH_CORE_URL', plugin_dir_url( __FILE__ ) );
 
 /**
- * Canonical DigiPublish constants.
- *
- * Legacy TECHPRESS_* constants remain available for backward compatibility.
+ * Legacy TechPress constants remain as aliases for backward compatibility.
  */
-define( 'DIGIPUBLISH_CORE_VERSION', TECHPRESS_EDITORIAL_VERSION );
-define( 'DIGIPUBLISH_CORE_DIR', TECHPRESS_EDITORIAL_DIR );
-define( 'DIGIPUBLISH_CORE_URL', TECHPRESS_EDITORIAL_URL );
+define( 'TECHPRESS_EDITORIAL_VERSION', DIGIPUBLISH_CORE_VERSION );
+define( 'TECHPRESS_EDITORIAL_DIR', DIGIPUBLISH_CORE_DIR );
+define( 'TECHPRESS_EDITORIAL_URL', DIGIPUBLISH_CORE_URL );
 
 require_once DIGIPUBLISH_CORE_DIR . 'includes/gallery.php';
 require_once DIGIPUBLISH_CORE_DIR . 'includes/query.php';
@@ -34,7 +32,7 @@ require_once DIGIPUBLISH_CORE_DIR . 'includes/query.php';
 /**
  * Register editorial content types.
  */
-function techpress_editorial_register_content_types() {
+function digipublish_core_register_content_types() {
 	register_post_type(
 		'tech_term',
 		array(
@@ -71,13 +69,13 @@ function techpress_editorial_register_content_types() {
 		)
 	);
 }
-add_action( 'init', 'techpress_editorial_register_content_types', 5 );
+add_action( 'init', 'digipublish_core_register_content_types', 5 );
 
 
 /**
  * Per-post editorial attribution used by the article byline block.
  */
-function techpress_editorial_register_attribution_meta() {
+function digipublish_core_register_attribution_meta() {
 	foreach ( array( 'post', 'digipublish_gallery' ) as $post_type ) {
 		register_post_meta(
 			$post_type,
@@ -108,12 +106,12 @@ function techpress_editorial_register_attribution_meta() {
 		);
 	}
 }
-add_action( 'init', 'techpress_editorial_register_attribution_meta', 6 );
+add_action( 'init', 'digipublish_core_register_attribution_meta', 6 );
 
 /**
  * Human-readable label for the selected editorial attribution.
  */
-function techpress_editorial_attribution_label( $type ) {
+function digipublish_core_attribution_label( $type ) {
 	$labels = array(
 		'fact_checked' => __( 'Fact Checked by', 'digipublish-core' ),
 		'verified'     => __( 'Verified by', 'digipublish-core' ),
@@ -128,32 +126,32 @@ function techpress_editorial_attribution_label( $type ) {
  * Front-end styles are declared as per-block files in block.json so WordPress
  * can load only the CSS needed by the blocks rendered on a request.
  */
-function techpress_editorial_register_blocks() {
-	$editor_js        = TECHPRESS_EDITORIAL_DIR . 'assets/editor.js';
-	$editor_query_js  = TECHPRESS_EDITORIAL_DIR . 'assets/editor-query.js';
-	$editor_native_js = TECHPRESS_EDITORIAL_DIR . 'assets/editor-native.js';
+function digipublish_core_register_blocks() {
+	$editor_js        = DIGIPUBLISH_CORE_DIR . 'assets/editor.js';
+	$editor_query_js  = DIGIPUBLISH_CORE_DIR . 'assets/editor-query.js';
+	$editor_native_js = DIGIPUBLISH_CORE_DIR . 'assets/editor-native.js';
 
 	wp_register_script(
 		'digipublish-core-editor-native',
-		TECHPRESS_EDITORIAL_URL . 'assets/editor-native.js',
+		DIGIPUBLISH_CORE_URL . 'assets/editor-native.js',
 		array( 'wp-hooks' ),
-		file_exists( $editor_native_js ) ? (string) filemtime( $editor_native_js ) : TECHPRESS_EDITORIAL_VERSION,
+		file_exists( $editor_native_js ) ? (string) filemtime( $editor_native_js ) : DIGIPUBLISH_CORE_VERSION,
 		true
 	);
 
 	wp_register_script(
 		'digipublish-core-editor-query',
-		TECHPRESS_EDITORIAL_URL . 'assets/editor-query.js',
+		DIGIPUBLISH_CORE_URL . 'assets/editor-query.js',
 		array( 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-data', 'wp-core-data' ),
-		file_exists( $editor_query_js ) ? (string) filemtime( $editor_query_js ) : TECHPRESS_EDITORIAL_VERSION,
+		file_exists( $editor_query_js ) ? (string) filemtime( $editor_query_js ) : DIGIPUBLISH_CORE_VERSION,
 		true
 	);
 
 	wp_register_script(
 		'digipublish-core-editor',
-		TECHPRESS_EDITORIAL_URL . 'assets/editor.js',
+		DIGIPUBLISH_CORE_URL . 'assets/editor.js',
 		array( 'digipublish-core-editor-native', 'digipublish-core-editor-query', 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-data', 'wp-core-data', 'wp-plugins', 'wp-editor', 'wp-edit-post' ),
-		file_exists( $editor_js ) ? (string) filemtime( $editor_js ) : TECHPRESS_EDITORIAL_VERSION,
+		file_exists( $editor_js ) ? (string) filemtime( $editor_js ) : DIGIPUBLISH_CORE_VERSION,
 		true
 	);
 
@@ -162,12 +160,12 @@ function techpress_editorial_register_blocks() {
 		DIGIPUBLISH_CORE_DIR . 'blocks-manifest.php'
 	);
 }
-add_action( 'init', 'techpress_editorial_register_blocks', 20 );
+add_action( 'init', 'digipublish_core_register_blocks', 20 );
 
 /**
  * Add a dedicated inserter category.
  */
-function techpress_editorial_block_categories( $categories ) {
+function digipublish_core_block_categories( $categories ) {
 	array_unshift(
 		$categories,
 		array(
@@ -178,7 +176,7 @@ function techpress_editorial_block_categories( $categories ) {
 	);
 	return $categories;
 }
-add_filter( 'block_categories_all', 'techpress_editorial_block_categories' );
+add_filter( 'block_categories_all', 'digipublish_core_block_categories' );
 
 /**
  * Rewrite the previous internal Gutenberg namespace to digipublish/*.
@@ -283,7 +281,7 @@ if ( ! get_option( 'digipublish_block_namespace_migrated_080', false ) ) {
 /**
  * Optional publication profile fields used by the author archive hero.
  */
-function techpress_editorial_author_profile_fields( $user ) {
+function digipublish_core_author_profile_fields( $user ) {
     $fields = array(
         'techpress_role'      => __( 'Editorial role', 'digipublish-core' ),
         'techpress_linkedin'  => __( 'LinkedIn URL', 'digipublish-core' ),
@@ -298,10 +296,10 @@ function techpress_editorial_author_profile_fields( $user ) {
     }
     echo '</table>';
 }
-add_action( 'show_user_profile', 'techpress_editorial_author_profile_fields' );
-add_action( 'edit_user_profile', 'techpress_editorial_author_profile_fields' );
+add_action( 'show_user_profile', 'digipublish_core_author_profile_fields' );
+add_action( 'edit_user_profile', 'digipublish_core_author_profile_fields' );
 
-function techpress_editorial_save_author_profile_fields( $user_id ) {
+function digipublish_core_save_author_profile_fields( $user_id ) {
     if ( ! current_user_can( 'edit_user', $user_id ) ) { return; }
     $url_fields = array( 'techpress_linkedin', 'techpress_x', 'techpress_instagram', 'techpress_youtube' );
     if ( isset( $_POST['techpress_role'] ) ) {
@@ -313,16 +311,16 @@ function techpress_editorial_save_author_profile_fields( $user_id ) {
         }
     }
 }
-add_action( 'personal_options_update', 'techpress_editorial_save_author_profile_fields' );
-add_action( 'edit_user_profile_update', 'techpress_editorial_save_author_profile_fields' );
+add_action( 'personal_options_update', 'digipublish_core_save_author_profile_fields' );
+add_action( 'edit_user_profile_update', 'digipublish_core_save_author_profile_fields' );
 
 
 /**
  * Cached top-level categories used by navigation and editorial blocks.
  */
-function techpress_editorial_get_top_categories( $limit = 8, $exclude_default = true ) {
+function digipublish_core_get_top_categories( $limit = 8, $exclude_default = true ) {
 	$limit = max( 1, min( 20, absint( $limit ) ) );
-	$key   = 'v' . techpress_editorial_cache_version() . '_top_categories_' . $limit . '_' . ( $exclude_default ? '1' : '0' );
+	$key   = 'v' . digipublish_core_cache_version() . '_top_categories_' . $limit . '_' . ( $exclude_default ? '1' : '0' );
 	$cats  = wp_cache_get( $key, 'techpress_editorial' );
 
 	if ( false !== $cats ) {
@@ -354,7 +352,7 @@ function techpress_editorial_get_top_categories( $limit = 8, $exclude_default = 
  * Cached expert IDs for a category. Uses one grouped SQL query instead of
  * loading dozens of post objects and resolving authors one by one.
  */
-function techpress_editorial_get_category_expert_ids( $term_id, $limit = 5 ) {
+function digipublish_core_get_category_expert_ids( $term_id, $limit = 5 ) {
 	global $wpdb;
 
 	$term_id = absint( $term_id );
@@ -363,7 +361,7 @@ function techpress_editorial_get_category_expert_ids( $term_id, $limit = 5 ) {
 		return array();
 	}
 
-	$key = 'v' . techpress_editorial_cache_version() . '_category_experts_' . $term_id . '_' . $limit;
+	$key = 'v' . digipublish_core_cache_version() . '_category_experts_' . $term_id . '_' . $limit;
 	$ids = wp_cache_get( $key, 'techpress_editorial' );
 	if ( false !== $ids ) {
 		return $ids;
@@ -404,58 +402,58 @@ function techpress_editorial_get_category_expert_ids( $term_id, $limit = 5 ) {
  * Comments only invalidate comment-count-ranked feeds; unrelated category and
  * latest-feed caches remain warm.
  */
-function techpress_editorial_cache_version( $scope = 'content' ) {
+function digipublish_core_cache_version( $scope = 'content' ) {
 	$scope  = 'popularity' === $scope ? 'popularity' : 'content';
-	$option = 'popularity' === $scope ? 'digipublish_editorial_popularity_cache_version' : 'techpress_editorial_cache_version';
+	$option = 'popularity' === $scope ? 'digipublish_editorial_popularity_cache_version' : 'digipublish_core_cache_version';
 	return max( 1, absint( get_option( $option, 1 ) ) );
 }
 
-function techpress_editorial_bump_cache_version( $scope = 'content' ) {
+function digipublish_core_bump_cache_version( $scope = 'content' ) {
 	$scope  = 'popularity' === $scope ? 'popularity' : 'content';
-	$option = 'popularity' === $scope ? 'digipublish_editorial_popularity_cache_version' : 'techpress_editorial_cache_version';
-	update_option( $option, techpress_editorial_cache_version( $scope ) + 1, false );
+	$option = 'popularity' === $scope ? 'digipublish_editorial_popularity_cache_version' : 'digipublish_core_cache_version';
+	update_option( $option, digipublish_core_cache_version( $scope ) + 1, false );
 }
 
-function techpress_editorial_bump_post_cache_versions( $post_id = 0 ) {
+function digipublish_core_bump_post_cache_versions( $post_id = 0 ) {
 	if ( ! $post_id || wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
 		return;
 	}
 	if ( ! in_array( get_post_type( $post_id ), array( 'post', 'tech_term', 'digipublish_gallery' ), true ) ) {
 		return;
 	}
-	techpress_editorial_bump_cache_version( 'content' );
+	digipublish_core_bump_cache_version( 'content' );
 	if ( 'post' === get_post_type( $post_id ) ) {
-		techpress_editorial_bump_cache_version( 'popularity' );
+		digipublish_core_bump_cache_version( 'popularity' );
 	}
 }
-add_action( 'save_post', 'techpress_editorial_bump_post_cache_versions' );
+add_action( 'save_post', 'digipublish_core_bump_post_cache_versions' );
 
-function techpress_editorial_bump_term_cache_version( $term_id = 0, $term_taxonomy_id = 0, $taxonomy = '' ) {
+function digipublish_core_bump_term_cache_version( $term_id = 0, $term_taxonomy_id = 0, $taxonomy = '' ) {
 	if ( $taxonomy && ! in_array( $taxonomy, array( 'category', 'post_tag', 'tech_topic' ), true ) ) {
 		return;
 	}
-	techpress_editorial_bump_cache_version( 'content' );
+	digipublish_core_bump_cache_version( 'content' );
 }
-add_action( 'created_term', 'techpress_editorial_bump_term_cache_version', 10, 3 );
-add_action( 'edited_term', 'techpress_editorial_bump_term_cache_version', 10, 3 );
-add_action( 'delete_term', 'techpress_editorial_bump_term_cache_version', 10, 3 );
+add_action( 'created_term', 'digipublish_core_bump_term_cache_version', 10, 3 );
+add_action( 'edited_term', 'digipublish_core_bump_term_cache_version', 10, 3 );
+add_action( 'delete_term', 'digipublish_core_bump_term_cache_version', 10, 3 );
 
-function techpress_editorial_bump_comment_cache_version( $comment_id = 0 ) {
+function digipublish_core_bump_comment_cache_version( $comment_id = 0 ) {
 	$comment = $comment_id ? get_comment( $comment_id ) : null;
 	if ( $comment && 'post' !== get_post_type( $comment->comment_post_ID ) ) {
 		return;
 	}
-	techpress_editorial_bump_cache_version( 'popularity' );
+	digipublish_core_bump_cache_version( 'popularity' );
 }
-add_action( 'wp_insert_comment', 'techpress_editorial_bump_comment_cache_version' );
-add_action( 'edit_comment', 'techpress_editorial_bump_comment_cache_version' );
-add_action( 'delete_comment', 'techpress_editorial_bump_comment_cache_version' );
+add_action( 'wp_insert_comment', 'digipublish_core_bump_comment_cache_version' );
+add_action( 'edit_comment', 'digipublish_core_bump_comment_cache_version' );
+add_action( 'delete_comment', 'digipublish_core_bump_comment_cache_version' );
 
 /**
  * Keep framework archive/search templates aligned with the main WordPress
  * query so the archive-feed block can render it without a duplicate query.
  */
-function techpress_editorial_optimize_main_queries( $query ) {
+function digipublish_core_optimize_main_queries( $query ) {
 	if ( is_admin() || ! $query->is_main_query() || ! current_theme_supports( 'digipublish-performance' ) ) {
 		return;
 	}
@@ -469,12 +467,12 @@ function techpress_editorial_optimize_main_queries( $query ) {
 		$query->set( 'posts_per_page', 10 );
 	}
 }
-add_action( 'pre_get_posts', 'techpress_editorial_optimize_main_queries' );
+add_action( 'pre_get_posts', 'digipublish_core_optimize_main_queries' );
 
 /**
  * Category label for a card.
  */
-function techpress_editorial_category_markup( $post_id ) {
+function digipublish_core_category_markup( $post_id ) {
 	$categories = get_the_category( $post_id );
 	if ( empty( $categories ) ) {
 		return '';
@@ -492,7 +490,7 @@ function techpress_editorial_category_markup( $post_id ) {
  * Lightweight publication category icon. These are framework-owned SVGs, not
  * copied third-party assets, and are selected heuristically from the category.
  */
-function techpress_editorial_category_icon_svg( $category ) {
+function digipublish_core_category_icon_svg( $category ) {
 	$slug = $category instanceof WP_Term ? $category->slug : sanitize_title( (string) $category );
 	$name = $category instanceof WP_Term ? $category->name : (string) $category;
 	$key  = strtolower( $slug . ' ' . $name );
@@ -531,7 +529,7 @@ function techpress_editorial_category_icon_svg( $category ) {
  * WordPress supplies srcset candidates. Layout-specific sizes hints keep
  * browsers from downloading desktop-sized media for compact/mobile cards.
  */
-function techpress_editorial_image_markup( $post_id, $size = 'large', $priority = false, $sizes = '' ) {
+function digipublish_core_image_markup( $post_id, $size = 'large', $priority = false, $sizes = '' ) {
 	if ( has_post_thumbnail( $post_id ) ) {
 		$attrs = array(
 			'alt'      => the_title_attribute( array( 'echo' => false, 'post' => $post_id ) ),
@@ -555,7 +553,7 @@ function techpress_editorial_image_markup( $post_id, $size = 'large', $priority 
 /**
  * Compact metadata row.
  */
-function techpress_editorial_meta_markup( $post_id, $show_author, $show_date ) {
+function digipublish_core_meta_markup( $post_id, $show_author, $show_date ) {
 	$parts = array();
 	if ( $show_author ) {
 		$author_id = (int) get_post_field( 'post_author', $post_id );
@@ -584,7 +582,7 @@ function techpress_editorial_meta_markup( $post_id, $show_author, $show_date ) {
 /**
  * Render a standard post card.
  */
-function techpress_editorial_card_markup( $post_id, $attributes = array() ) {
+function digipublish_core_card_markup( $post_id, $attributes = array() ) {
 	$show_image    = $attributes['showImage'] ?? true;
 	$show_category = $attributes['showCategory'] ?? true;
 	$show_excerpt  = $attributes['showExcerpt'] ?? false;
@@ -609,17 +607,17 @@ function techpress_editorial_card_markup( $post_id, $attributes = array() ) {
 		$html .= '<span class="tp-card__top-count" aria-hidden="true">' . esc_html( str_pad( (string) $card_index, 2, '0', STR_PAD_LEFT ) ) . '</span>';
 	}
 	if ( $show_image ) {
-		$html .= '<a class="tp-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' . techpress_editorial_image_markup( $post_id, $image_size, false, '(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw' ) . '</a>';
+		$html .= '<a class="tp-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' . digipublish_core_image_markup( $post_id, $image_size, false, '(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw' ) . '</a>';
 	}
 	$html .= '<div class="tp-card__body">';
 	if ( $show_category ) {
-		$html .= techpress_editorial_category_markup( $post_id );
+		$html .= digipublish_core_category_markup( $post_id );
 	}
 	$html .= '<h3 class="tp-card__title"><a href="' . esc_url( get_permalink( $post_id ) ) . '">' . esc_html( get_the_title( $post_id ) ) . '</a></h3>';
 	if ( $show_excerpt ) {
 		$html .= '<p class="tp-card__excerpt">' . esc_html( wp_trim_words( get_the_excerpt( $post_id ), 24 ) ) . '</p>';
 	}
-	$html .= techpress_editorial_meta_markup( $post_id, $show_author, $show_date );
+	$html .= digipublish_core_meta_markup( $post_id, $show_author, $show_date );
 
 	$stats = array();
 	if ( $show_comments ) {
@@ -629,19 +627,19 @@ function techpress_editorial_card_markup( $post_id, $attributes = array() ) {
 		);
 	}
 	if ( $show_read ) {
-		$minutes = techpress_editorial_read_time( $post_id );
+		$minutes = digipublish_core_read_time( $post_id );
 		$stats[] = sprintf( _n( '%d min read', '%d min read', $minutes, 'digipublish-core' ), $minutes );
 	}
 	if ( $show_views ) {
-		$views = techpress_editorial_metric_value( $post_id, '_techpress_views' );
+		$views = digipublish_core_metric_value( $post_id, '_techpress_views' );
 		if ( $views ) {
-			$stats[] = techpress_editorial_format_metric( $views ) . ' ' . __( 'views', 'digipublish-core' );
+			$stats[] = digipublish_core_format_metric( $views ) . ' ' . __( 'views', 'digipublish-core' );
 		}
 	}
 	if ( $show_shares ) {
-		$shares = techpress_editorial_metric_value( $post_id, '_techpress_shares' );
+		$shares = digipublish_core_metric_value( $post_id, '_techpress_shares' );
 		if ( $shares ) {
-			$stats[] = __( 'Shares', 'digipublish-core' ) . ' ' . techpress_editorial_format_metric( $shares );
+			$stats[] = __( 'Shares', 'digipublish-core' ) . ' ' . digipublish_core_format_metric( $shares );
 		}
 	}
 	if ( $stats ) {
@@ -708,19 +706,19 @@ function digipublish_core_post_feed_top_meta( $post_id, $attributes, $index ) {
 function digipublish_core_post_feed_footer( $post_id, $attributes ) {
 	$items = array();
 	if ( ! empty( $attributes['showReadTime'] ) ) {
-		$minutes = techpress_editorial_read_time( $post_id );
+		$minutes = digipublish_core_read_time( $post_id );
 		$items[] = sprintf( _n( '%d min read', '%d min read', $minutes, 'digipublish-core' ), $minutes );
 	}
 	if ( ! empty( $attributes['showViews'] ) ) {
-		$views = techpress_editorial_metric_value( $post_id, '_techpress_views' );
+		$views = digipublish_core_metric_value( $post_id, '_techpress_views' );
 		if ( $views ) {
-			$items[] = techpress_editorial_format_metric( $views ) . ' ' . __( 'views', 'digipublish-core' );
+			$items[] = digipublish_core_format_metric( $views ) . ' ' . __( 'views', 'digipublish-core' );
 		}
 	}
 	if ( ! empty( $attributes['showShares'] ) ) {
-		$shares = techpress_editorial_metric_value( $post_id, '_techpress_shares' );
+		$shares = digipublish_core_metric_value( $post_id, '_techpress_shares' );
 		if ( $shares ) {
-			$items[] = techpress_editorial_format_metric( $shares ) . ' ' . __( 'shares', 'digipublish-core' );
+			$items[] = digipublish_core_format_metric( $shares ) . ' ' . __( 'shares', 'digipublish-core' );
 		}
 	}
 	$read_more = ! empty( $attributes['showReadMore'] );
@@ -741,7 +739,7 @@ function digipublish_core_post_feed_footer( $post_id, $attributes ) {
 function digipublish_core_post_feed_main_meta( $post_id, $attributes, $all_inline = false ) {
 	$parts = array();
 	if ( ! empty( $attributes['showCategory'] ) ) {
-		$category = techpress_editorial_category_markup( $post_id );
+		$category = digipublish_core_category_markup( $post_id );
 		if ( $category ) {
 			$parts[] = $category;
 		}
@@ -761,19 +759,19 @@ function digipublish_core_post_feed_main_meta( $post_id, $attributes, $all_inlin
 	}
 	if ( $all_inline ) {
 		if ( ! empty( $attributes['showViews'] ) ) {
-			$views = techpress_editorial_metric_value( $post_id, '_techpress_views' );
+			$views = digipublish_core_metric_value( $post_id, '_techpress_views' );
 			if ( $views ) {
-				$parts[] = esc_html( techpress_editorial_format_metric( $views ) . ' ' . __( 'views', 'digipublish-core' ) );
+				$parts[] = esc_html( digipublish_core_format_metric( $views ) . ' ' . __( 'views', 'digipublish-core' ) );
 			}
 		}
 		if ( ! empty( $attributes['showReadTime'] ) ) {
-			$minutes = techpress_editorial_read_time( $post_id );
+			$minutes = digipublish_core_read_time( $post_id );
 			$parts[] = esc_html( sprintf( _n( '%d min read', '%d min read', $minutes, 'digipublish-core' ), $minutes ) );
 		}
 		if ( ! empty( $attributes['showShares'] ) ) {
-			$shares = techpress_editorial_metric_value( $post_id, '_techpress_shares' );
+			$shares = digipublish_core_metric_value( $post_id, '_techpress_shares' );
 			if ( $shares ) {
-				$parts[] = esc_html( techpress_editorial_format_metric( $shares ) . ' ' . __( 'shares', 'digipublish-core' ) );
+				$parts[] = esc_html( digipublish_core_format_metric( $shares ) . ' ' . __( 'shares', 'digipublish-core' ) );
 			}
 		}
 	}
@@ -827,7 +825,7 @@ function digipublish_core_post_feed_card_markup( $post_id, $attributes = array()
 				'playsinline preload="metadata" src="' . esc_url( $video_url ) . '"></video></div>';
 		} else {
 			$media = '<a class="tp-card__image" href="' . esc_url( get_permalink( $post_id ) ) . '">' .
-				techpress_editorial_image_markup( $post_id, $image_size, false, '(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw' ) .
+				digipublish_core_image_markup( $post_id, $image_size, false, '(max-width: 720px) 100vw, (max-width: 1120px) 50vw, 33vw' ) .
 				'</a>';
 		}
 
@@ -855,7 +853,7 @@ function digipublish_core_post_feed_card_markup( $post_id, $attributes = array()
 
 	$category_only = '';
 	if ( ! $all_inline_meta && ! empty( $attributes['showCategory'] ) ) {
-		$category_only = techpress_editorial_category_markup( $post_id );
+		$category_only = digipublish_core_category_markup( $post_id );
 	}
 	$secondary_meta_attrs = $attributes;
 	$secondary_meta_attrs['showCategory'] = false;
@@ -1081,7 +1079,7 @@ function digipublish_core_design_wrapper_args( $attributes, $classes, $column_de
 /**
  * Reading-time estimate. It is deterministic and requires no tracking script.
  */
-function techpress_editorial_read_time( $post_id ) {
+function digipublish_core_read_time( $post_id ) {
 	$content = wp_strip_all_tags( strip_shortcodes( (string) get_post_field( 'post_content', $post_id ) ) );
 	preg_match_all( '/[\p{L}\p{N}]+(?:[’\'][\p{L}\p{N}]+)*/u', $content, $matches );
 	$words = isset( $matches[0] ) ? count( $matches[0] ) : 0;
@@ -1092,13 +1090,13 @@ function techpress_editorial_read_time( $post_id ) {
  * Optional metric stored by analytics/integration code. Missing values remain
  * hidden rather than displaying fabricated counters.
  */
-function techpress_editorial_metric_value( $post_id, $key ) {
+function digipublish_core_metric_value( $post_id, $key ) {
 	$value = max( 0, (int) get_post_meta( $post_id, $key, true ) );
 	$filter = '_techpress_views' === $key ? 'techpress_post_views' : ( '_techpress_shares' === $key ? 'techpress_post_shares' : 'techpress_post_metric' );
 	return max( 0, (int) apply_filters( $filter, $value, $post_id, $key ) );
 }
 
-function techpress_editorial_format_metric( $value ) {
+function digipublish_core_format_metric( $value ) {
 	$value = (int) $value;
 	if ( $value >= 1000000 ) {
 		return rtrim( rtrim( number_format_i18n( $value / 1000000, 1 ), '0' ), '.' ) . 'M';
@@ -1112,22 +1110,22 @@ function techpress_editorial_format_metric( $value ) {
 /**
  * Shared story markup for all Editorial Feed Engine visual presets.
  */
-function techpress_editorial_feed_stats_markup( $post_id, $attributes ) {
+function digipublish_core_feed_stats_markup( $post_id, $attributes ) {
 	$stats = array();
 	if ( $attributes['showReadTime'] ?? true ) {
-		$minutes = techpress_editorial_read_time( $post_id );
+		$minutes = digipublish_core_read_time( $post_id );
 		$stats[] = sprintf( _n( '%d min read', '%d min read', $minutes, 'digipublish-core' ), $minutes );
 	}
 	if ( $attributes['showViews'] ?? true ) {
-		$views = techpress_editorial_metric_value( $post_id, '_techpress_views' );
+		$views = digipublish_core_metric_value( $post_id, '_techpress_views' );
 		if ( $views ) {
-			$stats[] = techpress_editorial_format_metric( $views ) . ' ' . __( 'views', 'digipublish-core' );
+			$stats[] = digipublish_core_format_metric( $views ) . ' ' . __( 'views', 'digipublish-core' );
 		}
 	}
 	if ( $attributes['showShares'] ?? true ) {
-		$shares = techpress_editorial_metric_value( $post_id, '_techpress_shares' );
+		$shares = digipublish_core_metric_value( $post_id, '_techpress_shares' );
 		if ( $shares ) {
-			$stats[] = __( 'Shares', 'digipublish-core' ) . ' ' . techpress_editorial_format_metric( $shares );
+			$stats[] = __( 'Shares', 'digipublish-core' ) . ' ' . digipublish_core_format_metric( $shares );
 		}
 	}
 	if ( ! $stats ) {
@@ -1140,7 +1138,7 @@ function techpress_editorial_feed_stats_markup( $post_id, $attributes ) {
 	return $html . '</div>';
 }
 
-function techpress_editorial_feed_story_markup( $post_id, $attributes, $class = 'tp-editorial-card', $overlay = false ) {
+function digipublish_core_feed_story_markup( $post_id, $attributes, $class = 'tp-editorial-card', $overlay = false ) {
 	$title = get_the_title( $post_id );
 	$url = get_permalink( $post_id );
 	$show_category = $attributes['showCategory'] ?? true;
@@ -1168,12 +1166,12 @@ function techpress_editorial_feed_story_markup( $post_id, $attributes, $class = 
 	if ( in_array( $requested_image_size, array( 'thumbnail', 'medium', 'medium_large', 'large', 'full' ), true ) ) {
 		$image_size = $requested_image_size;
 	}
-	$image = '<a class="tp-feed-story__image" href="' . esc_url( $url ) . '">' . techpress_editorial_image_markup( $post_id, $image_size, false, $image_sizes ) . '</a>';
-	$stats = techpress_editorial_feed_stats_markup( $post_id, $attributes );
+	$image = '<a class="tp-feed-story__image" href="' . esc_url( $url ) . '">' . digipublish_core_image_markup( $post_id, $image_size, false, $image_sizes ) . '</a>';
+	$stats = digipublish_core_feed_stats_markup( $post_id, $attributes );
 
 	$body = '<div class="tp-feed-story__body">';
 	if ( $show_category ) {
-		$category = techpress_editorial_category_markup( $post_id );
+		$category = digipublish_core_category_markup( $post_id );
 		if ( $category ) {
 			$body .= '<div class="tp-feed-story__category">' . $category . '</div>';
 		}
@@ -1212,23 +1210,29 @@ function techpress_editorial_feed_story_markup( $post_id, $attributes, $class = 
  * Allow ad-manager plugins or site code to inject provider markup.
  * Return an empty string from the filter to retain the reserved placeholder.
  */
-function techpress_editorial_ad_provider_markup( $slot_name, $attributes ) {
-	return apply_filters( 'techpress_ad_slot_html', '', $slot_name, $attributes );
+function digipublish_core_ad_provider_markup( $slot_name, $attributes ) {
+	$html = apply_filters( 'digipublish_ad_slot_html', '', $slot_name, $attributes );
+
+	// Legacy filter retained for pre-1.0 ad integrations.
+	return apply_filters( 'techpress_ad_slot_html', $html, $slot_name, $attributes );
 }
 
 /**
  * Flush rewrite rules once when the plugin is activated/deactivated so the
  * dictionary archive and single URLs work immediately.
  */
-function techpress_editorial_activate() {
-	techpress_editorial_register_content_types();
+function digipublish_core_activate() {
+	digipublish_core_register_content_types();
 	digipublish_core_register_gallery_post_type();
 	digipublish_core_migrate_block_namespace();
 	flush_rewrite_rules();
 }
-register_activation_hook( __FILE__, 'techpress_editorial_activate' );
+register_activation_hook( __FILE__, 'digipublish_core_activate' );
 
-function techpress_editorial_deactivate() {
+function digipublish_core_deactivate() {
 	flush_rewrite_rules();
 }
-register_deactivation_hook( __FILE__, 'techpress_editorial_deactivate' );
+register_deactivation_hook( __FILE__, 'digipublish_core_deactivate' );
+
+// Legacy callable aliases are isolated from the production namespace.
+require_once DIGIPUBLISH_CORE_DIR . 'includes/compatibility.php';

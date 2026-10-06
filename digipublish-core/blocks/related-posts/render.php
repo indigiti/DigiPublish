@@ -120,22 +120,22 @@ if ( 'read-next' === $layout ) {
 
 	foreach ( $posts as $post ) {
 		$id = (int) $post->ID;
-		$views = techpress_editorial_metric_value( $id, '_techpress_views' );
-		$shares = techpress_editorial_metric_value( $id, '_techpress_shares' );
-		$minutes = techpress_editorial_read_time( $id );
+		$views = digipublish_core_metric_value( $id, '_techpress_views' );
+		$shares = digipublish_core_metric_value( $id, '_techpress_shares' );
+		$minutes = digipublish_core_read_time( $id );
 
 		echo '<article class="tp-read-next-card">';
 		echo '<div class="tp-read-next-card__body">';
-		if ( $attributes['showCategory'] ?? true ) { echo techpress_editorial_category_markup( $id ); }
+		if ( $attributes['showCategory'] ?? true ) { echo digipublish_core_category_markup( $id ); }
 		echo '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>';
-		echo techpress_editorial_meta_markup( $id, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true );
+		echo digipublish_core_meta_markup( $id, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true );
 		if ( $attributes['showExcerpt'] ?? true ) {
 			echo '<p>' . esc_html( wp_trim_words( get_the_excerpt( $id ), 22 ) ) . '</p>';
 		}
 		echo '</div>';
 
 		echo '<a class="tp-read-next-card__image" href="' . esc_url( get_permalink( $id ) ) . '">';
-		echo techpress_editorial_image_markup( $id, digipublish_core_image_size( $attributes, 'medium_large' ), false, '(max-width: 680px) 82vw, (max-width: 1120px) 50vw, 25vw' );
+		echo digipublish_core_image_markup( $id, digipublish_core_image_size( $attributes, 'medium_large' ), false, '(max-width: 680px) 82vw, (max-width: 1120px) 50vw, 25vw' );
 		echo '</a>';
 
 		echo '<div class="tp-read-next-card__footer">';
@@ -143,10 +143,10 @@ if ( 'read-next' === $layout ) {
 			echo '<span>' . esc_html( sprintf( _n( '%d min read', '%d min read', $minutes, 'digipublish-core' ), $minutes ) ) . '</span>';
 		}
 		if ( ( $attributes['showViews'] ?? true ) && $views ) {
-			echo '<span>' . esc_html( techpress_editorial_format_metric( $views ) . ' ' . __( 'views', 'digipublish-core' ) ) . '</span>';
+			echo '<span>' . esc_html( digipublish_core_format_metric( $views ) . ' ' . __( 'views', 'digipublish-core' ) ) . '</span>';
 		}
 		if ( ( $attributes['showShares'] ?? true ) && $shares ) {
-			echo '<span class="tp-read-next-card__shares">' . esc_html( __( 'Shares', 'digipublish-core' ) . ' ' . techpress_editorial_format_metric( $shares ) ) . '</span>';
+			echo '<span class="tp-read-next-card__shares">' . esc_html( __( 'Shares', 'digipublish-core' ) . ' ' . digipublish_core_format_metric( $shares ) ) . '</span>';
 		}
 		echo '</div>';
 		echo '</article>';
@@ -168,7 +168,7 @@ foreach ( $posts as $i => $post ) {
 	$id         = (int) $post->ID;
 	$cls        = 0 === $i ? 'tp-related-card tp-related-card--lead' : 'tp-related-card';
 	$image_size = 0 === $i ? 'medium_large' : 'medium';
-	$category_markup = ( $attributes['showCategory'] ?? true ) ? techpress_editorial_category_markup( $id ) : '';
-	echo '<article class="' . esc_attr( $cls ) . '"><a class="tp-related-card__image" href="' . esc_url( get_permalink( $id ) ) . '">' . techpress_editorial_image_markup( $id, digipublish_core_image_size( $attributes, $image_size ) ) . '</a><div class="tp-related-card__body">' . $category_markup . '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>' . techpress_editorial_meta_markup( $id, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true ) . '</div></article>';
+	$category_markup = ( $attributes['showCategory'] ?? true ) ? digipublish_core_category_markup( $id ) : '';
+	echo '<article class="' . esc_attr( $cls ) . '"><a class="tp-related-card__image" href="' . esc_url( get_permalink( $id ) ) . '">' . digipublish_core_image_markup( $id, digipublish_core_image_size( $attributes, $image_size ) ) . '</a><div class="tp-related-card__body">' . $category_markup . '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>' . digipublish_core_meta_markup( $id, $attributes['showAuthor'] ?? true, $attributes['showDate'] ?? true ) . '</div></article>';
 }
 echo '</div></section>';

@@ -24,10 +24,10 @@ foreach ( $query->posts as $post ) {
 	$id = (int) $post->ID;
 	echo '<article class="dp-caards-mega-menu__card">';
 	if ( $attributes['showImages'] ?? true ) {
-		echo '<a class="dp-caards-mega-menu__image" href="' . esc_url( get_permalink( $id ) ) . '">' . techpress_editorial_image_markup( $id, 'medium_large', false, '25vw' ) . '</a>';
+		echo '<a class="dp-caards-mega-menu__image" href="' . esc_url( get_permalink( $id ) ) . '">' . digipublish_core_image_markup( $id, 'medium_large', false, '25vw' ) . '</a>';
 	}
 	echo '<div class="dp-caards-mega-menu__body">';
-	if ( $attributes['showCategory'] ?? true ) { echo techpress_editorial_category_markup( $id ); }
+	if ( $attributes['showCategory'] ?? true ) { echo digipublish_core_category_markup( $id ); }
 	echo '<h3><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>';
 	if ( $attributes['showDate'] ?? true ) { echo '<time datetime="' . esc_attr( get_the_date( DATE_W3C, $id ) ) . '">' . esc_html( get_the_date( '', $id ) ) . '</time>'; }
 	echo '</div></article>';
