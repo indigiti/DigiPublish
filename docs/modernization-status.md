@@ -16,7 +16,7 @@ This document distinguishes **Caards feature parity** from the separate **DigiPu
 | Design-system normalization | Complete active layer | Active theme/block styling consumes canonical `--dp-*` tokens. Compatibility color/preset aliases remain for old content. |
 | Header/footer visual ownership | Complete primary path | Site Editor template parts/patterns own visual composition; historical variant options are fallback-only. |
 | Homepage namespace | Complete primary path | New templates use `digipublish/editorial-home`; the old Caards pattern slug remains hidden for saved references. |
-| Version consistency | Complete | Theme, Core and README are aligned at 0.11.1. |
+| Version consistency | Complete | Theme, Core and README are aligned at 0.11.2. |
 
 ## Partially complete
 

@@ -9,7 +9,7 @@ DigiPublish is a Gutenberg-first publishing framework for WordPress, built as a 
 
 ## Current version
 
-**0.11.1**
+**0.11.2**
 
 ## Capabilities
 
