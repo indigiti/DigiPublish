@@ -129,12 +129,21 @@ function techpress_editorial_attribution_label( $type ) {
  * can load only the CSS needed by the blocks rendered on a request.
  */
 function techpress_editorial_register_blocks() {
-	$editor_js = TECHPRESS_EDITORIAL_DIR . 'assets/editor.js';
+	$editor_js       = TECHPRESS_EDITORIAL_DIR . 'assets/editor.js';
+	$editor_query_js = TECHPRESS_EDITORIAL_DIR . 'assets/editor-query.js';
+
+	wp_register_script(
+		'digipublish-core-editor-query',
+		TECHPRESS_EDITORIAL_URL . 'assets/editor-query.js',
+		array( 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-data', 'wp-core-data' ),
+		file_exists( $editor_query_js ) ? (string) filemtime( $editor_query_js ) : TECHPRESS_EDITORIAL_VERSION,
+		true
+	);
 
 	wp_register_script(
 		'digipublish-core-editor',
 		TECHPRESS_EDITORIAL_URL . 'assets/editor.js',
-		array( 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-data', 'wp-core-data', 'wp-plugins', 'wp-editor', 'wp-edit-post' ),
+		array( 'digipublish-core-editor-query', 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', 'wp-server-side-render', 'wp-data', 'wp-core-data', 'wp-plugins', 'wp-editor', 'wp-edit-post' ),
 		file_exists( $editor_js ) ? (string) filemtime( $editor_js ) : TECHPRESS_EDITORIAL_VERSION,
 		true
 	);
